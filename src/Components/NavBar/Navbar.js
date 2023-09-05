@@ -189,7 +189,7 @@ function NavBar() {
                   />
                 </>
               )}
-              <MenuLink to="/notice" active={pathname.startsWith("/notice")}>
+              <MenuLink to="/Check" active={pathname.startsWith("/notice")}>
                 출결 관리
               </MenuLink>
             </DisplayTextDiv>
@@ -217,7 +217,7 @@ function NavBar() {
                   />
                 </>
               )}
-              <MenuLink to="/re" active={pathname.startsWith("/re")}>
+              <MenuLink to="/Schedule" active={pathname.startsWith("/re")}>
                 일정 관리
               </MenuLink>
             </DisplayTextDiv>
@@ -246,7 +246,7 @@ function NavBar() {
                 </>
               )}
               <MenuLink
-                to="/shopManager"
+                to="/Score"
                 active={pathname.startsWith("/shopManager")}
               >
                 점수 관리
@@ -280,22 +280,22 @@ function NavBar() {
             <Ul>
               <li>
                 <MenuLink
-                  to="/members/memberManager"
-                  active={pathname.startsWith("/members/memberManager")}
+                  to="/Member"
+                  active={pathname.startsWith("/Member")}
                 >
                   <CircleIcon
-                    active={pathname.startsWith("/members/memberManager")}
+                    active={pathname.startsWith("/Member")}
                   />
                   회원 관리
                 </MenuLink>
               </li>
               <li>
                 <MenuLink
-                  to="/members/adminPermissions"
-                  active={pathname.startsWith("/members/adminPermissions")}
+                  to="/Master"
+                  active={pathname.startsWith("/Master")}
                 >
                   <CircleIcon
-                    active={pathname.startsWith("/members/adminPermissions")}
+                    active={pathname.startsWith("/Master")}
                   />
                   관리자 권한
                 </MenuLink>
