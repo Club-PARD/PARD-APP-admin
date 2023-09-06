@@ -7,7 +7,7 @@ const LogDiv = styled.div`
   justify-content: flex-end;
   margin-top: 32px;
   margin-right: 64px;
-  background-color: red;
+  /* background-color: red; */
 `;
 
 const LogText = styled.div`

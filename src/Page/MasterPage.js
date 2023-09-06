@@ -12,7 +12,7 @@ const DDiv = styled.div`
 
 const TitleDiv = styled.div`
   display: flex;
-  margin-top: 53px;
+  margin-top: 36px;
   margin-left: 80px;
   align-items: center;
 `;
