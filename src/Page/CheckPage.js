@@ -47,6 +47,15 @@ const BarText = styled.div`
   background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
 `;
 
+const BodyDiv = styled.div`
+  display: flex;
+  margin-top: 83px;
+  margin-left: 80px;
+  width: 1240px;
+  height: 584px;
+  /* background-color: red; */
+`;
+
 const CheckPage = () => {
   return (
     <DDiv>
@@ -56,6 +65,9 @@ const CheckPage = () => {
         <BarText />
         <SubTitle>파트별로 출결을 관리해보세요.</SubTitle>
       </TitleDiv>
+      <BodyDiv>
+
+      </BodyDiv>
     </DDiv>
   );
 };

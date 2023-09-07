@@ -4,7 +4,7 @@ import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
-import koLocale from 'date-fns/locale/ko'; 
+import koLocale from "date-fns/locale/ko";
 
 const DDiv = styled.div`
   background: #f6f6f6;
@@ -171,11 +171,62 @@ const RankDiv = styled.div`
   margin-top: 16px;
   height: 696px;
   border-radius: 8px;
-border: 1px solid var(--Gray30, #A3A3A3);
-width: 440px;
+  border: 1px solid var(--Gray30, #a3a3a3);
+  width: 440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
+const RankingNumDiv = styled.div`
+  width: 409px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
 
-`
+const RankingNum = styled.div`
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  margin-right: 24px;
+  background-color: green;
+  color: var(--primary-blue, #5262f5);
+  font-family: "Pretendard";
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const RankingName = styled.div`
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  margin-right: 8px;
+`;
+
+const RankingPart = styled.div`
+  color: var(--Gray30, #a3a3a3);
+  font-family: "Pretendard";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 18px;
+`;
+
+const RankingFirstDiv = styled.div`
+  display: flex;
+  align-items: center;
+`;
 
 const HomePage = () => {
   const [schedules, setSchedule] = useState([]);
@@ -208,7 +259,7 @@ const HomePage = () => {
         for (const userDoc of userData.docs) {
           const userData = userDoc.data();
           const pid = userData.pid;
-          
+
           // 해당 사용자의 points 데이터 가져오기
           const pointsDocRef = doc(dbService, "points", pid);
           const pointsDoc = await getDoc(pointsDocRef);
@@ -216,14 +267,18 @@ const HomePage = () => {
           if (pointsDoc.exists()) {
             const pointsData = pointsDoc.data();
             const pointsArray = pointsData.points || [];
-            
+
             // pointsArray 내부 digit 필드의 값을 합산하여 순위 계산
-            const totalPoints = pointsArray.reduce((acc, curr) => acc + curr.digit, 0);
-            
+            const totalPoints = pointsArray.reduce(
+              (acc, curr) => acc + curr.digit,
+              0
+            );
+
             rankings.push({
               uid: userDoc.id,
               displayName: userData.name,
               totalPoints: totalPoints,
+              part: userData.part,
             });
           }
         }
@@ -241,7 +296,6 @@ const HomePage = () => {
 
     calculateUserRankings();
   }, []);
-
 
   useEffect(() => {
     console.log("Updated schedules data:", schedules);
@@ -285,14 +339,12 @@ const HomePage = () => {
                 <ContentText>
                   일시 :{" "}
                   {format(
-                      fromUnixTime(schedule.dueDate.seconds),
-                      'M월 d일 EEEE HH:mm',
-                      { locale: koLocale } // 한국어 로케일 설정
-                    )}
+                    fromUnixTime(schedule.dueDate.seconds),
+                    "M월 d일 EEEE HH:mm",
+                    { locale: koLocale } // 한국어 로케일 설정
+                  )}
                 </ContentText>
-                <ContentText>
-                  장소 : {schedule.place}
-                </ContentText>
+                <ContentText>장소 : {schedule.place}</ContentText>
               </ScheduleItem>
             ))}
           </ScheduleDiv>
@@ -300,13 +352,25 @@ const HomePage = () => {
         <LeftDiv>
           <HomeTitle>점수 업데이트</HomeTitle>
           <RankDiv>
-          <ul>
-        {userRankings.map((user, index) => (
-          <li key={user.uid}>
-            순위: {index + 1}, 이름: {user.displayName}, 총 포인트: {user.totalPoints}
-          </li>
-        ))}
-      </ul>
+            <>
+              {userRankings.map((user, index) => (
+                <RankingNumDiv key={user.uid}>
+                  <RankingFirstDiv>
+                    <RankingNum
+                      style={{
+                        backgroundColor: index < 3 ? "#EEEFFE" : "#F8F8F8",
+                        color: index < 3 ? "#5262F5" : "#A3A3A3",
+                      }}
+                    >
+                      {index + 1}
+                    </RankingNum>
+                    <RankingName>{user.displayName}</RankingName>
+                    <RankingPart>{user.part}</RankingPart>
+                  </RankingFirstDiv>
+                  {user.totalPoints}점
+                </RankingNumDiv>
+              ))}
+            </>
           </RankDiv>
         </LeftDiv>
       </BodyDiv>
