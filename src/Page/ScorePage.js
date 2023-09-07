@@ -3,6 +3,8 @@ import styled from "styled-components";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { dbService } from "../fbase";
+import { format, fromUnixTime } from "date-fns";
+import koLocale from "date-fns/locale/ko";
 
 const DDiv = styled.div`
   background: #f6f6f6;
@@ -204,7 +206,6 @@ const ScorePage = () => {
   const [userScores, setUserScores] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [modals, setModals] = useState([]);
 
   const openModal = (index) => {
@@ -283,8 +284,84 @@ const ScorePage = () => {
     margin-right: ${(props) => props.right}px;
   `;
 
+  const HR = styled.hr`
+    width: 540px;
+    height: 0px;
+    stroke-width: 1px;
+    stroke: var(--Gray30, #a3a3a3);
+    margin-top: ${(props) => props.top}px;
+  `;
+
+  const RowTitleDiv = styled.div`
+    width: 540px;
+    height: 20px;
+    display: flex;
+    margin-left: 57px;
+  `;
+
+  const RowTitle = styled.div`
+    color: var(--text-black, #111);
+    font-family: "Pretendard";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 18px;
+    margin-right: ${(props) => props.right}px;
+  `;
+
+
+const RowContent = styled.div`
+color: var(--text-black, #111);
+font-family: 'Pretendard';
+font-size: 12px;
+font-style: normal;
+font-weight: 500;
+line-height: 16px; 
+margin-right: ${(props) => props.right}px;
+width: ${(props) => props.widthj}px;
+background-color: red;
+`;
+
+const RowContentDiv = styled.div`
+width: 540px;
+height: 20px;
+display: flex;
+margin-left: 63px;
+`;
+
   // 모달 컴포넌트
-  const Modal = ({ isOpen, onClose, name, part }) => {
+  const Modal = ({ isOpen, onClose, name, part, pid }) => {
+    const [points, setPoints] = useState([]); // Points 데이터를 저장할 상태 변수
+
+    // Points 데이터를 가져오는 함수
+    const fetchPoints = async () => {
+      try {
+        const pointsQuery = query(
+          collection(dbService, "points"),
+          where("pid", "==", pid) // 해당 사용자의 pid와 일치하는 Points 문서를 가져옴
+        );
+        const pointsSnapshot = await getDocs(pointsQuery);
+        const pointsData = [];
+
+        pointsSnapshot.forEach((pointDoc) => {
+          const pointData = pointDoc.data().points; // "points" 필드 값을 가져옴
+          pointsData.push(...pointData); // 배열로 합쳐서 저장
+        });
+
+        setPoints(pointsData);
+      } catch (error) {
+        console.error("Error fetching Points data:", error);
+      }
+    };
+
+    useEffect(() => {
+      if (isOpen) {
+        // 모달이 열릴 때만 Points 데이터를 가져옴
+        fetchPoints();
+        console.log("data : ", points);
+      }
+    }, [isOpen, pid]);
+
     return (
       <ModalWrapper isOpen={isOpen}>
         <ModalContent>
@@ -311,6 +388,31 @@ const ScorePage = () => {
               {part}
             </ModalContents>
           </ModalSubTitle>
+          <HR top={24} />
+          <RowTitleDiv>
+            <RowTitle right={57}>파드너십</RowTitle>
+            <RowTitle right={103}>점수</RowTitle>
+            <RowTitle right={203}>내용</RowTitle>
+            <RowTitle right={0}>날짜</RowTitle>
+          </RowTitleDiv>
+          <HR top={8} />
+          {points.map((point, index) => (
+            <div key={index}>
+              <RowContentDiv>
+                <RowContent right={77}>{point.type}</RowContent>
+                <RowContent right={0}>{point.digit}점</RowContent>
+                <RowContent right={0}>{point.reason}</RowContent>
+                <RowContent right={0}>
+                {format(
+                    fromUnixTime(point.timestamp),
+                    "MM.dd(EEE)",
+                    { locale: koLocale }
+                  )}
+                </RowContent>
+              </RowContentDiv>
+              <HR top={8} />
+            </div>
+          ))}
         </ModalContent>
       </ModalWrapper>
     );
@@ -395,6 +497,7 @@ const ScorePage = () => {
 
           scores.push({
             name: userData.name,
+            pid: userData.pid,
             mvp: mvpPoints,
             study: studyPoints,
             communication: communicationPoints,
@@ -495,6 +598,7 @@ const ScorePage = () => {
                     onClose={() => closeModal(index)}
                     name={userScore.name}
                     part={userScore.part}
+                    pid={userScore.pid}
                   />
                 </TableCell>
               </TableRow>
