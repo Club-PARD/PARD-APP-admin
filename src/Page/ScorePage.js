@@ -309,25 +309,93 @@ const ScorePage = () => {
     margin-right: ${(props) => props.right}px;
   `;
 
+  const RowContent = styled.div`
+    color: var(--text-black, #111);
+    font-family: "Pretendard";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+    margin-right: ${(props) => props.right}px;
+    width: ${(props) => props.width}px;
+    /* background-color: red; */
+    display: flex;
+    align-items: center;
+    justify-content: start;
+  `;
 
-const RowContent = styled.div`
-color: var(--text-black, #111);
-font-family: 'Pretendard';
-font-size: 12px;
-font-style: normal;
-font-weight: 500;
-line-height: 16px; 
-margin-right: ${(props) => props.right}px;
-width: ${(props) => props.widthj}px;
-background-color: red;
-`;
+  const RowContentType = styled.div`
+    color: var(--text-black, #111);
+    font-family: "Pretendard";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+    margin-right: ${(props) => props.right}px;
+    width: ${(props) => props.width}px;
+    /* background-color: red; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  `;
 
-const RowContentDiv = styled.div`
-width: 540px;
-height: 20px;
-display: flex;
-margin-left: 63px;
-`;
+  const RowContentDigit = styled.div`
+    color: var(--text-black, #111);
+    font-family: "Pretendard";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+    margin-right: ${(props) => props.right}px;
+    width: ${(props) => props.width}px;
+    /* background-color: red; */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  `;
+
+  const RowContentDiv = styled.div`
+    width: 540px;
+    height: auto;
+    display: flex;
+    margin-left: 53px;
+    margin-top: 16px;
+  `;
+
+  const ContentDiv = styled.div`
+    height: 150px;
+    overflow-y: scroll;
+    /* background-color: red; */
+  `;
+
+  const RegisterButton = styled.button`
+    width: 556px;
+    height: 48px;
+    margin-left: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--primary-blue, #5262f5);
+    background: var(--primary-blue-10, #eeeffe);
+    display: flex;
+    width: 556px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-blue, #5262f5);
+    /* Head/H1-SB-18 */
+    font-family: "Pretendard";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    margin-top: 66px;
+
+    &:hover {
+      box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
+    }
+    &:active {
+      box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
+    }
+  `;
 
   // 모달 컴포넌트
   const Modal = ({ isOpen, onClose, name, part, pid }) => {
@@ -346,6 +414,10 @@ margin-left: 63px;
         pointsSnapshot.forEach((pointDoc) => {
           const pointData = pointDoc.data().points; // "points" 필드 값을 가져옴
           pointsData.push(...pointData); // 배열로 합쳐서 저장
+        });
+        pointsSnapshot.forEach((beePointDoc) => {
+          const beePointData = beePointDoc.data().beePoints; // "beePoints" 필드 값을 가져옴
+          pointsData.push(...beePointData); // 배열로 합쳐서 저장
         });
 
         setPoints(pointsData);
@@ -396,23 +468,35 @@ margin-left: 63px;
             <RowTitle right={0}>날짜</RowTitle>
           </RowTitleDiv>
           <HR top={8} />
-          {points.map((point, index) => (
-            <div key={index}>
-              <RowContentDiv>
-                <RowContent right={77}>{point.type}</RowContent>
-                <RowContent right={0}>{point.digit}점</RowContent>
-                <RowContent right={0}>{point.reason}</RowContent>
-                <RowContent right={0}>
-                {format(
-                    fromUnixTime(point.timestamp),
-                    "MM.dd(EEE)",
-                    { locale: koLocale }
-                  )}
-                </RowContent>
-              </RowContentDiv>
-              <HR top={8} />
-            </div>
-          ))}
+          <ContentDiv>
+            {points
+              .slice()
+              .reverse()
+              .map((point, index) => (
+                <div key={index}>
+                  <RowContentDiv>
+                    <RowContentType right={40} width={60}>
+                      {point.type}
+                    </RowContentType>
+                    <RowContentDigit right={30} width={30}>
+                      {" "}
+                      {point.digit > 0
+                        ? `+${point.digit}점`
+                        : `${point.digit}점`}
+                    </RowContentDigit>
+                    <RowContent right={100} width={190}>
+                      {point.reason}
+                    </RowContent>
+                    <RowContent right={0} width={50}>
+                      {format(fromUnixTime(point.timestamp), "MM.dd(EEE)", {
+                        locale: koLocale,
+                      })}
+                    </RowContent>
+                  </RowContentDiv>
+                </div>
+              ))}
+          </ContentDiv>
+          <RegisterButton>점수 추가</RegisterButton>
         </ModalContent>
       </ModalWrapper>
     );
@@ -587,7 +671,7 @@ margin-left: 63px;
                   +{userScore.retrospection}점
                 </TableCell>
                 <TableCell color={"#FF5A5A"} width={205.2}>
-                  -{userScore.penalty}점
+                  {userScore.penalty}점
                 </TableCell>
                 <TableCell width={205}>
                   <CheckScoreButton onClick={() => openModal(index)}>
