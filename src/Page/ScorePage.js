@@ -272,6 +272,7 @@ const ScorePage = () => {
     margin-left: 56px;
     align-items: center;
     margin-top: 24px;
+    margin-top: ${(props) => props.top || 24}px;
   `;
 
   const ModalContents = styled.div`
@@ -282,6 +283,7 @@ const ScorePage = () => {
     font-weight: ${(props) => props.weight};
     line-height: 24px;
     margin-right: ${(props) => props.right}px;
+    margin-top: ${(props) => props.top}px;
   `;
 
   const HR = styled.hr`
@@ -365,6 +367,7 @@ const ScorePage = () => {
   const ContentDiv = styled.div`
     height: 150px;
     overflow-y: scroll;
+    margin-top: -8px;
     /* background-color: red; */
   `;
 
@@ -397,9 +400,161 @@ const ScorePage = () => {
     }
   `;
 
+  const DropdownWrapper1 = styled.div`
+    position: relative;
+    display: inline-block;
+    margin-top: 12px;
+    margin-left: 40px;
+    display: flex;
+    width: 200px;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 2px;
+    border: 1px solid var(--primary-blue, #5262f5);
+    background: var(--White, #fff);
+  `;
+
+  const DropdownButton1 = styled.button`
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    border: none;
+  `;
+
+  const DropdownContent1 = styled.div`
+    display: ${(props) => (props.isOpen ? "block" : "none")};
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    z-index: 1;
+    top: 100%;
+    left: 0;
+    border: 1px solid #ccc;
+  `;
+
+  const DropdownItem1 = styled.div`
+    padding: 10px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #ddd;
+    }
+  `;
+
+  const ScoreDiv = styled.div`
+    width: 42px;
+    height: 26px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    background: var(--Gray10, #e4e4e4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    margin-right: 8px;
+  `;
+
+  const UnitText = styled.div`
+    color: var(--Gray30, #a3a3a3);
+    font-family: "Pretendard";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    margin-right: 8px;
+  `;
+
+  const UnitSubText = styled.div`
+    color: var(--Gray30, #a3a3a3);
+    font-family: "Pretendard";
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 14px;
+    margin-top: 8px;
+  `;
+
+  const ReasonInput = styled.input`
+    width: 420px;
+    height: 42px;
+    border-radius: 4px;
+    border: 1px solid var(--Gray10, #e4e4e4);
+    background: var(--White, #fff);
+    color: var(--Gray30, #a3a3a3);
+    font-family: "Pretendard";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px;
+    padding-right: 20px;
+
+    &::placeholder {
+      color: var(--Gray30, #a3a3a3);
+      padding-right: 20px;
+    }
+  `;
+
+  const InputNumNum = styled.div`
+    color: var(--Gray30, #a3a3a3);
+    text-align: right;
+    font-family: "Pretendard";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+    margin-top: 16px;
+    margin-right: 23px;
+  `;
+
   // 모달 컴포넌트
   const Modal = ({ isOpen, onClose, name, part, pid }) => {
     const [points, setPoints] = useState([]); // Points 데이터를 저장할 상태 변수
+    const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(true);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [selectedScoreReason, setSelectedScoreReason] = useState(null);
+    const [selectedScore, setSelectedScore] = useState(null); // State to store the selected score
+
+    const [inputText, setInputText] = useState(""); // State to store input text
+
+    const handleInputChange = (e) => {
+      const text = e.target.value;
+      if (text.length <= 20) {
+        setInputText(text);
+      }
+    };
+
+    const ScoreList = [
+      "MVP (+5점)",
+      "스터디 개최 및 수료 (+5점)",
+      "파드 소통 인증 (+1점)",
+      "디스콰이엇 회고 (+3점)",
+      "세미나 지각 벌점 (-1점)",
+      "세미나 결석 벌점 (-2점)",
+      "과제 지각 벌점 (-0.5점)",
+      "과제 미제출 (-1점)",
+    ];
+
+    const ScoreoggleDropdown = () => {
+      setIsDropdownOpen(!isDropdownOpen);
+    };
+
+    const handleScoreClick = (option) => {
+      setSelectedScoreReason(option);
+      setIsDropdownOpen(false);
+    };
 
     // Points 데이터를 가져오는 함수
     const fetchPoints = async () => {
@@ -428,7 +583,7 @@ const ScorePage = () => {
 
     useEffect(() => {
       if (isOpen) {
-        // 모달이 열릴 때만 Points 데이터를 가져옴
+        setSelectedScore(null);
         fetchPoints();
         console.log("data : ", points);
       }
@@ -438,7 +593,11 @@ const ScorePage = () => {
       <ModalWrapper isOpen={isOpen}>
         <ModalContent>
           <ModalTitleDiv>
-            <ModalTitle>점수 기록</ModalTitle>
+            {!isRegisterModalOpen ? (
+              <ModalTitle>점수 기록</ModalTitle>
+            ) : (
+              <ModalTitle>점수 추가</ModalTitle>
+            )}
             <CancelIcon
               src={require("../Assets/img/CancelButton.png")}
               onClick={onClose}
@@ -460,43 +619,100 @@ const ScorePage = () => {
               {part}
             </ModalContents>
           </ModalSubTitle>
-          <HR top={24} />
-          <RowTitleDiv>
-            <RowTitle right={57}>파드너십</RowTitle>
-            <RowTitle right={103}>점수</RowTitle>
-            <RowTitle right={203}>내용</RowTitle>
-            <RowTitle right={0}>날짜</RowTitle>
-          </RowTitleDiv>
-          <HR top={8} />
-          <ContentDiv>
-            {points
-              .slice()
-              .reverse()
-              .map((point, index) => (
-                <div key={index}>
-                  <RowContentDiv>
-                    <RowContentType right={40} width={60}>
-                      {point.type}
-                    </RowContentType>
-                    <RowContentDigit right={30} width={30}>
-                      {" "}
-                      {point.digit > 0
-                        ? `+${point.digit}점`
-                        : `${point.digit}점`}
-                    </RowContentDigit>
-                    <RowContent right={100} width={190}>
-                      {point.reason}
-                    </RowContent>
-                    <RowContent right={0} width={50}>
-                      {format(fromUnixTime(point.timestamp), "MM.dd(EEE)", {
-                        locale: koLocale,
-                      })}
-                    </RowContent>
-                  </RowContentDiv>
-                </div>
-              ))}
-          </ContentDiv>
-          <RegisterButton>점수 추가</RegisterButton>
+          {!isRegisterModalOpen ? (
+            <>
+              <HR top={24} />
+              <RowTitleDiv>
+                <RowTitle right={57}>파드너십</RowTitle>
+                <RowTitle right={103}>점수</RowTitle>
+                <RowTitle right={203}>내용</RowTitle>
+                <RowTitle right={0}>날짜</RowTitle>
+              </RowTitleDiv>
+              <HR top={8} />
+              <ContentDiv>
+                {points
+                  .slice()
+                  .reverse()
+                  .map((point, index) => (
+                    <div key={index}>
+                      <RowContentDiv>
+                        <RowContentType right={40} width={60}>
+                          {point.type}
+                        </RowContentType>
+                        <RowContentDigit right={30} width={30}>
+                          {" "}
+                          {point.digit > 0
+                            ? `+${point.digit}점`
+                            : `${point.digit}점`}
+                        </RowContentDigit>
+                        <RowContent right={100} width={190}>
+                          {point.reason}
+                        </RowContent>
+                        <RowContent right={0} width={50}>
+                          {format(fromUnixTime(point.timestamp), "MM.dd(EEE)", {
+                            locale: koLocale,
+                          })}
+                        </RowContent>
+                      </RowContentDiv>
+                    </div>
+                  ))}
+              </ContentDiv>
+              <RegisterButton onClick={() => setIsRegisterModalOpen(false)}>
+                점수 추가
+              </RegisterButton>
+            </>
+          ) : (
+            <>
+              <ModalSubTitle>
+                <ModalContents color={"#111"} top={10} weight={500}>
+                  파드너십
+                </ModalContents>
+                <DropdownWrapper1>
+                  <DropdownButton1 onClick={ScoreoggleDropdown}>
+                    {selectedScoreReason || "전체"}
+                  </DropdownButton1>
+                  <DropdownContent1 isOpen={isDropdownOpen}>
+                    {ScoreList.map((option, index) => (
+                      <DropdownItem1
+                        key={index}
+                        onClick={() => {
+                          handleScoreClick(option);
+                          setSelectedScore(option);
+                        }}
+                      >
+                        {option}
+                      </DropdownItem1>
+                    ))}
+                  </DropdownContent1>
+                </DropdownWrapper1>
+              </ModalSubTitle>
+              <ModalSubTitle top={36}>
+                <ModalContents color={"#111"} right={71} weight={500}>
+                  점수
+                </ModalContents>
+                <ScoreDiv>
+                  {selectedScore && selectedScore.match(/(-?\d+(\.\d+)?)점/)
+                    ? selectedScore.match(/(-?\d+(\.\d+)?)점/)[1]
+                    : 0}
+                </ScoreDiv>
+                <UnitText>점</UnitText>
+                <UnitSubText>
+                  * 파드너십에서 점수 분야를 고르면 자동으로 점수가 입력돼요.
+                </UnitSubText>
+              </ModalSubTitle>
+              <ModalSubTitle top={32}>
+                <ModalContents color={"#111"} right={71} weight={500}>
+                  이유
+                </ModalContents>
+                <ReasonInput
+                  value={inputText}
+                  onChange={handleInputChange}
+                  placeholder="파트 포인트나 벌점 추가하는 사유 (20자 이내)"
+                />
+              </ModalSubTitle>
+              <InputNumNum>{inputText.length}/20</InputNumNum>
+            </>
+          )}
         </ModalContent>
       </ModalWrapper>
     );
