@@ -186,6 +186,7 @@ const RankingNumDiv = styled.div`
   justify-content: space-between;
 `;
 
+
 const RankingNum = styled.div`
   width: 40px;
   height: 40px;
@@ -226,6 +227,13 @@ const RankingPart = styled.div`
 const RankingFirstDiv = styled.div`
   display: flex;
   align-items: center;
+`;
+
+const RankingHR = styled.hr`
+ width: 408px;
+height: 0px;
+stroke-width: 1px;
+stroke: var(--Gray30, #A3A3A3);
 `;
 
 const HomePage = () => {
@@ -354,6 +362,7 @@ const HomePage = () => {
           <RankDiv>
             <>
               {userRankings.map((user, index) => (
+                <>
                 <RankingNumDiv key={user.uid}>
                   <RankingFirstDiv>
                     <RankingNum
@@ -369,6 +378,8 @@ const HomePage = () => {
                   </RankingFirstDiv>
                   {user.totalPoints}점
                 </RankingNumDiv>
+                <RankingHR/>
+                </>
               ))}
             </>
           </RankDiv>
