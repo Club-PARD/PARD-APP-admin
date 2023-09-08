@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  updateDoc,
+  doc
+} from "firebase/firestore";
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
@@ -342,18 +349,17 @@ const ScorePage = () => {
   `;
 
   const RowContentDigit = styled.div`
-    color: var(--text-black, #111);
-    font-family: "Pretendard";
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 16px;
     margin-right: ${(props) => props.right}px;
     width: ${(props) => props.width}px;
     /* background-color: red; */
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    font-family: "Pretendard";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 18px;
   `;
 
   const RowContentDiv = styled.div`
@@ -488,7 +494,7 @@ const ScorePage = () => {
   `;
 
   const ReasonInput = styled.input`
-    width: 420px;
+    width: 400px;
     height: 42px;
     border-radius: 4px;
     border: 1px solid var(--Gray10, #e4e4e4);
@@ -516,7 +522,34 @@ const ScorePage = () => {
     font-weight: 500;
     line-height: 16px;
     margin-top: 16px;
-    margin-right: 23px;
+    margin-right: 40px;
+  `;
+
+  const RegisterAddButton = styled.button`
+    width: 556px;
+    height: 48px;
+    margin-left: 32px;
+    border-radius: 8px;
+    background: var(--primary-blue, #5262f5);
+    display: flex;
+    width: 556px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    color: var(--White, #fff);
+    font-family: "Pretendard";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    margin-top: 66px;
+
+    &:hover {
+      box-shadow: 0px 4px 8px 0px #5262f5;
+    }
+    &:active {
+      box-shadow: 0px 4px 8px 0px #5262f5 inset;
+    }
   `;
 
   // 모달 컴포넌트
@@ -525,7 +558,7 @@ const ScorePage = () => {
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(true);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedScoreReason, setSelectedScoreReason] = useState(null);
-    const [selectedScore, setSelectedScore] = useState(null); // State to store the selected score
+    const [selectedScore, setSelectedScore] = useState(0); // State to store the selected score
 
     const [inputText, setInputText] = useState(""); // State to store input text
 
@@ -533,6 +566,91 @@ const ScorePage = () => {
       const text = e.target.value;
       if (text.length <= 20) {
         setInputText(text);
+      }
+    };
+
+    const handleAddButtonClick = async () => {
+      if (selectedScore && inputText) {
+        const scoreMatch = selectedScore.match(/(-?\d+(\.\d+)?)점/);
+
+        if (scoreMatch) {
+          const scoreDigit = parseFloat(scoreMatch[1]);
+          let selectedType;
+          switch (selectedScore) {
+            case "MVP (+5점)":
+              selectedType = "최고";
+              break;
+            case "스터디 개최 및 수료 (+5점)":
+              selectedType = "스터디";
+              break;
+            case "파드 소통 인증 (+1점)":
+              selectedType = "소통";
+              break;
+            case "디스콰이엇 회고 (+3점)":
+              selectedType = "회고";
+              break;
+            default:
+              selectedType = selectedScore; // 기본적으로는 그대로 설정
+              break;
+          }
+
+          console.log("값은 :", selectedType);
+          const timestamp = new Date().toISOString();
+
+          const newPoint = {
+            'digit': scoreDigit,
+            'reason': inputText,
+            'timestamp': timestamp,
+            'type': selectedType,
+          };
+
+          if (
+            inputText === null &&
+            timestamp === null &&
+            selectedType === null
+          ) {
+            console.log("값", selectedType);
+            console.log("시간", scoreDigit);
+            alert("빈칸 확인해");
+          } else {
+            try {
+              // Points 데이터를 업데이트할 때는 기존 데이터를 가져온 후 새로운 데이터를 추가하고 다시 업데이트합니다.
+              const pointsQuery = query(
+                collection(dbService, "points"),
+                where("pid", "==", pid)
+              );
+
+              const pointsSnapshot = await getDocs(pointsQuery);
+              const pointsData = pointsSnapshot.docs.map((doc) => doc.data());
+              console.log("읽어온 data :", pointsData[0].points);
+
+              // 새로운 데이터를 추가
+              if (scoreDigit > 0) {
+                pointsData[0].points.push(newPoint);
+              } else if (scoreDigit < 0) {
+                pointsData[0].beePoints.push(newPoint);
+              }
+
+              console.log("넣을 data :", pointsData[0].points);
+
+              const docRefPoint = doc(dbService, "points", pid);
+              // 업데이트된 데이터로 업데이트
+              await updateDoc(docRefPoint, {
+                points: pointsData[0].points,
+                beePoints: pointsData[0].beePoints,
+              });
+
+              // Points 데이터를 다시 불러옴
+              fetchPoints();
+              onClose();
+            } catch (error) {
+              console.error("Error updating Points data:", error);
+            }
+          }
+        } else {
+          // 선택한 점수에서 일치하는 패턴을 찾을 수 없는 경우의 처리
+          alert("점수 형식이 올바르지 않습니다.");
+        }
       }
     };
 
@@ -593,7 +711,7 @@ const ScorePage = () => {
       <ModalWrapper isOpen={isOpen}>
         <ModalContent>
           <ModalTitleDiv>
-            {!isRegisterModalOpen ? (
+            {isRegisterModalOpen ? (
               <ModalTitle>점수 기록</ModalTitle>
             ) : (
               <ModalTitle>점수 추가</ModalTitle>
@@ -619,7 +737,7 @@ const ScorePage = () => {
               {part}
             </ModalContents>
           </ModalSubTitle>
-          {!isRegisterModalOpen ? (
+          {isRegisterModalOpen ? (
             <>
               <HR top={24} />
               <RowTitleDiv>
@@ -637,7 +755,7 @@ const ScorePage = () => {
                     <div key={index}>
                       <RowContentDiv>
                         <RowContentType right={40} width={60}>
-                          {point.type}
+                        {point.type === "최고" ? "MVP" : point.type}
                         </RowContentType>
                         <RowContentDigit right={30} width={30}>
                           {" "}
@@ -711,6 +829,13 @@ const ScorePage = () => {
                 />
               </ModalSubTitle>
               <InputNumNum>{inputText.length}/20</InputNumNum>
+              <RegisterAddButton
+                onClick={() => {
+                  handleAddButtonClick();
+                }}
+              >
+                추가하기
+              </RegisterAddButton>
             </>
           )}
         </ModalContent>
@@ -770,7 +895,7 @@ const ScorePage = () => {
             pointData.points.forEach((point) => {
               // 포인트 유형(type)에 따라 각각의 포인트를 계산
               switch (point.type) {
-                case "MVP":
+                case "최고":
                   mvpPoints += point.digit;
                   break;
                 case "스터디":
