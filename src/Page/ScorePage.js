@@ -7,11 +7,13 @@ import {
   query,
   where,
   updateDoc,
-  doc
+  doc,
+  Timestamp,
 } from "firebase/firestore";
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
+// const { Timestamp } = require('@google-cloud/firestore');
 
 const DDiv = styled.div`
   background: #f6f6f6;
@@ -595,18 +597,18 @@ const ScorePage = () => {
           }
 
           console.log("값은 :", selectedType);
-          const timestamp = new Date().toISOString();
+          const currentDate = Timestamp.now();
 
           const newPoint = {
-            'digit': scoreDigit,
-            'reason': inputText,
-            'timestamp': timestamp,
-            'type': selectedType,
+            digit: scoreDigit,
+            reason: inputText,
+            timestamp: currentDate,
+            type: selectedType,
           };
 
           if (
             inputText === null &&
-            timestamp === null &&
+            currentDate === null &&
             selectedType === null
           ) {
             console.log("값", selectedType);
@@ -755,9 +757,9 @@ const ScorePage = () => {
                     <div key={index}>
                       <RowContentDiv>
                         <RowContentType right={40} width={60}>
-                        {point.type === "최고" ? "MVP" : point.type}
+                          {point.type === "최고" ? "MVP" : point.type}
                         </RowContentType>
-                        <RowContentDigit right={30} width={30}>
+                        <RowContentDigit right={30} width={40}>
                           {" "}
                           {point.digit > 0
                             ? `+${point.digit}점`
