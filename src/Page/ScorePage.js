@@ -8,7 +8,7 @@ import {
   where,
   updateDoc,
   doc,
-  Timestamp,
+  Timestamp
 } from "firebase/firestore";
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
@@ -600,10 +600,10 @@ const ScorePage = () => {
           const currentDate = Timestamp.now();
 
           const newPoint = {
-            digit: scoreDigit,
-            reason: inputText,
-            timestamp: currentDate,
-            type: selectedType,
+            'digit': scoreDigit,
+            'reason': inputText,
+            'timestamp': currentDate,
+            'type': selectedType,
           };
 
           if (
@@ -757,7 +757,7 @@ const ScorePage = () => {
                     <div key={index}>
                       <RowContentDiv>
                         <RowContentType right={40} width={60}>
-                          {point.type === "최고" ? "MVP" : point.type}
+                        {point.type === "최고" ? "MVP" : point.type}
                         </RowContentType>
                         <RowContentDigit right={30} width={40}>
                           {" "}

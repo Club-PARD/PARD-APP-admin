@@ -445,7 +445,7 @@ const MemberPage = () => {
 // 필터
 const filteredUserScores = sortedUserScores.filter((userScore) => {
   const memberFilter =
-    selectedMemberFilter === "전체" || userScore.member === selectedMemberFilter;
+    selectedMemberFilter === "구분" || "전체" || userScore.member === selectedMemberFilter;
   const partFilter =
     selectedPartFilter === "파트" || userScore.part === selectedPartFilter;
   return memberFilter && partFilter;
@@ -465,6 +465,7 @@ const filteredUserScores = sortedUserScores.filter((userScore) => {
 
   useEffect(() => {
     fetchUsers();
+    console.log("user 정보 :", userScores);
   }, []);
 
 
@@ -500,8 +501,8 @@ const filteredUserScores = sortedUserScores.filter((userScore) => {
   const memberFillter = ["전체", "파디", "거친파도", "운영진", "잔잔파도"];
   
 
-  const part = ["기획", "디자인", "개발 - 웹", "개발 - iOS", "개발 - 서버"];
-  const partFillter = ["기획", "디자인", "개발 - 웹", "개발 - iOS", "개발 - 서버"];
+  const part = ["기획파트", "디자인파트", "웹파트", "iOS파트", "서버파트"];
+  const partFillter = ["기획파트", "디자인파트", "웹파트", "iOS파트", "서버파트"];
 
   const toggleDropdown = (index) => {
     const updatedIsOpen = [...isOpen];
