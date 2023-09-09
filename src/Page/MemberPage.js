@@ -337,6 +337,7 @@ const DropdownButton = styled.button`
   width: 100%;
   height: 100%;
   background-color: white;
+  background: ${(props) => props.Backcolor};
   color: var(--black-background, #1a1a1a);
   font-family: "Pretendard";
   font-size: 16px;
@@ -429,16 +430,26 @@ const MemberPage = () => {
   const [selectedPart, setSelectedPart] = useState(Array(15).fill(null));
   const [nameInputs, setNameInputs] = useState(Array(15).fill(""));
   const [phoneInputs, setPhoneInputs] = useState(Array(15).fill(""));
-  const [selectedMemberFilter, setSelectedMemberFilter] = useState(null);
+  const [selectedMemberFilter, setSelectedMemberFilter] = useState("구분");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedPartFilter, setSelectedPartFilter] = useState("파트");
+  const [isdropdownPart, setIsdropdownPart] = useState(false);
+
   // User 정보 읽기
 
   const sortedUserScores = userScores.sort((a, b) => {
     return a.name.localeCompare(b.name);
   });
 
-  const filteredUserScores = selectedMemberFilter
-  ? sortedUserScores.filter((userScore) => userScore.member === selectedMemberFilter)
-  : sortedUserScores;
+
+// 필터
+const filteredUserScores = sortedUserScores.filter((userScore) => {
+  const memberFilter =
+    selectedMemberFilter === "전체" || userScore.member === selectedMemberFilter;
+  const partFilter =
+    selectedPartFilter === "파트" || userScore.part === selectedPartFilter;
+  return memberFilter && partFilter;
+});
 
   const fetchUsers = async () => {
     const usersRef = collection(dbService, "users");
@@ -456,16 +467,41 @@ const MemberPage = () => {
     fetchUsers();
   }, []);
 
+
+
   // 구분 필터
-  const handleArrowTopClick = (member) => {
-    // 선택한 멤버 필터 업데이트
-    setSelectedMemberFilter(member);
+  const handleArrowTopClick = () => {
+    // Dropdown 열고 닫기 토글
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
+  const handleMemberItemClick = (memberOption) => {
+    // 멤버를 선택하고 Dropdown 닫기
+    handleArrowTopClick();
+    setSelectedMemberFilter(memberOption);
+  };
+
+
+  const handleArrowPartClick = () => {
+    // 파트 열고 닫기 토글
+    setIsdropdownPart(!isdropdownPart);
+  };
+
+  const handlePartItemClick = (memberOption) => {
+    // 멤버를 선택하고 Dropdown 닫기
+    handleArrowPartClick();
+    setSelectedPartFilter(memberOption);
+  };
+  
+  
+
   // 선택 관련 코드
-  const member = ["파디", "거친파도", "운영진", "iOS파트", "잔잔파도"];
+  const member = ["파디", "거친파도", "운영진", "잔잔파도"];
+  const memberFillter = ["전체", "파디", "거친파도", "운영진", "잔잔파도"];
+  
 
   const part = ["기획", "디자인", "개발 - 웹", "개발 - iOS", "개발 - 서버"];
+  const partFillter = ["기획", "디자인", "개발 - 웹", "개발 - iOS", "개발 - 서버"];
 
   const toggleDropdown = (index) => {
     const updatedIsOpen = [...isOpen];
@@ -630,15 +666,48 @@ const MemberPage = () => {
                   최근 로그인
                 </TableHeaderCell>
                 <TableHeaderCell style={{ background: "#F8F8F8" }} width={190}>
-                  구분
-                  <ArrowTop1
-                    src={require("../Assets/img/Polygon.png")}
-                    onClick={() => handleArrowTopClick("운영진")} // 클릭 시 선택한 멤버 업데이트
-                  />{" "}
+                  <DropdownWrapper>
+                    <DropdownButton
+                      onClick={handleArrowTopClick}
+                      color={true}
+                      Backcolor={"#F8F8F8"}
+                    >
+                      {selectedMemberFilter || "구분"}
+                      <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
+                    </DropdownButton>
+                    <DropdownContent isOpen={isDropdownOpen}>
+                      {memberFillter.map((memberOption, memberIndex) => (
+                        <DropdownItem
+                          key={memberIndex}
+                          onClick={() => handleMemberItemClick(memberOption)}
+                        >
+                          {memberOption}
+                        </DropdownItem>
+                      ))}
+                    </DropdownContent>
+                  </DropdownWrapper>
                 </TableHeaderCell>
                 <TableHeaderCell width={180} style={{ background: "#F8F8F8" }}>
-                  파트
-                  <ArrowTop src={require("../Assets/img/Polygon.png")} />
+                <DropdownWrapper>
+                    <DropdownButton
+                      onClick={handleArrowPartClick}
+                      color={true}
+                      Backcolor={"#F8F8F8"}
+                    >
+                      {selectedPartFilter || "파트"}
+                      <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
+                    </DropdownButton>
+                    <DropdownContent isOpen={isdropdownPart}>
+                      {partFillter.map((memberOption, memberIndex) => (
+                        <DropdownItem
+                          key={memberIndex}
+                          onClick={() => handlePartItemClick(memberOption)}
+                        >
+                          {memberOption}
+                        </DropdownItem>
+                      ))}
+                    </DropdownContent>
+                  </DropdownWrapper>
                 </TableHeaderCell>
                 <TableHeaderCell width={180} style={{ background: "#F8F8F8" }}>
                   관리
