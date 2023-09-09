@@ -9,6 +9,7 @@ import {
   updateDoc,
   doc,
   Timestamp,
+  addDoc,
 } from "firebase/firestore";
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
@@ -125,8 +126,27 @@ const RegisterButton = styled.button`
   }
 `;
 
+const RegisterAddButton = styled.button`
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  border-radius: 8px;
+  background: #5262f5;
+  color: #fff;
+  font-family: "Pretendard";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  padding: 12px 65px;
+  cursor: pointer;
+  border: none;
+  margin-right: 183px;
+`;
+
 const Table = styled.table`
-  width: 1300px;
+  width: 1100px;
   border-collapse: collapse;
   border-spacing: 0;
   border-radius: 4px;
@@ -169,6 +189,20 @@ const TableHeaderCell = styled.th`
   &:last-child {
     border-right: 1px solid var(--Gray30, #a3a3a3);
   }
+`;
+
+const ArrowTop = styled.img`
+  width: 14px;
+  height: 14px;
+  margin-left: 16px;
+  cursor: pointer;
+`;
+
+const ArrowTop1 = styled.img`
+  width: 14px;
+  height: 14px;
+  margin-left: 16px;
+  cursor: pointer;
 `;
 
 const TableCell = styled.td`
@@ -250,38 +284,299 @@ const CheckScoreButton = styled.button`
   }
 `;
 
+const NameInputBox = styled.input`
+  width: 100%;
+  height: 100%;
+  font-family: "Pretendard";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  ::placeholder {
+    text-align: center;
+  }
+`;
+
+const PhoneNumInputBox = styled.input`
+  width: 100%;
+  height: 100%;
+  font-family: "Pretendard";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  /* padding-left: 75px; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  text-align: center;
+  ::placeholder {
+    text-align: center;
+  }
+`;
+
+const DropdownWrapper = styled.div`
+  position: relative;
+  display: inline-block;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  background: var(--White, #fff);
+`;
+
+const DropdownButton = styled.button`
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  border: none;
+  padding: 8px 12px;
+  color: ${(props) => (props.color ? "#1A1A1A" : "#A3A3A3")};
+`;
+
+const DropdownContent = styled.div`
+  display: ${(props) => (props.isOpen ? "block" : "none")};
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 145px;
+  z-index: 1;
+  top: 100%;
+  left: 22px;
+  border-radius: 2px 2px 0px 0px;
+  border: 1px solid var(--primary-blue, #5262f5);
+  background: var(--White, #fff);
+`;
+
+const DropdownItem = styled.div`
+  padding: 10px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #ddd;
+  }
+`;
+
+const DropdownWrapper1 = styled.div`
+  position: relative;
+  display: inline-block;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  background: var(--White, #fff);
+`;
+
+const DropdownButton1 = styled.button`
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  border: none;
+  padding: 8px 12px;
+  color: ${(props) => (props.color ? "#1A1A1A" : "#A3A3A3")};
+`;
+
+const DropdownContent1 = styled.div`
+  display: ${(props) => (props.isOpen ? "block" : "none")};
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 145px;
+  z-index: 1;
+  top: 100%;
+  left: 22px;
+  border-radius: 2px 2px 0px 0px;
+  border: 1px solid var(--primary-blue, #5262f5);
+  background: var(--White, #fff);
+`;
+
+const DropdownItem1 = styled.div`
+  padding: 10px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #ddd;
+  }
+`;
+
 const MemberPage = () => {
   const [userScores, setUserScores] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const [addable, setAddable] = useState(true);
-
+  const [isOpen, setIsOpen] = useState(Array(15).fill(false));
+  const [isOpenPart, setIsOpenPart] = useState(Array(15).fill(false));
+  const [selectedMembers, setSelectedMembers] = useState(Array(15).fill(null));
+  const [selectedPart, setSelectedPart] = useState(Array(15).fill(null));
+  const [nameInputs, setNameInputs] = useState(Array(15).fill(""));
+  const [phoneInputs, setPhoneInputs] = useState(Array(15).fill(""));
+  const [selectedMemberFilter, setSelectedMemberFilter] = useState(null);
+  // User 정보 읽기
 
   const sortedUserScores = userScores.sort((a, b) => {
-    // 이름을 가나다 순으로 비교하여 정렬
     return a.name.localeCompare(b.name);
   });
 
-  const filteredUserScores = selectedOption
-    ? sortedUserScores.filter((userScore) => userScore.part === selectedOption)
-    : sortedUserScores;
+  const filteredUserScores = selectedMemberFilter
+  ? sortedUserScores.filter((userScore) => userScore.member === selectedMemberFilter)
+  : sortedUserScores;
 
   const fetchUsers = async () => {
     const usersRef = collection(dbService, "users");
     const querySnapshot = await getDocs(usersRef);
     const usersData = [];
 
-    // 쿼리 스냅샷을 배열로 변환하여 usersData 배열에 저장합니다.
     querySnapshot.forEach((doc) => {
       usersData.push(doc.data());
     });
 
-    setUserScores(usersData); // 읽어온 데이터를 state에 설정합니다.
+    setUserScores(usersData);
   };
 
   useEffect(() => {
-    // 컴포넌트가 마운트될 때 Firestore에서 "users" 컬렉션을 읽어옵니다.
     fetchUsers();
   }, []);
+
+  // 구분 필터
+  const handleArrowTopClick = (member) => {
+    // 선택한 멤버 필터 업데이트
+    setSelectedMemberFilter(member);
+  };
+
+  // 선택 관련 코드
+  const member = ["파디", "거친파도", "운영진", "iOS파트", "잔잔파도"];
+
+  const part = ["기획", "디자인", "개발 - 웹", "개발 - iOS", "개발 - 서버"];
+
+  const toggleDropdown = (index) => {
+    const updatedIsOpen = [...isOpen];
+    updatedIsOpen[index] = !updatedIsOpen[index]; // 선택한 인덱스의 Dropdown 열림 상태를 반전
+    setIsOpen(updatedIsOpen);
+    setSelectedOption(index); // 선택한 인덱스 설정
+  };
+
+  const handleMemberClick = (member, index) => {
+    const updatedMembers = [...selectedMembers];
+    updatedMembers[index] = member;
+    setSelectedMembers(updatedMembers);
+    const updatedIsOpen = [...isOpen];
+    updatedIsOpen[index] = false; // 선택한 인덱스의 Dropdown 닫힘 상태로 설정
+    setIsOpen(updatedIsOpen);
+  };
+
+  const handlePartClick = (partOption, index) => {
+    setSelectedPart((prevSelectedPart) => {
+      const updatedSelectedPart = [...prevSelectedPart];
+      updatedSelectedPart[index] = partOption;
+      return updatedSelectedPart;
+    });
+
+    setIsOpenPart((prevIsOpenPart) => {
+      const updatedIsOpenPart = [...prevIsOpenPart];
+      updatedIsOpenPart[index] = false;
+      return updatedIsOpenPart;
+    });
+  };
+
+  const toggleDropdownPart = (index) => {
+    setIsOpenPart((prevIsOpenPart) => {
+      const updatedIsOpenPart = [...prevIsOpenPart];
+      updatedIsOpenPart[index] = !updatedIsOpenPart[index];
+      return updatedIsOpenPart;
+    });
+  };
+
+  // input 값 관리 코드
+  const handleNameInputChange = (e, index) => {
+    const updatedNameInputs = [...nameInputs];
+    updatedNameInputs[index] = e.target.value;
+    setNameInputs(updatedNameInputs);
+  };
+
+  const handlePhoneInputChange = (e, index) => {
+    const updatedPhoneInputs = [...phoneInputs];
+    updatedPhoneInputs[index] = e.target.value;
+    setPhoneInputs(updatedPhoneInputs);
+  };
+
+  // 사용자 추가 코드
+
+  const userCollectionRef = collection(dbService, "users");
+  const pointsCollectionRef = collection(dbService, "points");
+
+  const handleAddButtonClick = async () => {
+    // 루프를 사용하여 각 인덱스에 대한 데이터 확인
+    for (let index = 0; index < 15; index++) {
+      if (
+        selectedMembers[index] !== null &&
+        selectedPart[index] !== null &&
+        nameInputs[index] !== "" &&
+        phoneInputs[index] !== ""
+      ) {
+        // 선택한 index에 해당하는 데이터가 모두 존재하는 경우에만 Firestore에 추가
+        const userData = {
+          member: selectedMembers[index],
+          part: selectedPart[index],
+          name: nameInputs[index],
+          phone: phoneInputs[index],
+          isAdmin: selectedMembers[index] === "운영진",
+          isMaster: selectedMembers[index] === "운영진",
+          generation: 2,
+        };
+
+        try {
+          // Firestore에 데이터 추가
+          const docRef = await addDoc(userCollectionRef, userData);
+          console.log("Document written with ID: ", docRef.id);
+
+          // Firestore 문서 업데이트
+          const pointsData = {
+            beePoints: [],
+            points: [],
+          };
+
+          const docRefPoint = await addDoc(pointsCollectionRef, pointsData);
+
+          const updatedUserData = {
+            uid: docRef.id,
+            pid: `${docRefPoint.id}`,
+          };
+
+          // Firestore 문서 업데이트
+          await updateDoc(doc(userCollectionRef, docRef.id), updatedUserData);
+          await updateDoc(
+            doc(pointsCollectionRef, docRefPoint.id),
+            updatedUserData
+          );
+
+          // 데이터 추가 완료 후 처리
+          setAddable(true);
+          alert("등록 성공!");
+        } catch (error) {
+          console.error("Error adding document: ", error);
+        }
+      }
+    }
+  };
 
   return (
     <DDiv>
@@ -292,189 +587,228 @@ const MemberPage = () => {
         <SubTitle>사용자를 추가하고 관리해보세요.</SubTitle>
       </TitleDiv>
       {addable ? (
-         <BodyDiv>
-         <FirstDiv>
-           <FlexDiv>
-             <MemberNumText color={"#1A1A1A"} right={4}>
-               총
-             </MemberNumText>
-             <MemberNumText color={"#5262F5"}>
-               {filteredUserScores.length}
-             </MemberNumText>
-             <MemberNumText color={"#1A1A1A"}>명</MemberNumText>
-           </FlexDiv>
-           <RegisterButton onClick={() => setAddable(false)}>
-             <RegisterMemberIcon src={require("../Assets/img/MemberIcon.png")} />
-             사용자 추가
-           </RegisterButton>
-         </FirstDiv>
-         <Table>
-           <TableHead>
-             <TableRow>
-               <TableHeaderCell width={60} style={{ background: "#F8F8F8" }}>
-                 No.
-               </TableHeaderCell>
-               <TableHeaderCell width={120} style={{ background: "#F8F8F8" }}>
-                 이름
-               </TableHeaderCell>
-               <TableHeaderCell style={{ background: "#F8F8F8" }} width={197.5}>
-                 이메일
-               </TableHeaderCell>
-               <TableHeaderCell style={{ background: "#F8F8F8" }} width={197.5}>
-                 전화번호
-               </TableHeaderCell>
-               <TableHeaderCell style={{ background: "#F8F8F8" }} width={190}>
-                 최근 로그인
-               </TableHeaderCell>
-               <TableHeaderCell style={{ background: "#F8F8F8" }} width={190}>
-                 구분
-               </TableHeaderCell>
-               <TableHeaderCell width={180} style={{ background: "#F8F8F8" }}>
-                 파트
-               </TableHeaderCell>
-               <TableHeaderCell width={180} style={{ background: "#F8F8F8" }}>
-                 관리
-               </TableHeaderCell>
-             </TableRow>
-           </TableHead>
-           <tbody>
-             {filteredUserScores.map((userScore, index) => (
-               <TableRow key={index}>
-                 <TableCell color={"#2A2A2A"} width={60}>
-                   {index + 1}
-                 </TableCell>
-                 <TableCell color={"#2A2A2A"} width={120}>
-                   {userScore.name}
-                 </TableCell>
-                 <TableMinText color={"#2A2A2A"} width={197.5}>
-                   {userScore.emali}
-                 </TableMinText>
-                 <TableCell color={"#2A2A2A"} width={197.5}>
-                   {userScore.phone}
-                 </TableCell>
-                 <TableMinText color={"#2A2A2A"} width={190}>
-                   {userScore.lastLogin &&
-                     format(
-                       fromUnixTime(userScore.lastLogin.seconds),
-                       "yyyy-MM-dd HH:mm:ss",
-                       {
-                         locale: koLocale,
-                       }
-                     )}
-                 </TableMinText>
-                 <TableCell color={"#2A2A2A"} width={190}>
-                   {userScore.member}
-                 </TableCell>
-                 <TableCell color={"#2A2A2A"} width={180}>
-                   {userScore.part}
-                 </TableCell>
-                 <TableCell width={180}>
-                   <CheckScoreButton>관리</CheckScoreButton>
-                   {/* <Modal
-                     isOpen={modals[index] || false}
-                     // onClose={() => closeModal(index)}
-                     name={userScore.name}
-                     part={userScore.part}
-                     pid={userScore.pid}
-                   /> */}
-                 </TableCell>
-               </TableRow>
-             ))}
-           </tbody>
-         </Table>
-       </BodyDiv>
+        <BodyDiv>
+          <FirstDiv>
+            <FlexDiv>
+              <MemberNumText color={"#1A1A1A"} right={4}>
+                총
+              </MemberNumText>
+              <MemberNumText color={"#5262F5"}>
+                {filteredUserScores.length}
+              </MemberNumText>
+              <MemberNumText color={"#1A1A1A"}>명</MemberNumText>
+            </FlexDiv>
+            <RegisterButton onClick={() => setAddable(false)}>
+              <RegisterMemberIcon
+                src={require("../Assets/img/MemberIcon.png")}
+              />
+              사용자 추가
+            </RegisterButton>
+          </FirstDiv>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeaderCell width={60} style={{ background: "#F8F8F8" }}>
+                  No.
+                </TableHeaderCell>
+                <TableHeaderCell width={120} style={{ background: "#F8F8F8" }}>
+                  이름
+                </TableHeaderCell>
+                <TableHeaderCell
+                  style={{ background: "#F8F8F8" }}
+                  width={197.5}
+                >
+                  이메일
+                </TableHeaderCell>
+                <TableHeaderCell
+                  style={{ background: "#F8F8F8" }}
+                  width={197.5}
+                >
+                  전화번호
+                </TableHeaderCell>
+                <TableHeaderCell style={{ background: "#F8F8F8" }} width={190}>
+                  최근 로그인
+                </TableHeaderCell>
+                <TableHeaderCell style={{ background: "#F8F8F8" }} width={190}>
+                  구분
+                  <ArrowTop1
+                    src={require("../Assets/img/Polygon.png")}
+                    onClick={() => handleArrowTopClick("운영진")} // 클릭 시 선택한 멤버 업데이트
+                  />{" "}
+                </TableHeaderCell>
+                <TableHeaderCell width={180} style={{ background: "#F8F8F8" }}>
+                  파트
+                  <ArrowTop src={require("../Assets/img/Polygon.png")} />
+                </TableHeaderCell>
+                <TableHeaderCell width={180} style={{ background: "#F8F8F8" }}>
+                  관리
+                </TableHeaderCell>
+              </TableRow>
+            </TableHead>
+            <tbody>
+              {filteredUserScores.map((userScore, index) => (
+                <TableRow key={index}>
+                  <TableCell color={"#2A2A2A"} width={60}>
+                    {index + 1}
+                  </TableCell>
+                  <TableCell color={"#2A2A2A"} width={120}>
+                    {userScore.name}
+                  </TableCell>
+                  <TableMinText color={"#2A2A2A"} width={197.5}>
+                    {userScore.emali}
+                  </TableMinText>
+                  <TableCell color={"#2A2A2A"} width={197.5}>
+                    {userScore.phone}
+                  </TableCell>
+                  <TableMinText color={"#2A2A2A"} width={190}>
+                    {userScore.lastLogin &&
+                      format(
+                        fromUnixTime(userScore.lastLogin.seconds),
+                        "yyyy-MM-dd HH:mm:ss",
+                        {
+                          locale: koLocale,
+                        }
+                      )}
+                  </TableMinText>
+                  <TableCell color={"#2A2A2A"} width={190}>
+                    {userScore.member}
+                  </TableCell>
+                  <TableCell color={"#2A2A2A"} width={180}>
+                    {userScore.part}
+                  </TableCell>
+                  <TableCell width={180}>
+                    <CheckScoreButton>관리</CheckScoreButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </tbody>
+          </Table>
+        </BodyDiv>
       ) : (
         <BodyDiv>
-        <FirstDiv>
-          <FlexDiv>
-            <MemberNumText color={"#1A1A1A"} right={4}>
-              총
-            </MemberNumText>
-            <MemberNumText color={"#5262F5"}>
-              {filteredUserScores.length}
-            </MemberNumText>
-            <MemberNumText color={"#1A1A1A"}>명</MemberNumText>
-          </FlexDiv>
-          <RegisterButton onClick={() => setAddable(true)}>
-            <RegisterMemberIcon src={require("../Assets/img/MemberIcon.png")}/>
-            추가하기
-          </RegisterButton>
-        </FirstDiv>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeaderCell width={60} style={{ background: "#F8F8F8" }}>
-                No.
-              </TableHeaderCell>
-              <TableHeaderCell width={120} style={{ background: "#F8F8F8" }}>
-                이름
-              </TableHeaderCell>
-              <TableHeaderCell style={{ background: "#F8F8F8" }} width={197.5}>
-                이메일
-              </TableHeaderCell>
-              <TableHeaderCell style={{ background: "#F8F8F8" }} width={197.5}>
-                전화번호
-              </TableHeaderCell>
-              <TableHeaderCell style={{ background: "#F8F8F8" }} width={190}>
-                최근 로그인
-              </TableHeaderCell>
-              <TableHeaderCell style={{ background: "#F8F8F8" }} width={190}>
-                구분
-              </TableHeaderCell>
-              <TableHeaderCell width={180} style={{ background: "#F8F8F8" }}>
-                파트
-              </TableHeaderCell>
-              <TableHeaderCell width={180} style={{ background: "#F8F8F8" }}>
-                관리
-              </TableHeaderCell>
-            </TableRow>
-          </TableHead>
-          <tbody>
-            {filteredUserScores.map((userScore, index) => (
-              <TableRow key={index}>
-                <TableCell color={"#2A2A2A"} width={60}>
-                  {index + 1}
-                </TableCell>
-                <TableCell color={"#2A2A2A"} width={120}>
-                  {userScore.name}
-                </TableCell>
-                <TableMinText color={"#2A2A2A"} width={197.5}>
-                  {userScore.emali}
-                </TableMinText>
-                <TableCell color={"#2A2A2A"} width={197.5}>
-                  {userScore.phone}
-                </TableCell>
-                <TableMinText color={"#2A2A2A"} width={190}>
-                  {userScore.lastLogin &&
-                    format(
-                      fromUnixTime(userScore.lastLogin.seconds),
-                      "yyyy-MM-dd HH:mm:ss",
-                      {
-                        locale: koLocale,
-                      }
-                    )}
-                </TableMinText>
-                <TableCell color={"#2A2A2A"} width={190}>
-                  {userScore.member}
-                </TableCell>
-                <TableCell color={"#2A2A2A"} width={180}>
-                  {userScore.part}
-                </TableCell>
-                <TableCell width={180}>
-                  <CheckScoreButton>관리</CheckScoreButton>
-                  {/* <Modal
-                    isOpen={modals[index] || false}
-                    // onClose={() => closeModal(index)}
-                    name={userScore.name}
-                    part={userScore.part}
-                    pid={userScore.pid}
-                  /> */}
-                </TableCell>
+          <FirstDiv>
+            <FlexDiv>
+              <MemberNumText color={"#1A1A1A"} right={4}>
+                총
+              </MemberNumText>
+              <MemberNumText color={"#5262F5"}>
+                {filteredUserScores.length}
+              </MemberNumText>
+              <MemberNumText color={"#1A1A1A"}>명</MemberNumText>
+            </FlexDiv>
+            <RegisterAddButton onClick={handleAddButtonClick}>
+              추가하기
+            </RegisterAddButton>
+          </FirstDiv>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeaderCell width={60} style={{ background: "#F8F8F8" }}>
+                  No.
+                </TableHeaderCell>
+                <TableHeaderCell width={120} style={{ background: "#F8F8F8" }}>
+                  이름
+                </TableHeaderCell>
+                <TableHeaderCell
+                  style={{ background: "#F8F8F8" }}
+                  width={197.5}
+                >
+                  이메일
+                </TableHeaderCell>
+                <TableHeaderCell
+                  style={{ background: "#F8F8F8" }}
+                  width={197.5}
+                >
+                  전화번호
+                </TableHeaderCell>
+                <TableHeaderCell style={{ background: "#F8F8F8" }} width={190}>
+                  최근 로그인
+                </TableHeaderCell>
+                <TableHeaderCell style={{ background: "#F8F8F8" }} width={190}>
+                  구분
+                </TableHeaderCell>
+                <TableHeaderCell width={180} style={{ background: "#F8F8F8" }}>
+                  파트
+                </TableHeaderCell>
               </TableRow>
-            ))}
-          </tbody>
-        </Table>
-      </BodyDiv>
+            </TableHead>
+            <tbody>
+              {Array.from({ length: 15 }).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell color={"#2A2A2A"} width={60}>
+                    {index + 1}
+                  </TableCell>
+                  <TableCell color={"#2A2A2A"} width={120}>
+                    <NameInputBox
+                      type="text"
+                      placeholder="입력"
+                      value={nameInputs[index] || ""}
+                      onChange={(e) => handleNameInputChange(e, index)}
+                    />
+                  </TableCell>
+                  <TableMinText color={"#2A2A2A"} width={197.5}>
+                    -
+                  </TableMinText>
+                  <TableCell color={"#2A2A2A"} width={197.5}>
+                    <PhoneNumInputBox
+                      type="text"
+                      placeholder="입력"
+                      value={phoneInputs[index] || ""}
+                      onChange={(e) => handlePhoneInputChange(e, index)}
+                    />
+                  </TableCell>
+                  <TableMinText color={"#2A2A2A"} width={190}>
+                    -
+                  </TableMinText>
+                  <TableCell color={"#2A2A2A"} width={190}>
+                    <DropdownWrapper>
+                      <DropdownButton
+                        onClick={() => toggleDropdown(index)}
+                        color={selectedMembers[index] !== null}
+                      >
+                        {selectedMembers[index] || "선택"}
+                      </DropdownButton>
+                      <DropdownContent isOpen={isOpen[index]}>
+                        {" "}
+                        {/* 인덱스에 따라 열림 상태 설정 */}
+                        {member.map((memberOption, memberIndex) => (
+                          <DropdownItem
+                            key={memberIndex}
+                            onClick={() =>
+                              handleMemberClick(memberOption, index)
+                            }
+                          >
+                            {memberOption}
+                          </DropdownItem>
+                        ))}
+                      </DropdownContent>
+                    </DropdownWrapper>
+                  </TableCell>
+                  <TableCell color={"#2A2A2A"} width={180}>
+                    <DropdownWrapper1>
+                      <DropdownButton1
+                        onClick={() => toggleDropdownPart(index)}
+                        color={selectedPart[index] !== null}
+                      >
+                        {selectedPart[index] || "선택"}
+                      </DropdownButton1>
+                      <DropdownContent1 isOpen={isOpenPart[index]}>
+                        {part.map((partOption, partIndex) => (
+                          <DropdownItem1
+                            key={partIndex}
+                            onClick={() => handlePartClick(partOption, index)}
+                          >
+                            {partOption}
+                          </DropdownItem1>
+                        ))}
+                      </DropdownContent1>
+                    </DropdownWrapper1>{" "}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </tbody>
+          </Table>
+        </BodyDiv>
       )}
     </DDiv>
   );
