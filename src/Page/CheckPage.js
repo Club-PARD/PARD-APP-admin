@@ -2,11 +2,6 @@ import styled from "styled-components";
 import {
   collection,
   getDocs,
-  query,
-  where,
-  updateDoc,
-  doc,
-  Timestamp,
 } from "firebase/firestore";
 import { dbService } from "../fbase";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
@@ -59,10 +54,11 @@ const BarText = styled.div`
 
 const BodyDiv = styled.div`
   display: flex;
-  margin-top: 16px;
+  margin-top: 87px;
   margin-left: 80px;
   width: 1396px;
   height: 744px;
+  overflow: scroll;
 `;
 
 const Table = styled.table`
@@ -70,12 +66,15 @@ const Table = styled.table`
   border-collapse: collapse;
   border-spacing: 0;
   border-radius: 4px;
+  overflow-x: scroll;
+  overflow-y: scroll;
   /* background-color: red; */
 `;
 
 const TableHead = styled.thead`
   background-color: #eee;
   border-bottom: 1px solid #a3a3a3;
+  /* overflow-x : scroll; */
 `;
 
 const TableRow = styled.tr`
@@ -185,32 +184,6 @@ const DropdownItem = styled.div`
   }
 `;
 
-const CheckScoreButton = styled.button`
-  display: flex;
-  width: 140px;
-  padding: 6px 16px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  color: var(--primary-blue, #5262f5);
-  font-family: "Pretendard";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 18px;
-  border-radius: 4px;
-  border: 1px solid var(--primary-blue, #5262f5);
-  background: var(--primary-blue-10, #eeeffe);
-  cursor: pointer;
-
-  &:hover {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-  }
-  &:active {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-  }
-`;
 
 const CheckPage = () => {
   const [userDatas, setUserDatas] = useState([]);
@@ -218,19 +191,10 @@ const CheckPage = () => {
   useEffect(() => {
     // Firestore에서 데이터 읽어오기
     const fetchData = async () => {
-      try {
-        const usersRef = collection(dbService, "users");
-        const querySnapshot = await getDocs(usersRef);
-        const usersData = [];
-        querySnapshot.forEach((doc) => {
-          usersData.push(doc.data());
-        });
-
-        setUserDatas(userDatas);
-        console.log("userDatas :", userDatas);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+      const data = await getDocs(collection(dbService, "users")); // create라는 collection 안에 모든 document를 읽어올 때 사용한다.
+      const newData = data.docs.map(doc => ({ ...doc.data()}));
+      setUserDatas(newData);
+      console.log(newData);
     };
 
     fetchData();
@@ -251,19 +215,18 @@ const CheckPage = () => {
               <TableHeaderCell width={140} style={{ background: "#F8F8F8" }}>
                 이름
               </TableHeaderCell>
-              <TableHeaderCell width={206}>OT</TableHeaderCell>
-              <TableHeaderCell width={206}>스터디</TableHeaderCell>
-              <TableHeaderCell width={206}>소통</TableHeaderCell>
-              <TableHeaderCell width={206}>회고</TableHeaderCell>
-              <TableHeaderCell
-                width={205}
-                style={{ background: "rgba(255, 90, 90, 0.10)" }}
-              >
-                벌점
-              </TableHeaderCell>
-              <TableHeaderCell width={205} style={{ background: "#F8F8F8" }}>
-                점수 관리
-              </TableHeaderCell>
+              <TableHeaderCell width={152}>OT</TableHeaderCell>
+              <TableHeaderCell width={152}>1차 세미나</TableHeaderCell>
+              <TableHeaderCell width={152}>2차 세미나</TableHeaderCell>
+              <TableHeaderCell width={152}>3차 세미나</TableHeaderCell>
+              <TableHeaderCell width={152}>연합 세미나</TableHeaderCell>
+              <TableHeaderCell width={152}>4차 세미나</TableHeaderCell>
+              <TableHeaderCell width={152}>5차 세미나</TableHeaderCell>
+              <TableHeaderCell width={152}>6차 세미나</TableHeaderCell>
+              <TableHeaderCell width={152}>기디개 연합 세미나</TableHeaderCell>
+              <TableHeaderCell width={152}>숏커톤</TableHeaderCell>
+              <TableHeaderCell width={152}>아이디어 피칭</TableHeaderCell>
+              <TableHeaderCell width={152}>종강총회</TableHeaderCell>
             </TableRow>
           </TableHead>
           <tbody>
@@ -272,8 +235,29 @@ const CheckPage = () => {
                 <TableCell color={"#2A2A2A"} width={140}>
                   {userData.name}
                 </TableCell>
-                <TableCell width={205}>
-                  <CheckScoreButton>점수 관리</CheckScoreButton>
+                <TableCell width={152}>
+                </TableCell>
+                <TableCell width={152}>
+                </TableCell>
+                <TableCell width={152}>
+                </TableCell>
+                <TableCell width={152}>
+                </TableCell>
+                <TableCell width={152}>
+                </TableCell>
+                <TableCell width={152}>
+                </TableCell>
+                <TableCell width={152}>
+                </TableCell>
+                <TableCell width={152}>
+                </TableCell>
+                <TableCell width={152}>
+                </TableCell>
+                <TableCell width={152}>
+                </TableCell>
+                <TableCell width={152}>
+                </TableCell>
+                <TableCell width={152}>
                 </TableCell>
               </TableRow>
             ))}

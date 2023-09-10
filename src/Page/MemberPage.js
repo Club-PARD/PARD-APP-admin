@@ -4,11 +4,8 @@ import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import {
   collection,
   getDocs,
-  query,
-  where,
   updateDoc,
   doc,
-  Timestamp,
   addDoc,
 } from "firebase/firestore";
 import { dbService } from "../fbase";
@@ -578,6 +575,7 @@ const filteredUserScores = sortedUserScores.filter((userScore) => {
           isAdmin: selectedMembers[index] === "운영진",
           isMaster: selectedMembers[index] === "운영진",
           generation: 2,
+          attend: {},
         };
 
         try {
