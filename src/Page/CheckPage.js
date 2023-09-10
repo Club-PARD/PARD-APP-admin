@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { dbService } from "../fbase";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import React, { useEffect, useState } from "react";
@@ -51,7 +51,7 @@ const BarText = styled.div`
 
 const BodyDiv = styled.div`
   display: flex;
-  margin-top: 16px;
+  /* margin-top: 16px; */
   margin-left: 80px;
   width: 1396px;
   height: 744px;
@@ -186,6 +186,7 @@ const FirstDiv = styled.div`
   height: 48px;
   width: 100%;
   margin-bottom: 16px;
+  margin-top: 83px;
   justify-content: space-between;
   align-items: flex-end;
 `;
@@ -216,6 +217,32 @@ const EditButton = styled.button`
   }
 `;
 
+const SaveButton = styled.button`
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  border-radius: 8px;
+  color: var(--White, #fff);
+  font-family: "Pretendard";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  padding: 12px 52px;
+  cursor: pointer;
+  margin-right: 60px;
+  background: var(--primary-blue, #5262f5);
+  border: none;
+
+  &:hover {
+    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
+  }
+  &:active {
+    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
+  }
+`;
+
 const EditIcon = styled.img`
   width: 24px;
   height: 24px;
@@ -224,6 +251,7 @@ const EditIcon = styled.img`
 
 const CheckPage = () => {
   const [userDatas, setUserDatas] = useState([]);
+  const [sidDatas, setSidDatas] = useState([]);
   const [userAttendKey, setUserAttendKey] = useState([]);
   const [userAttendValue, setUserAttendValue] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -232,6 +260,21 @@ const CheckPage = () => {
 
   useEffect(() => {
     // Firestore에서 데이터 읽어오기
+
+    const fetchSchedules = async () => {
+      const schedulesRef = collection(dbService, "schedules");
+      const querySnapshot = await getDocs(
+        query(schedulesRef, where("type", "==", true))
+      );
+
+      const scheduleIds = [];
+      querySnapshot.forEach((doc) => {
+        scheduleIds.push(doc.sid);
+      });
+      setSidDatas(scheduleIds);
+      console.log("읽은 sid :", sidDatas);
+    };
+
     const fetchData = async () => {
       const data = await getDocs(collection(dbService, "users")); // create라는 collection 안에 모든 document를 읽어올 때 사용한다.
       const newData = data.docs.map((doc) => ({ ...doc.data() }));
@@ -255,6 +298,7 @@ const CheckPage = () => {
     };
 
     fetchData();
+    fetchSchedules();
   }, []);
 
   // 필터 관련 코드
@@ -296,7 +340,7 @@ const CheckPage = () => {
     justify-content: center;
     align-items: center;
     gap: 10px;
-    font-family: 'Pretendard';
+    font-family: "Pretendard";
     font-size: 12px;
     font-style: normal;
     font-weight: 600;
@@ -304,12 +348,14 @@ const CheckPage = () => {
     border-radius: 4px;
   `;
 
-  const CustomTableCell = ({ value }) => {
+  const CustomTableCell = ({ value, idx }) => {
     let backgroundColor = "";
     let color = "";
     let displayValue = "";
 
-    switch (value) {
+    const sidValue = value[idx];
+
+    switch (sidValue) {
       case "지":
         backgroundColor = "#FFE7D9";
         color = "var(--primary-orange, #FF5C00)";
@@ -330,8 +376,9 @@ const CheckPage = () => {
         color = "";
         displayValue = "";
     }
+
     return (
-        <AttendBox style={{ backgroundColor, color }}>{displayValue}</AttendBox>
+      <AttendBox style={{ backgroundColor, color }}>{displayValue}</AttendBox>
     );
   };
   return (
@@ -343,26 +390,72 @@ const CheckPage = () => {
         <SubTitle>파트별로 출결을 관리해보세요.</SubTitle>
       </TitleDiv>
       <FirstDiv>
-      <DropdownWrapper>
-        <DropdownButton onClick={toggleDropdown}>
-          {selectedOption || "전체"}
-        </DropdownButton>
-        <DropdownContent isOpen={isOpen}>
-          {options.map((option, index) => (
-            <DropdownItem key={index} onClick={() => handleOptionClick(option)}>
-              {option}
-            </DropdownItem>
-          ))}
-        </DropdownContent>
-      </DropdownWrapper>
-      <EditButton onClick={() => setAddable(false)}>
-              <EditIcon
-                src={require("../Assets/img/EditIcon.png")}
-              />
-              사용자 추가
-            </EditButton>
+        <DropdownWrapper>
+          <DropdownButton onClick={toggleDropdown}>
+            {selectedOption || "전체"}
+          </DropdownButton>
+          <DropdownContent isOpen={isOpen}>
+            {options.map((option, index) => (
+              <DropdownItem
+                key={index}
+                onClick={() => handleOptionClick(option)}
+              >
+                {option}
+              </DropdownItem>
+            ))}
+          </DropdownContent>
+        </DropdownWrapper>
+        {addable ? (
+          <EditButton onClick={() => setAddable(false)}>
+            <EditIcon src={require("../Assets/img/EditIcon.png")} />
+            수정하기
+          </EditButton>
+        ) : (
+          <SaveButton onClick={() => setAddable(true)}>저장하기</SaveButton>
+        )}
       </FirstDiv>
-      <BodyDiv>
+      {addable ? (
+        <BodyDiv>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeaderCell width={140} style={{ background: "#F8F8F8" }}>
+                  이름
+                </TableHeaderCell>
+                <TableHeaderCell width={152}>OT</TableHeaderCell>
+                <TableHeaderCell width={152}>1차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>2차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>3차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>연합 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>4차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>5차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>6차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>
+                  기디개 연합 세미나
+                </TableHeaderCell>
+                <TableHeaderCell width={152}>숏커톤</TableHeaderCell>
+                <TableHeaderCell width={152}>아이디어 피칭</TableHeaderCell>
+                <TableHeaderCell width={152}>종강총회</TableHeaderCell>
+              </TableRow>
+            </TableHead>
+            <tbody>
+              {filteredUserScores.map((userData, index) => (
+                <TableRow key={index}>
+                  <TableCell color={"#2A2A2A"} width={140}>
+                    {userData.name}
+                  </TableCell>
+                  {Array.from({ length: 12 }, (_, idx) => (
+                    <TableCell key={idx} width={152}>
+                      <CustomTableCell value={userData.attendInfo} idx={idx} />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </tbody>
+          </Table>
+        </BodyDiv>
+      ) : (
+        <BodyDiv>
         <Table>
           <TableHead>
             <TableRow>
@@ -377,7 +470,9 @@ const CheckPage = () => {
               <TableHeaderCell width={152}>4차 세미나</TableHeaderCell>
               <TableHeaderCell width={152}>5차 세미나</TableHeaderCell>
               <TableHeaderCell width={152}>6차 세미나</TableHeaderCell>
-              <TableHeaderCell width={152}>기디개 연합 세미나</TableHeaderCell>
+              <TableHeaderCell width={152}>
+                기디개 연합 세미나
+              </TableHeaderCell>
               <TableHeaderCell width={152}>숏커톤</TableHeaderCell>
               <TableHeaderCell width={152}>아이디어 피칭</TableHeaderCell>
               <TableHeaderCell width={152}>종강총회</TableHeaderCell>
@@ -389,12 +484,9 @@ const CheckPage = () => {
                 <TableCell color={"#2A2A2A"} width={140}>
                   {userData.name}
                 </TableCell>
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <TableCell key={i} width={152}>
-                    <CustomTableCell
-                      key={i}
-                      value={userAttendValue[index]?.[i] || ""}
-                    />
+                {Array.from({ length: 12 }, (_, idx) => (
+                  <TableCell key={idx} width={152}>
+                    <CustomTableCell value={userData.attendInfo} idx={idx} />
                   </TableCell>
                 ))}
               </TableRow>
@@ -402,6 +494,7 @@ const CheckPage = () => {
           </tbody>
         </Table>
       </BodyDiv>
+      )}
     </DDiv>
   );
 };

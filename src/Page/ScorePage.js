@@ -137,7 +137,7 @@ const TableCell = styled.td`
 const DropdownWrapper = styled.div`
   position: relative;
   display: inline-block;
-  margin-top: 83px;
+  margin-top: 89px;
   margin-left: 80px;
   display: flex;
   width: 104px;
@@ -571,6 +571,11 @@ const ScorePage = () => {
       }
     };
 
+    useEffect(() => {
+      fetchPoints();
+      console.log("read Data");
+    }, []);
+
     const handleAddButtonClick = async () => {
       if (selectedScore && inputText) {
         const scoreMatch = selectedScore.match(/(-?\d+(\.\d+)?)점/);
@@ -707,6 +712,7 @@ const ScorePage = () => {
         fetchPoints();
         console.log("data : ", points);
       }
+      
     }, [isOpen, pid]);
 
     return (
