@@ -332,6 +332,14 @@ const CheckPage = () => {
     ? sortedUserScores.filter((userScore) => userScore.part === selectedOption)
     : sortedUserScores;
 
+    // 업데이트 관련 코드 
+
+    const updateUser = (index, newData) => {
+      const updatedUserDatas = [...userDatas];
+      updatedUserDatas[index] = { ...updatedUserDatas[index], attendInfo: newData };
+      setUserDatas(updatedUserDatas);
+    };
+
   // 출석 결석 지각 버튼
   const AttendBox = styled.div`
     display: flex;
@@ -396,7 +404,7 @@ const CheckPage = () => {
     align-items: center;
     justify-content: center;
     position: absolute;
-    top: -6%; 
+    top: -6%;
   `;
 
   const Button = styled.button`
@@ -406,73 +414,106 @@ const CheckPage = () => {
     color: ${(props) => props.color};
     background-color: ${(props) => props.background};
     display: flex;
-padding: 4px 12px;
-border-radius: 4px;
-
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
   `;
 
-  const CustomTableCell = ({ value, idx }) => {
-    const [showButtons, setShowButtons] = useState(false); // 추가된 상태 여부를 관리하는 상태
-    const toggleButtons = () => {
-      setShowButtons(!showButtons);
-    };
+const CustomTableCell = ({ value, idx, onUpdate }) => {
+  const [showButtons, setShowButtons] = useState(false);
+  const [attendValue, setAttendValue] = useState(value[idx]);
 
-    let backgroundColor = "";
-    let color = "";
-    let displayValue = "";
-
-    const sidValue = value[idx];
-
-    switch (sidValue) {
-      case "지":
-        backgroundColor = "#FFE7D9";
-        color = "var(--primary-orange, #FF5C00)";
-        displayValue = "지각";
-        break;
-      case "출":
-        backgroundColor = "#E8F6F0";
-        color = "var(--primary-green, var(--primary-green, #64C59A))";
-        displayValue = "출석";
-        break;
-      case "결":
-        color = "var(--error-red, #FF5A5A)";
-        backgroundColor = "#FFE6E6";
-        displayValue = "결석";
-        break;
-      default:
-        backgroundColor = "";
-        color = "";
-        displayValue = "";
-    }
-
-    return (
-      <CustomTableCellContainer>
-        {addable ? (
-          <AttendBox style={{ backgroundColor, color }}>
-            {displayValue}
-          </AttendBox>
-        ) : (
-          <>
-            <AttendButton onClick={toggleButtons} style={{ backgroundColor, color }}>{displayValue}</AttendButton>
-
-            {showButtons && (
-              <ImageContainer>
-                <Image
-                  src={require("../Assets/img/CheckEditBox.png")}
-                  alt="Image Alt Text"
-                />
-                <ButtonFlexDiv>
-                  <Button color={"#64C59A"} background={"#E8F6F0"}>출석</Button>
-                  <Button color={"#FF5C00"} background={"#FFE7D9"} left={8} right={8}>지각</Button>
-                  <Button color={"#FF5A5A"} background={"#FFE6E6"}>결석</Button>
-                </ButtonFlexDiv>
-              </ImageContainer>
-            )}
-          </>
-        )}
-      </CustomTableCellContainer>
-    );
+  const toggleButtons = () => {
+    setShowButtons(!showButtons);
   };
+
+  const updateValue = (newValue) => {
+    setAttendValue(newValue);
+    setShowButtons(false);
+
+    // 업데이트된 값을 부모 컴포넌트로 전달
+    onUpdate(newValue);
+  };
+
+  let backgroundColor = "";
+  let color = "";
+  let displayValue = "";
+
+  const sidValue = value[idx];
+
+  switch (sidValue) {
+    case "지":
+      backgroundColor = "#FFE7D9";
+      color = "var(--primary-orange, #FF5C00)";
+      displayValue = "지각";
+      break;
+    case "출":
+      backgroundColor = "#E8F6F0";
+      color = "var(--primary-green, var(--primary-green, #64C59A))";
+      displayValue = "출석";
+      break;
+    case "결":
+      color = "var(--error-red, #FF5A5A)";
+      backgroundColor = "#FFE6E6";
+      displayValue = "결석";
+      break;
+    default:
+      backgroundColor = "";
+      color = "";
+      displayValue = "";
+  }
+
+  return (
+    <CustomTableCellContainer>
+      {addable ? (
+        <AttendBox style={{ backgroundColor, color }}>
+          {displayValue}
+        </AttendBox>
+      ) : (
+        <>
+          <AttendButton onClick={toggleButtons} style={{ backgroundColor, color }}>
+            {displayValue}
+          </AttendButton>
+
+          {showButtons && (
+            <ImageContainer>
+              <Image
+                src={require("../Assets/img/CheckEditBox.png")}
+                alt="Image Alt Text"
+              />
+              <ButtonFlexDiv>
+                <Button
+                  color={"#64C59A"}
+                  background={"#E8F6F0"}
+                  onClick={() => updateValue("출")}
+                >
+                  출석
+                </Button>
+                <Button
+                  color={"#FF5C00"}
+                  background={"#FFE7D9"}
+                  left={8}
+                  right={8}
+                  onClick={() => updateValue("지")}
+                >
+                  지각
+                </Button>
+                <Button
+                  color={"#FF5A5A"}
+                  background={"#FFE6E6"}
+                  onClick={() => updateValue("결")}
+                >
+                  결석
+                </Button>
+              </ButtonFlexDiv>
+            </ImageContainer>
+          )}
+        </>
+      )}
+    </CustomTableCellContainer>
+  );
+};
+
   return (
     <DDiv>
       <CommonLogSection username="김파드님" />
@@ -582,6 +623,7 @@ border-radius: 4px;
                         value={userData.attendInfo}
                         idx={idx}
                         addable={addable}
+                        onUpdate={(newData) => updateUser(index, newData)} 
                       />
                     </TableCell>
                   ))}
