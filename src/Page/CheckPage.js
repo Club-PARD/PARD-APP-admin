@@ -1,8 +1,5 @@
 import styled from "styled-components";
-import {
-  collection,
-  getDocs,
-} from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { dbService } from "../fbase";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import React, { useEffect, useState } from "react";
@@ -184,25 +181,83 @@ const DropdownItem = styled.div`
   }
 `;
 
+const FirstDiv = styled.div`
+  display: flex;
+  height: 48px;
+  width: 100%;
+  margin-bottom: 16px;
+  justify-content: space-between;
+  align-items: flex-end;
+`;
+
+const EditButton = styled.button`
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  border-radius: 8px;
+  border: 1px solid var(--primary-blue, #5262f5);
+  background: rgba(82, 98, 245, 0.1);
+  color: var(--primary-blue, #5262f5);
+  font-family: "Pretendard";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  padding: 12px 36px;
+  cursor: pointer;
+  margin-right: 60px;
+
+  &:hover {
+    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
+  }
+  &:active {
+    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
+  }
+`;
+
+const EditIcon = styled.img`
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+`;
 
 const CheckPage = () => {
   const [userDatas, setUserDatas] = useState([]);
+  const [userAttendKey, setUserAttendKey] = useState([]);
+  const [userAttendValue, setUserAttendValue] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [addable, setAddable] = useState(true);
 
   useEffect(() => {
     // Firestore에서 데이터 읽어오기
     const fetchData = async () => {
       const data = await getDocs(collection(dbService, "users")); // create라는 collection 안에 모든 document를 읽어올 때 사용한다.
-      const newData = data.docs.map(doc => ({ ...doc.data()}));
+      const newData = data.docs.map((doc) => ({ ...doc.data() }));
+
+      const keys = [];
+      const values = [];
+      newData.forEach((item) => {
+        const attend = item.attend || {}; // "attend"가 없을 경우 빈 객체로 초기화
+        const itemKeys = Object.keys(attend);
+        const itemValues = Object.values(attend);
+        keys.push(itemKeys);
+        values.push(itemValues);
+      });
+
       setUserDatas(newData);
+      setUserAttendKey(keys);
+      setUserAttendValue(values);
       console.log(newData);
+      console.log("key :", userAttendKey);
+      console.log("value :", userAttendValue);
     };
 
     fetchData();
   }, []);
 
-  // 필터 관련 코드 
+  // 필터 관련 코드
   const options = [
     "전체",
     "서버파트",
@@ -231,10 +286,54 @@ const CheckPage = () => {
   });
 
   const filteredUserScores = selectedOption
-  ? sortedUserScores.filter((userScore) => userScore.part === selectedOption)
-  : sortedUserScores;
+    ? sortedUserScores.filter((userScore) => userScore.part === selectedOption)
+    : sortedUserScores;
 
+  // 출석 결석 지각 버튼
+  const AttendBox = styled.div`
+    display: flex;
+    padding: 4px 12px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Pretendard';
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px;
+    border-radius: 4px;
+  `;
 
+  const CustomTableCell = ({ value }) => {
+    let backgroundColor = "";
+    let color = "";
+    let displayValue = "";
+
+    switch (value) {
+      case "지":
+        backgroundColor = "#FFE7D9";
+        color = "var(--primary-orange, #FF5C00)";
+        displayValue = "지각";
+        break;
+      case "출":
+        backgroundColor = "#E8F6F0";
+        color = "var(--primary-green, var(--primary-green, #64C59A))";
+        displayValue = "출석";
+        break;
+      case "결":
+        color = "var(--error-red, #FF5A5A)";
+        backgroundColor = "#FFE6E6";
+        displayValue = "결석";
+        break;
+      default:
+        backgroundColor = "";
+        color = "";
+        displayValue = "";
+    }
+    return (
+        <AttendBox style={{ backgroundColor, color }}>{displayValue}</AttendBox>
+    );
+  };
   return (
     <DDiv>
       <CommonLogSection username="김파드님" />
@@ -243,6 +342,7 @@ const CheckPage = () => {
         <BarText />
         <SubTitle>파트별로 출결을 관리해보세요.</SubTitle>
       </TitleDiv>
+      <FirstDiv>
       <DropdownWrapper>
         <DropdownButton onClick={toggleDropdown}>
           {selectedOption || "전체"}
@@ -255,6 +355,13 @@ const CheckPage = () => {
           ))}
         </DropdownContent>
       </DropdownWrapper>
+      <EditButton onClick={() => setAddable(false)}>
+              <EditIcon
+                src={require("../Assets/img/EditIcon.png")}
+              />
+              사용자 추가
+            </EditButton>
+      </FirstDiv>
       <BodyDiv>
         <Table>
           <TableHead>
@@ -282,31 +389,14 @@ const CheckPage = () => {
                 <TableCell color={"#2A2A2A"} width={140}>
                   {userData.name}
                 </TableCell>
-                <TableCell width={152}>
-                {userData.attend[0]}
-                </TableCell>
-                <TableCell width={152}>
-                </TableCell>
-                <TableCell width={152}>
-                </TableCell>
-                <TableCell width={152}>
-                </TableCell>
-                <TableCell width={152}>
-                </TableCell>
-                <TableCell width={152}>
-                </TableCell>
-                <TableCell width={152}>
-                </TableCell>
-                <TableCell width={152}>
-                </TableCell>
-                <TableCell width={152}>
-                </TableCell>
-                <TableCell width={152}>
-                </TableCell>
-                <TableCell width={152}>
-                </TableCell>
-                <TableCell width={152}>
-                </TableCell>
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <TableCell key={i} width={152}>
+                    <CustomTableCell
+                      key={i}
+                      value={userAttendValue[index]?.[i] || ""}
+                    />
+                  </TableCell>
+                ))}
               </TableRow>
             ))}
           </tbody>
