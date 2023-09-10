@@ -54,7 +54,7 @@ const BarText = styled.div`
 
 const BodyDiv = styled.div`
   display: flex;
-  margin-top: 87px;
+  margin-top: 16px;
   margin-left: 80px;
   width: 1396px;
   height: 744px;
@@ -187,6 +187,8 @@ const DropdownItem = styled.div`
 
 const CheckPage = () => {
   const [userDatas, setUserDatas] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null);
 
   useEffect(() => {
     // Firestore에서 데이터 읽어오기
@@ -200,6 +202,39 @@ const CheckPage = () => {
     fetchData();
   }, []);
 
+  // 필터 관련 코드 
+  const options = [
+    "전체",
+    "서버파트",
+    "웹파트",
+    "iOS파트",
+    "디자인파트",
+    "기획파트",
+  ];
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleOptionClick = (option) => {
+    if (option === "전체") {
+      setSelectedOption(null);
+    } else {
+      setSelectedOption(option);
+    }
+    setIsOpen(false);
+  };
+
+  const sortedUserScores = userDatas.sort((a, b) => {
+    // 이름을 가나다 순으로 비교하여 정렬
+    return a.name.localeCompare(b.name);
+  });
+
+  const filteredUserScores = selectedOption
+  ? sortedUserScores.filter((userScore) => userScore.part === selectedOption)
+  : sortedUserScores;
+
+
   return (
     <DDiv>
       <CommonLogSection username="김파드님" />
@@ -208,6 +243,18 @@ const CheckPage = () => {
         <BarText />
         <SubTitle>파트별로 출결을 관리해보세요.</SubTitle>
       </TitleDiv>
+      <DropdownWrapper>
+        <DropdownButton onClick={toggleDropdown}>
+          {selectedOption || "전체"}
+        </DropdownButton>
+        <DropdownContent isOpen={isOpen}>
+          {options.map((option, index) => (
+            <DropdownItem key={index} onClick={() => handleOptionClick(option)}>
+              {option}
+            </DropdownItem>
+          ))}
+        </DropdownContent>
+      </DropdownWrapper>
       <BodyDiv>
         <Table>
           <TableHead>
@@ -230,12 +277,13 @@ const CheckPage = () => {
             </TableRow>
           </TableHead>
           <tbody>
-            {userDatas.map((userData, index) => (
+            {filteredUserScores.map((userData, index) => (
               <TableRow key={index}>
                 <TableCell color={"#2A2A2A"} width={140}>
                   {userData.name}
                 </TableCell>
                 <TableCell width={152}>
+                {userData.attend[0]}
                 </TableCell>
                 <TableCell width={152}>
                 </TableCell>
