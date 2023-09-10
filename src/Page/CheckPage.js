@@ -324,10 +324,9 @@ const CheckPage = () => {
     setIsOpen(false);
   };
 
-  const sortedUserScores = userDatas.sort((a, b) => {
-    // 이름을 가나다 순으로 비교하여 정렬
-    return a.name.localeCompare(b.name);
-  });
+  const sortedUserScores = userDatas
+    .filter((user) => user.name) // name 속성이 정의된 요소만 필터링
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const filteredUserScores = selectedOption
     ? sortedUserScores.filter((userScore) => userScore.part === selectedOption)
@@ -348,7 +347,76 @@ const CheckPage = () => {
     border-radius: 4px;
   `;
 
+  const AttendButton = styled.button`
+    display: flex;
+    padding: 4px 12px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-family: "Pretendard";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    &:hover {
+      box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25);
+    }
+    &:active {
+      box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25) inset;
+    }
+  `;
+
+  const CustomTableCellContainer = styled.div`
+    position: relative;
+  `;
+
+  const ImageContainer = styled.div`
+    position: absolute;
+    top: -60px; // 원하는 위치로 조정
+    left: -80px; // 원하는 위치로 조정
+    width: 200px;
+    height: 60px;
+    z-index: 1; // 다른 요소 위에 렌더링되도록 zIndex 설정
+    /* 추가적인 스타일 설정 가능 */
+  `;
+
+  const Image = styled.img`
+    width: 200px;
+    height: 60px;
+    object-fit: cover; // 이미지 크기 조정 방식 설정
+  `;
+
+  const ButtonFlexDiv = styled.div`
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: -6%; 
+  `;
+
+  const Button = styled.button`
+    border: none;
+    margin-right: ${(props) => props.right}px;
+    margin-left: ${(props) => props.left}px;
+    color: ${(props) => props.color};
+    background-color: ${(props) => props.background};
+    display: flex;
+padding: 4px 12px;
+border-radius: 4px;
+
+  `;
+
   const CustomTableCell = ({ value, idx }) => {
+    const [showButtons, setShowButtons] = useState(false); // 추가된 상태 여부를 관리하는 상태
+    const toggleButtons = () => {
+      setShowButtons(!showButtons);
+    };
+
     let backgroundColor = "";
     let color = "";
     let displayValue = "";
@@ -378,7 +446,31 @@ const CheckPage = () => {
     }
 
     return (
-      <AttendBox style={{ backgroundColor, color }}>{displayValue}</AttendBox>
+      <CustomTableCellContainer>
+        {addable ? (
+          <AttendBox style={{ backgroundColor, color }}>
+            {displayValue}
+          </AttendBox>
+        ) : (
+          <>
+            <AttendButton onClick={toggleButtons} style={{ backgroundColor, color }}>{displayValue}</AttendButton>
+
+            {showButtons && (
+              <ImageContainer>
+                <Image
+                  src={require("../Assets/img/CheckEditBox.png")}
+                  alt="Image Alt Text"
+                />
+                <ButtonFlexDiv>
+                  <Button color={"#64C59A"} background={"#E8F6F0"}>출석</Button>
+                  <Button color={"#FF5C00"} background={"#FFE7D9"} left={8} right={8}>지각</Button>
+                  <Button color={"#FF5A5A"} background={"#FFE6E6"}>결석</Button>
+                </ButtonFlexDiv>
+              </ImageContainer>
+            )}
+          </>
+        )}
+      </CustomTableCellContainer>
     );
   };
   return (
@@ -456,44 +548,48 @@ const CheckPage = () => {
         </BodyDiv>
       ) : (
         <BodyDiv>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeaderCell width={140} style={{ background: "#F8F8F8" }}>
-                이름
-              </TableHeaderCell>
-              <TableHeaderCell width={152}>OT</TableHeaderCell>
-              <TableHeaderCell width={152}>1차 세미나</TableHeaderCell>
-              <TableHeaderCell width={152}>2차 세미나</TableHeaderCell>
-              <TableHeaderCell width={152}>3차 세미나</TableHeaderCell>
-              <TableHeaderCell width={152}>연합 세미나</TableHeaderCell>
-              <TableHeaderCell width={152}>4차 세미나</TableHeaderCell>
-              <TableHeaderCell width={152}>5차 세미나</TableHeaderCell>
-              <TableHeaderCell width={152}>6차 세미나</TableHeaderCell>
-              <TableHeaderCell width={152}>
-                기디개 연합 세미나
-              </TableHeaderCell>
-              <TableHeaderCell width={152}>숏커톤</TableHeaderCell>
-              <TableHeaderCell width={152}>아이디어 피칭</TableHeaderCell>
-              <TableHeaderCell width={152}>종강총회</TableHeaderCell>
-            </TableRow>
-          </TableHead>
-          <tbody>
-            {filteredUserScores.map((userData, index) => (
-              <TableRow key={index}>
-                <TableCell color={"#2A2A2A"} width={140}>
-                  {userData.name}
-                </TableCell>
-                {Array.from({ length: 12 }, (_, idx) => (
-                  <TableCell key={idx} width={152}>
-                    <CustomTableCell value={userData.attendInfo} idx={idx} />
-                  </TableCell>
-                ))}
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeaderCell width={140} style={{ background: "#F8F8F8" }}>
+                  이름
+                </TableHeaderCell>
+                <TableHeaderCell width={152}>OT</TableHeaderCell>
+                <TableHeaderCell width={152}>1차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>2차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>3차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>연합 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>4차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>5차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>6차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>
+                  기디개 연합 세미나
+                </TableHeaderCell>
+                <TableHeaderCell width={152}>숏커톤</TableHeaderCell>
+                <TableHeaderCell width={152}>아이디어 피칭</TableHeaderCell>
+                <TableHeaderCell width={152}>종강총회</TableHeaderCell>
               </TableRow>
-            ))}
-          </tbody>
-        </Table>
-      </BodyDiv>
+            </TableHead>
+            <tbody>
+              {filteredUserScores.map((userData, index) => (
+                <TableRow key={index}>
+                  <TableCell color={"#2A2A2A"} width={140}>
+                    {userData.name}
+                  </TableCell>
+                  {Array.from({ length: 12 }, (_, idx) => (
+                    <TableCell key={idx} width={152}>
+                      <CustomTableCell
+                        value={userData.attendInfo}
+                        idx={idx}
+                        addable={addable}
+                      />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </tbody>
+          </Table>
+        </BodyDiv>
       )}
     </DDiv>
   );
