@@ -468,9 +468,9 @@ const MemberPage = () => {
 // 필터
 const filteredUserScores = sortedUserScores.filter((userScore) => {
   const memberFilter =
-    selectedMemberFilter === "구분" || "전체" || userScore.member === selectedMemberFilter;
+  selectedMemberFilter === "구분" || selectedMemberFilter === "전체" || userScore.member === selectedMemberFilter;
   const partFilter =
-    selectedPartFilter === "파트" || userScore.part === selectedPartFilter;
+  selectedPartFilter === "전체"  || selectedPartFilter === "파트" || userScore.part === selectedPartFilter;
   return memberFilter && partFilter;
 });
 
@@ -525,7 +525,7 @@ const filteredUserScores = sortedUserScores.filter((userScore) => {
   
 
   const part = ["기획파트", "디자인파트", "웹파트", "iOS파트", "서버파트"];
-  const partFillter = ["기획파트", "디자인파트", "웹파트", "iOS파트", "서버파트"];
+  const partFillter = ["전체", "기획파트", "디자인파트", "웹파트", "iOS파트", "서버파트"];
 
   const toggleDropdown = (index) => {
     const updatedIsOpen = [...isOpen];
