@@ -318,8 +318,13 @@ const CheckPage = () => {
         batch.push(updateDoc(userDocRef, { attendInfo: updatedAttendInfo }));
       });
 
-      await Promise.all(batch);
-      console.log("Firestore 문서 업데이트 성공!");
+      await Promise.all(batch).then(() => {
+        console.log("Firestore 문서 업데이트 성공!");
+        alert("Firestore 문서 업데이트 성공!"); // 성공 시 알림 추가
+        setTimeout(() => {
+          window.location.reload(); // Refresh the page
+        }, 1000); // Delay for 1 second (1000 milliseconds)
+      });
     } catch (error) {
       console.error("Firestore 문서 업데이트 오류:", error);
     }
@@ -328,7 +333,6 @@ const CheckPage = () => {
   const handleEditButtonClick = () => {
     // 여기서 updateUser 함수 대신에 updateFirestore 함수를 호출
     updateFirestore();
-    setAddable(true); // 수정 완료 후 addable 상태를 true로 변경
   };
 
   // 필터 관련 코드
