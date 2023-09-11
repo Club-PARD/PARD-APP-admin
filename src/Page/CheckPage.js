@@ -1,5 +1,12 @@
 import styled from "styled-components";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
 import { dbService } from "../fbase";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import React, { useEffect, useState } from "react";
@@ -301,6 +308,29 @@ const CheckPage = () => {
     fetchSchedules();
   }, []);
 
+  // 정보 업데이트
+  const updateFirestore = async () => {
+    try {
+      const batch = [];
+      userDatas.forEach((userData) => {
+        const userDocRef = doc(dbService, "users", userData.uid); // userId 필드가 있다고 가정
+        const updatedAttendInfo = userData.attendInfo;
+        batch.push(updateDoc(userDocRef, { attendInfo: updatedAttendInfo }));
+      });
+
+      await Promise.all(batch);
+      console.log("Firestore 문서 업데이트 성공!");
+    } catch (error) {
+      console.error("Firestore 문서 업데이트 오류:", error);
+    }
+  };
+
+  const handleEditButtonClick = () => {
+    // 여기서 updateUser 함수 대신에 updateFirestore 함수를 호출
+    updateFirestore();
+    setAddable(true); // 수정 완료 후 addable 상태를 true로 변경
+  };
+
   // 필터 관련 코드
   const options = [
     "전체",
@@ -332,13 +362,16 @@ const CheckPage = () => {
     ? sortedUserScores.filter((userScore) => userScore.part === selectedOption)
     : sortedUserScores;
 
-    // 업데이트 관련 코드 
+  // 업데이트 관련 코드
 
-    const updateUser = (index, newData) => {
-      const updatedUserDatas = [...userDatas];
-      updatedUserDatas[index] = { ...updatedUserDatas[index], attendInfo: newData };
-      setUserDatas(updatedUserDatas);
+  const updateUser = (index, idx, newData) => {
+    const updatedUserDatas = [...userDatas];
+    updatedUserDatas[index] = {
+      ...updatedUserDatas[index],
+      attendInfo: { ...updatedUserDatas[index].attendInfo, [idx]: newData },
     };
+    setUserDatas(updatedUserDatas);
+  };
 
   // 출석 결석 지각 버튼
   const AttendBox = styled.div`
@@ -419,100 +452,103 @@ const CheckPage = () => {
     cursor: pointer;
   `;
 
-const CustomTableCell = ({ value, idx, onUpdate }) => {
-  const [showButtons, setShowButtons] = useState(false);
-  const [attendValue, setAttendValue] = useState(value[idx]);
+  const CustomTableCell = ({ value, idx, onUpdate }) => {
+    const [showButtons, setShowButtons] = useState(false);
+    const [attendValue, setAttendValue] = useState(value[idx]);
 
-  const toggleButtons = () => {
-    setShowButtons(!showButtons);
-  };
+    const toggleButtons = () => {
+      setShowButtons(!showButtons);
+    };
 
-  const updateValue = (newValue) => {
-    setAttendValue(newValue);
-    setShowButtons(false);
+    const updateValue = (newValue) => {
+      setAttendValue(newValue);
+      setShowButtons(false);
 
-    // 업데이트된 값을 부모 컴포넌트로 전달
-    onUpdate(newValue);
-  };
+      // 업데이트된 값을 부모 컴포넌트로 전달
+      onUpdate(newValue);
+    };
 
-  let backgroundColor = "";
-  let color = "";
-  let displayValue = "";
+    let backgroundColor = "";
+    let color = "";
+    let displayValue = "";
 
-  const sidValue = value[idx];
+    const sidValue = value[idx];
 
-  switch (sidValue) {
-    case "지":
-      backgroundColor = "#FFE7D9";
-      color = "var(--primary-orange, #FF5C00)";
-      displayValue = "지각";
-      break;
-    case "출":
-      backgroundColor = "#E8F6F0";
-      color = "var(--primary-green, var(--primary-green, #64C59A))";
-      displayValue = "출석";
-      break;
-    case "결":
-      color = "var(--error-red, #FF5A5A)";
-      backgroundColor = "#FFE6E6";
-      displayValue = "결석";
-      break;
-    default:
-      backgroundColor = "";
-      color = "";
-      displayValue = "";
-  }
+    switch (sidValue) {
+      case "지":
+        backgroundColor = "#FFE7D9";
+        color = "var(--primary-orange, #FF5C00)";
+        displayValue = "지각";
+        break;
+      case "출":
+        backgroundColor = "#E8F6F0";
+        color = "var(--primary-green, var(--primary-green, #64C59A))";
+        displayValue = "출석";
+        break;
+      case "결":
+        color = "var(--error-red, #FF5A5A)";
+        backgroundColor = "#FFE6E6";
+        displayValue = "결석";
+        break;
+      default:
+        backgroundColor = "";
+        color = "";
+        displayValue = "";
+    }
 
-  return (
-    <CustomTableCellContainer>
-      {addable ? (
-        <AttendBox style={{ backgroundColor, color }}>
-          {displayValue}
-        </AttendBox>
-      ) : (
-        <>
-          <AttendButton onClick={toggleButtons} style={{ backgroundColor, color }}>
+    return (
+      <CustomTableCellContainer>
+        {addable ? (
+          <AttendBox style={{ backgroundColor, color }}>
             {displayValue}
-          </AttendButton>
+          </AttendBox>
+        ) : (
+          <>
+            <AttendButton
+              onClick={toggleButtons}
+              style={{ backgroundColor, color }}
+            >
+              {displayValue}
+            </AttendButton>
 
-          {showButtons && (
-            <ImageContainer>
-              <Image
-                src={require("../Assets/img/CheckEditBox.png")}
-                alt="Image Alt Text"
-              />
-              <ButtonFlexDiv>
-                <Button
-                  color={"#64C59A"}
-                  background={"#E8F6F0"}
-                  onClick={() => updateValue("출")}
-                >
-                  출석
-                </Button>
-                <Button
-                  color={"#FF5C00"}
-                  background={"#FFE7D9"}
-                  left={8}
-                  right={8}
-                  onClick={() => updateValue("지")}
-                >
-                  지각
-                </Button>
-                <Button
-                  color={"#FF5A5A"}
-                  background={"#FFE6E6"}
-                  onClick={() => updateValue("결")}
-                >
-                  결석
-                </Button>
-              </ButtonFlexDiv>
-            </ImageContainer>
-          )}
-        </>
-      )}
-    </CustomTableCellContainer>
-  );
-};
+            {showButtons && (
+              <ImageContainer>
+                <Image
+                  src={require("../Assets/img/CheckEditBox.png")}
+                  alt="Image Alt Text"
+                />
+                <ButtonFlexDiv>
+                  <Button
+                    color={"#64C59A"}
+                    background={"#E8F6F0"}
+                    onClick={() => updateValue("출")}
+                  >
+                    출석
+                  </Button>
+                  <Button
+                    color={"#FF5C00"}
+                    background={"#FFE7D9"}
+                    left={8}
+                    right={8}
+                    onClick={() => updateValue("지")}
+                  >
+                    지각
+                  </Button>
+                  <Button
+                    color={"#FF5A5A"}
+                    background={"#FFE6E6"}
+                    onClick={() => updateValue("결")}
+                  >
+                    결석
+                  </Button>
+                </ButtonFlexDiv>
+              </ImageContainer>
+            )}
+          </>
+        )}
+      </CustomTableCellContainer>
+    );
+  };
 
   return (
     <DDiv>
@@ -544,7 +580,7 @@ const CustomTableCell = ({ value, idx, onUpdate }) => {
             수정하기
           </EditButton>
         ) : (
-          <SaveButton onClick={() => setAddable(true)}>저장하기</SaveButton>
+          <SaveButton onClick={handleEditButtonClick}>저장하기</SaveButton>
         )}
       </FirstDiv>
       {addable ? (
@@ -623,7 +659,9 @@ const CustomTableCell = ({ value, idx, onUpdate }) => {
                         value={userData.attendInfo}
                         idx={idx}
                         addable={addable}
-                        onUpdate={(newData) => updateUser(index, newData)} 
+                        onUpdate={(newData) =>
+                          updateUser(userDatas.indexOf(userData), idx, newData)
+                        }
                       />
                     </TableCell>
                   ))}
