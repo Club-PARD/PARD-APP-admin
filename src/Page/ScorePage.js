@@ -8,7 +8,7 @@ import {
   where,
   updateDoc,
   doc,
-  Timestamp
+  Timestamp,
 } from "firebase/firestore";
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
@@ -17,8 +17,8 @@ import koLocale from "date-fns/locale/ko";
 
 const DDiv = styled.div`
   background: #f6f6f6;
-  margin: 0 auto;
   height: 100%;
+  overflow-y: hidden;
 `;
 
 const TitleDiv = styled.div`
@@ -61,7 +61,9 @@ const BodyDiv = styled.div`
   margin-top: 16px;
   margin-left: 80px;
   width: 1396px;
-  height: 744px;
+  height: 700px;
+  margin-bottom: 10px;
+  overflow-y: scroll;
 `;
 
 const Table = styled.table`
@@ -69,12 +71,19 @@ const Table = styled.table`
   border-collapse: collapse;
   border-spacing: 0;
   border-radius: 4px;
-  /* background-color: red; */
 `;
 
 const TableHead = styled.thead`
   background-color: #eee;
   border-bottom: 1px solid #a3a3a3;
+  position: sticky; /* 고정 위치로 설정 */
+  top: 0; /* 화면 상단에 고정 */
+  z-index: 1; /* 다른 콘텐츠 위에 표시 */
+`;
+const TableBody = styled.tbody`
+  display: block; /* 블록 레벨로 설정 */
+  max-height: calc(100% - 48px); /* 테이블 헤더 높이만큼 뺀 나머지 높이 설정 */
+  overflow-y: auto; /* 필요한 경우 스크롤 적용 */
 `;
 
 const TableRow = styled.tr`
@@ -605,10 +614,10 @@ const ScorePage = () => {
           const currentDate = Timestamp.now();
 
           const newPoint = {
-            'digit': scoreDigit,
-            'reason': inputText,
-            'timestamp': currentDate,
-            'type': selectedType,
+            digit: scoreDigit,
+            reason: inputText,
+            timestamp: currentDate,
+            type: selectedType,
           };
 
           if (
@@ -708,13 +717,12 @@ const ScorePage = () => {
     };
 
     useEffect(() => {
-       fetchPoints();
+      fetchPoints();
       if (isOpen) {
         setSelectedScore(null);
         fetchPoints();
         console.log("data : ", points);
       }
-      
     }, [isOpen, pid]);
 
     return (
@@ -765,7 +773,7 @@ const ScorePage = () => {
                     <div key={index}>
                       <RowContentDiv>
                         <RowContentType right={40} width={60}>
-                        {point.type === "최고" ? "MVP" : point.type}
+                          {point.type === "최고" ? "MVP" : point.type}
                         </RowContentType>
                         <RowContentDigit right={30} width={40}>
                           {" "}
@@ -1003,7 +1011,7 @@ const ScorePage = () => {
               </TableHeaderCell>
             </TableRow>
           </TableHead>
-          <tbody>
+          <TableBody>
             {filteredUserScores.map((userScore, index) => (
               <TableRow key={index}>
                 <TableCell color={"#2A2A2A"} width={140}>
@@ -1038,7 +1046,7 @@ const ScorePage = () => {
                 </TableCell>
               </TableRow>
             ))}
-          </tbody>
+          </TableBody>
         </Table>
       </BodyDiv>
     </DDiv>
