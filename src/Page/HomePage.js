@@ -176,6 +176,9 @@ const RankDiv = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: scroll;
+  padding-top: 10px;
+  /* background-color: red; */
 `;
 
 const RankingNumDiv = styled.div`
@@ -184,6 +187,9 @@ const RankingNumDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-top: 8px;
+  margin-bottom: 8px;
+    /* background-color: red; */
 `;
 
 
@@ -360,7 +366,6 @@ const HomePage = () => {
         <LeftDiv>
           <HomeTitle>점수 업데이트</HomeTitle>
           <RankDiv>
-            <>
               {userRankings.map((user, index) => (
                 <>
                 <RankingNumDiv key={user.uid}>
@@ -381,7 +386,6 @@ const HomePage = () => {
                 <RankingHR/>
                 </>
               ))}
-            </>
           </RankDiv>
         </LeftDiv>
       </BodyDiv>

@@ -648,7 +648,8 @@ const ScorePage = () => {
               });
 
               // Points 데이터를 다시 불러옴
-              fetchPoints();
+              // fetchPoints();
+              window.location.reload();
               onClose();
             } catch (error) {
               console.error("Error updating Points data:", error);
@@ -707,6 +708,7 @@ const ScorePage = () => {
     };
 
     useEffect(() => {
+       fetchPoints();
       if (isOpen) {
         setSelectedScore(null);
         fetchPoints();

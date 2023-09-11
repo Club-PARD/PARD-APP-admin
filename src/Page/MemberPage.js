@@ -576,6 +576,7 @@ const filteredUserScores = sortedUserScores.filter((userScore) => {
           isMaster: selectedMembers[index] === "운영진",
           generation: 2,
           attend: {},
+          attendInfo : []
         };
 
         try {
@@ -605,6 +606,7 @@ const filteredUserScores = sortedUserScores.filter((userScore) => {
 
           // 데이터 추가 완료 후 처리
           setAddable(true);
+          window.location.reload();
           alert("등록 성공!");
         } catch (error) {
           console.error("Error adding document: ", error);
