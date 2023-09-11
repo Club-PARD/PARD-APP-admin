@@ -8,7 +8,7 @@ const Nav = styled.nav`
   color: white;
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding-top: 20px;
   justify-content: flex-start;
   min-width: 200px;
 `;
@@ -60,12 +60,25 @@ const DisplayDiv = styled.div`
   width: 100%;
   justify-content: space-between;
   cursor: pointer;
+
 `;
 
 const DisplayTextDiv = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: ${(props) => props.bottom}px;
+  /* background-color: red; */
+  width: 100%;
+  height: 58px;
+  padding-left: 23px;
+
+  &:hover {
+    background: #323553;
+  }
+  background: ${(props) => (props.active
+    ? "var(--grabp, linear-gradient(92deg, #5262F5 0%, #7B3FEF 100%))"
+    : "transparent")};
+
 `;
 
 const Icon = styled.img`
@@ -92,6 +105,7 @@ const MenuLink = styled(Link)`
   text-decoration: none;
   display: flex;
   align-items: center;
+  width: 100%;
   /* gap: 8px; */
   height: 48px;
   margin-top: 5px;
@@ -101,7 +115,16 @@ const MenuLink = styled(Link)`
   font-style: normal;
   font-weight: 400;
   line-height: 140%;
-  color: ${(props) => (props.active ? "#0079E0" : "#FFFFFF")};
+  color: white;
+  &:hover {
+    background: #323553;
+  }
+  background: ${(props) => (props.active
+    ? "var(--grabp, linear-gradient(92deg, #5262F5 0%, #7B3FEF 100%))"
+    : "transparent")};
+
+
+  
 `;
 
 const CircleIcon = styled.span`
@@ -109,7 +132,8 @@ const CircleIcon = styled.span`
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background-color: ${(props) => (props.active ? "#0079E0" : "#FFFFFF")};
+  /* background-color: ${(props) => (props.active ? "#0079E0" : "#FFFFFF")}; */
+  background-color: white;
   margin-right: 8px;
   margin-left: 40px;
 `;
@@ -142,7 +166,7 @@ function NavBar() {
         <HRLight />
         <li>
           <DisplayDiv>
-            <DisplayTextDiv bottom={0}>
+            <DisplayTextDiv bottom={0} active={pathname === "/"}>
               {pathname === "/" ? (
                 <>
                   <Icon
@@ -170,7 +194,7 @@ function NavBar() {
         </li>
         <li>
           <DisplayDiv>
-            <DisplayTextDiv bottom={-5}>
+            <DisplayTextDiv bottom={0} active={pathname.startsWith("/Check")}>
               {pathname.startsWith("/notice") ? (
                 <>
                   <Icon
@@ -198,7 +222,7 @@ function NavBar() {
         </li>
         <li>
           <DisplayDiv>
-            <DisplayTextDiv bottom={-5}>
+            <DisplayTextDiv bottom={0} active={pathname.startsWith("/Schedule")}>
               {pathname.startsWith("/re") ? (
                 <>
                   <Icon
@@ -218,7 +242,7 @@ function NavBar() {
                   />
                 </>
               )}
-              <MenuLink to="/Schedule" active={pathname.startsWith("/re")}>
+              <MenuLink to="/Schedule" active={pathname.startsWith("/Schedule")}>
                 일정 관리
               </MenuLink>
             </DisplayTextDiv>
@@ -226,7 +250,7 @@ function NavBar() {
         </li>
         <li>
           <DisplayDiv>
-            <DisplayTextDiv bottom={-5}>
+            <DisplayTextDiv bottom={-5} active={pathname.startsWith("/Score")}>
               {pathname.startsWith("/shopManager") ? (
                 <>
                   <Icon
