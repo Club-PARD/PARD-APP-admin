@@ -16,7 +16,7 @@ const Nav = styled.nav`
 const TitleDiv = styled.div`
   display: flex;
   align-items: center;
-    justify-content: center;
+  justify-content: center;
 `;
 
 const Logo = styled.img`
@@ -31,7 +31,7 @@ const Logo = styled.img`
 
 const TitleText = styled.div`
   color: var(--White, #fff);
-  font-family: 'Pretendard';
+  font-family: "Pretendard";
   font-size: 18px;
   font-style: normal;
   font-weight: 500;
@@ -94,6 +94,7 @@ const MenuLink = styled(Link)`
   align-items: center;
   /* gap: 8px; */
   height: 48px;
+  margin-top: 5px;
   /* background-color: red; */
   font-family: "NotoSansKR";
   font-size: 16px;
@@ -279,24 +280,14 @@ function NavBar() {
           {isSubMemberOpen && (
             <Ul>
               <li>
-                <MenuLink
-                  to="/Member"
-                  active={pathname.startsWith("/Member")}
-                >
-                  <CircleIcon
-                    active={pathname.startsWith("/Member")}
-                  />
+                <MenuLink to="/Member" active={pathname.startsWith("/Member")}>
+                  <CircleIcon active={pathname.startsWith("/Member")} />
                   회원 관리
                 </MenuLink>
               </li>
               <li>
-                <MenuLink
-                  to="/Master"
-                  active={pathname.startsWith("/Master")}
-                >
-                  <CircleIcon
-                    active={pathname.startsWith("/Master")}
-                  />
+                <MenuLink to="/Master" active={pathname.startsWith("/Master")}>
+                  <CircleIcon active={pathname.startsWith("/Master")} />
                   관리자 권한
                 </MenuLink>
               </li>
