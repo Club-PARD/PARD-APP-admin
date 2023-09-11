@@ -148,15 +148,14 @@ const RegisterAddButton = styled.button`
   }
 `;
 
-
 const CancelButton = styled.button`
   display: inline-flex;
   justify-content: center;
   align-items: center;
   display: flex;
   border-radius: 8px;
-  background: var(--Gray10, #E4E4E4);
-  color: var(--black-card, #2A2A2A);
+  background: var(--Gray10, #e4e4e4);
+  color: var(--black-card, #2a2a2a);
   font-family: "Pretendard";
   font-size: 18px;
   font-style: normal;
@@ -214,17 +213,11 @@ const TableHeaderCell = styled.th`
   }
 `;
 
-const ArrowTop = styled.img`
-  width: 14px;
-  height: 14px;
-  margin-left: 16px;
-  cursor: pointer;
-`;
-
 const ArrowTop1 = styled.img`
   width: 14px;
   height: 14px;
   margin-left: 16px;
+  margin-bottom: 1px;
   cursor: pointer;
 `;
 
@@ -243,6 +236,7 @@ const TableCell = styled.td`
   height: auto;
   border-right: 0.5px solid var(--Gray30, #a3a3a3);
   border-left: 0.5px solid var(--Gray30, #a3a3a3);
+  padding-right: ${(props) => props.right}px;
 
   &:first-child {
     border-left: 1px solid var(--Gray30, #a3a3a3);
@@ -370,6 +364,9 @@ const DropdownButton = styled.button`
   border: none;
   padding: 8px 12px;
   color: ${(props) => (props.color ? "#1A1A1A" : "#A3A3A3")};
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const DropdownContent = styled.div`
@@ -464,15 +461,18 @@ const MemberPage = () => {
     return a.name.localeCompare(b.name);
   });
 
-
-// 필터
-const filteredUserScores = sortedUserScores.filter((userScore) => {
-  const memberFilter =
-  selectedMemberFilter === "구분" || selectedMemberFilter === "전체" || userScore.member === selectedMemberFilter;
-  const partFilter =
-  selectedPartFilter === "전체"  || selectedPartFilter === "파트" || userScore.part === selectedPartFilter;
-  return memberFilter && partFilter;
-});
+  // 필터
+  const filteredUserScores = sortedUserScores.filter((userScore) => {
+    const memberFilter =
+      selectedMemberFilter === "구분" ||
+      selectedMemberFilter === "전체" ||
+      userScore.member === selectedMemberFilter;
+    const partFilter =
+      selectedPartFilter === "전체" ||
+      selectedPartFilter === "파트" ||
+      userScore.part === selectedPartFilter;
+    return memberFilter && partFilter;
+  });
 
   const fetchUsers = async () => {
     const usersRef = collection(dbService, "users");
@@ -491,8 +491,6 @@ const filteredUserScores = sortedUserScores.filter((userScore) => {
     console.log("user 정보 :", userScores);
   }, []);
 
-
-
   // 구분 필터
   const handleArrowTopClick = () => {
     // Dropdown 열고 닫기 토글
@@ -505,7 +503,6 @@ const filteredUserScores = sortedUserScores.filter((userScore) => {
     setSelectedMemberFilter(memberOption);
   };
 
-
   const handleArrowPartClick = () => {
     // 파트 열고 닫기 토글
     setIsdropdownPart(!isdropdownPart);
@@ -516,16 +513,20 @@ const filteredUserScores = sortedUserScores.filter((userScore) => {
     handleArrowPartClick();
     setSelectedPartFilter(memberOption);
   };
-  
-  
 
   // 선택 관련 코드
   const member = ["파디", "거친파도", "운영진", "잔잔파도"];
   const memberFillter = ["전체", "파디", "거친파도", "운영진", "잔잔파도"];
-  
 
   const part = ["기획파트", "디자인파트", "웹파트", "iOS파트", "서버파트"];
-  const partFillter = ["전체", "기획파트", "디자인파트", "웹파트", "iOS파트", "서버파트"];
+  const partFillter = [
+    "전체",
+    "기획파트",
+    "디자인파트",
+    "웹파트",
+    "iOS파트",
+    "서버파트",
+  ];
 
   const toggleDropdown = (index) => {
     const updatedIsOpen = [...isOpen];
@@ -583,7 +584,6 @@ const filteredUserScores = sortedUserScores.filter((userScore) => {
   const userCollectionRef = collection(dbService, "users");
   const pointsCollectionRef = collection(dbService, "points");
 
-    
   const handleEditButtonClick = () => {
     const confirmSave = window.confirm("새로운 멤버를 추가하시겠습니까?");
     if (confirmSave) {
@@ -610,7 +610,7 @@ const filteredUserScores = sortedUserScores.filter((userScore) => {
           isMaster: selectedMembers[index] === "운영진",
           generation: 2,
           attend: {},
-          attendInfo : []
+          attendInfo: [],
         };
 
         try {
@@ -651,11 +651,13 @@ const filteredUserScores = sortedUserScores.filter((userScore) => {
 
   // 취소 버튼
   const handleCancelClick = () => {
-    const confirmSave = window.confirm("변경사항이 저장되지 않습니다.\n취소 하시겠습니까?");
+    const confirmSave = window.confirm(
+      "변경사항이 저장되지 않습니다.\n취소 하시겠습니까?"
+    );
     if (confirmSave) {
       setTimeout(() => {
         window.location.reload(); // Refresh the page
-      }, 1000); 
+      }, 1000);
     }
   };
 
@@ -718,7 +720,13 @@ const filteredUserScores = sortedUserScores.filter((userScore) => {
                       Backcolor={"#F8F8F8"}
                     >
                       {selectedMemberFilter || "구분"}
-                      <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
+                      {!isDropdownOpen ? (
+                        <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
+                      ) : (
+                        <ArrowTop1
+                          src={require("../Assets/img/PolygonDown.png")}
+                        />
+                      )}
                     </DropdownButton>
                     <DropdownContent isOpen={isDropdownOpen}>
                       {memberFillter.map((memberOption, memberIndex) => (
@@ -733,14 +741,20 @@ const filteredUserScores = sortedUserScores.filter((userScore) => {
                   </DropdownWrapper>
                 </TableHeaderCell>
                 <TableHeaderCell width={180} style={{ background: "#F8F8F8" }}>
-                <DropdownWrapper>
+                  <DropdownWrapper>
                     <DropdownButton
                       onClick={handleArrowPartClick}
                       color={true}
                       Backcolor={"#F8F8F8"}
                     >
                       {selectedPartFilter || "파트"}
-                      <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
+                      {!isdropdownPart ? (
+                        <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
+                      ) : (
+                        <ArrowTop1
+                          src={require("../Assets/img/PolygonDown.png")}
+                        />
+                      )}
                     </DropdownButton>
                     <DropdownContent isOpen={isdropdownPart}>
                       {partFillter.map((memberOption, memberIndex) => (
@@ -784,10 +798,10 @@ const filteredUserScores = sortedUserScores.filter((userScore) => {
                         }
                       )}
                   </TableMinText>
-                  <TableCell color={"#2A2A2A"} width={190}>
+                  <TableCell color={"#2A2A2A"} width={180} right={10}>
                     {userScore.member}
                   </TableCell>
-                  <TableCell color={"#2A2A2A"} width={180}>
+                  <TableCell color={"#2A2A2A"} width={170} right={10}>
                     {userScore.part}
                   </TableCell>
                   <TableCell width={180}>
@@ -811,12 +825,10 @@ const filteredUserScores = sortedUserScores.filter((userScore) => {
               <MemberNumText color={"#1A1A1A"}>명</MemberNumText>
             </FlexDiv>
             <FlexDiv>
-              <CancelButton onClick={handleCancelClick}>
-                취소하기
-              </CancelButton>
-            <RegisterAddButton onClick={handleEditButtonClick}>
-              추가하기
-            </RegisterAddButton>
+              <CancelButton onClick={handleCancelClick}>취소하기</CancelButton>
+              <RegisterAddButton onClick={handleEditButtonClick}>
+                추가하기
+              </RegisterAddButton>
             </FlexDiv>
           </FirstDiv>
           <Table>
