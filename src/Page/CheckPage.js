@@ -258,29 +258,37 @@ const EditIcon = styled.img`
 
 const CheckPage = () => {
   const [userDatas, setUserDatas] = useState([]);
-  const [sidDatas, setSidDatas] = useState([]);
   const [userAttendKey, setUserAttendKey] = useState([]);
   const [userAttendValue, setUserAttendValue] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [addable, setAddable] = useState(true);
+  const [scheduleKeys, setScheduleKeys] = useState([]); // schedules의 sid 값들을 저장할 상태
 
   useEffect(() => {
     // Firestore에서 데이터 읽어오기
-
     const fetchSchedules = async () => {
-      const schedulesRef = collection(dbService, "schedules");
-      const querySnapshot = await getDocs(
-        query(schedulesRef, where("type", "==", true))
-      );
+      try {
+        const schedulesRef = collection(dbService, "schedules");
+        const querySnapshot = await getDocs(
+          query(schedulesRef, where("type", "==", true))
+        );
 
-      const scheduleIds = [];
-      querySnapshot.forEach((doc) => {
-        scheduleIds.push(doc.sid);
-      });
-      setSidDatas(scheduleIds);
-      console.log("읽은 sid :", sidDatas);
+        const scheduleIds = [];
+        querySnapshot.forEach((doc) => {
+          scheduleIds.push(doc.id);
+        });
+
+        // dueDate 필드를 기준으로 데이터를 정렬 (과거 날짜가 먼저 오도록)
+        scheduleIds.sort((a, b) => a.dueDate - b.dueDate);
+
+        setScheduleKeys(scheduleIds); // 여기서 scheduleKeys 상태를 설정합니다.
+        console.log('sid : ',scheduleIds)
+      } catch (error) {
+        console.error("Error fetching schedules:", error);
+      }
     };
+
 
     const fetchData = async () => {
       const data = await getDocs(collection(dbService, "users")); // create라는 collection 안에 모든 document를 읽어올 때 사용한다.
@@ -329,7 +337,7 @@ const CheckPage = () => {
       console.error("Firestore 문서 업데이트 오류:", error);
     }
   };
-  
+
   const handleEditButtonClick = () => {
     const confirmSave = window.confirm("변경 사항을 저장하시겠습니까?");
     if (confirmSave) {
@@ -370,14 +378,28 @@ const CheckPage = () => {
 
   // 업데이트 관련 코드
 
-  const updateUser = (index, idx, newData) => {
-    const updatedUserDatas = [...userDatas];
-    updatedUserDatas[index] = {
-      ...updatedUserDatas[index],
-      attendInfo: { ...updatedUserDatas[index].attendInfo, [idx]: newData },
-    };
-    setUserDatas(updatedUserDatas);
+const updateUser = async (index, idx, newData) => {
+  const updatedUserDatas = [...userDatas];
+  updatedUserDatas[index] = {
+    ...updatedUserDatas[index],
+    attendInfo: { ...updatedUserDatas[index].attendInfo, [idx]: newData },
   };
+  setUserDatas(updatedUserDatas);
+
+  // attend 맵 업데이트
+  const updatedAttend = { ...updatedUserDatas[index].attend };
+  updatedAttend[scheduleKeys[idx]] = newData; // scheduleKeys를 사용하여 업데이트
+  updatedUserDatas[index].attend = updatedAttend;
+
+  // Firestore에 업데이트
+  const userDocRef = doc(dbService, "users", updatedUserDatas[index].uid);
+  await updateDoc(userDocRef, {
+    attendInfo: updatedUserDatas[index].attendInfo,
+    attend: updatedAttend, // attend 맵 업데이트
+  });
+
+  console.log("Firestore 문서 업데이트 성공!");
+};
 
   // 출석 결석 지각 버튼
   const AttendBox = styled.div`

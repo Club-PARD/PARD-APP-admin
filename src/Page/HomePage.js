@@ -5,6 +5,7 @@ import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
+import FadeLoader from "react-spinners/FadeLoader";
 
 const DDiv = styled.div`
   background: #f6f6f6;
@@ -189,9 +190,8 @@ const RankingNumDiv = styled.div`
   justify-content: space-between;
   margin-top: 8px;
   margin-bottom: 8px;
-    /* background-color: red; */
+  /* background-color: red; */
 `;
-
 
 const RankingNum = styled.div`
   width: 40px;
@@ -236,16 +236,17 @@ const RankingFirstDiv = styled.div`
 `;
 
 const RankingHR = styled.hr`
- width: 408px;
-height: 0px;
-stroke-width: 1px;
-stroke: var(--Gray30, #A3A3A3);
+  width: 408px;
+  height: 0px;
+  stroke-width: 1px;
+  stroke: var(--Gray30, #a3a3a3);
 `;
 
 const HomePage = () => {
   const [schedules, setSchedule] = useState([]);
   const [score, setScore] = useState([]);
   const [userRankings, setUserRankings] = useState([]);
+  const [isLoadingRankings, setIsLoadingRankings] = useState(true); // 로딩 중 여부를 나타내는 상태
 
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -302,6 +303,7 @@ const HomePage = () => {
 
         // 순위를 상태에 설정
         setUserRankings(rankings);
+        setIsLoadingRankings(false);
         console.log("user Ranking :", rankings);
       } catch (error) {
         console.error("Error calculating rankings:", error);
@@ -337,39 +339,41 @@ const HomePage = () => {
       <BodyDiv>
         <RightDiv>
           <HomeTitle>일정 업데이트</HomeTitle>
-          <ScheduleDiv>
-            {getRecentSchedules().map((schedule, index) => (
-              <ScheduleItem key={index}>
-                <ScheduleFirstDiv>
-                  <FlextBoxDiv>
-                    <PartNameDiv>{schedule.part}</PartNameDiv>
-                    <DateDiv>{schedule.description}</DateDiv>
-                  </FlextBoxDiv>
-                  <DelteButton>
-                    <DeleteIcon src={require("../Assets/img/DeleteIcon.png")} />
-                    삭제
-                  </DelteButton>
-                </ScheduleFirstDiv>
-                <ContentText>
-                  일시 :{" "}
-                  {format(
-                    fromUnixTime(schedule.dueDate.seconds),
-                    "M월 d일 EEEE HH:mm",
-                    { locale: koLocale } // 한국어 로케일 설정
-                  )}
-                </ContentText>
-                <ContentText>장소 : {schedule.place}</ContentText>
-              </ScheduleItem>
-            ))}
-          </ScheduleDiv>
+            <ScheduleDiv>
+              {getRecentSchedules().map((schedule, index) => (
+                <ScheduleItem key={index}>
+                  <ScheduleFirstDiv key={index}>
+                    <FlextBoxDiv>
+                      <PartNameDiv>{schedule.part}</PartNameDiv>
+                      <DateDiv>{schedule.description}</DateDiv>
+                    </FlextBoxDiv>
+                    <DelteButton>
+                      <DeleteIcon
+                        src={require("../Assets/img/DeleteIcon.png")}
+                      />
+                      삭제
+                    </DelteButton>
+                  </ScheduleFirstDiv>
+                  <ContentText>
+                    일시 :{" "}
+                    {format(
+                      fromUnixTime(schedule.dueDate.seconds),
+                      "M월 d일 EEEE HH:mm",
+                      { locale: koLocale } // 한국어 로케일 설정
+                    )}
+                  </ContentText>
+                  <ContentText>장소 : {schedule.place}</ContentText>
+                </ScheduleItem>
+              ))}
+            </ScheduleDiv>
         </RightDiv>
         <LeftDiv>
           <HomeTitle>점수 업데이트</HomeTitle>
           <RankDiv>
-              {userRankings.map((user, index) => (
-                <>
+            {userRankings.map((user, index) => (
+              <>
                 <RankingNumDiv key={user.uid}>
-                  <RankingFirstDiv>
+                  <RankingFirstDiv key={index}>
                     <RankingNum
                       style={{
                         backgroundColor: index < 3 ? "#EEEFFE" : "#F8F8F8",
@@ -383,9 +387,9 @@ const HomePage = () => {
                   </RankingFirstDiv>
                   {user.totalPoints}점
                 </RankingNumDiv>
-                <RankingHR/>
-                </>
-              ))}
+                <RankingHR />
+              </>
+            ))}
           </RankDiv>
         </LeftDiv>
       </BodyDiv>
