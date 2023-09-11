@@ -329,10 +329,12 @@ const CheckPage = () => {
       console.error("Firestore 문서 업데이트 오류:", error);
     }
   };
-
+  
   const handleEditButtonClick = () => {
-    // 여기서 updateUser 함수 대신에 updateFirestore 함수를 호출
-    updateFirestore();
+    const confirmSave = window.confirm("변경 사항을 저장하시겠습니까?");
+    if (confirmSave) {
+      updateFirestore();
+    }
   };
 
   // 필터 관련 코드
@@ -497,7 +499,7 @@ const CheckPage = () => {
       default:
         backgroundColor = "";
         color = "";
-        displayValue = "";
+        displayValue = "  ";
     }
 
     return (

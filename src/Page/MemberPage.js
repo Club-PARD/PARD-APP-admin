@@ -140,6 +140,32 @@ const RegisterAddButton = styled.button`
   cursor: pointer;
   border: none;
   margin-right: 183px;
+  &:hover {
+    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
+  }
+  &:active {
+    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
+  }
+`;
+
+
+const CancelButton = styled.button`
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  border-radius: 8px;
+  background: var(--Gray10, #E4E4E4);
+  color: var(--black-card, #2A2A2A);
+  font-family: "Pretendard";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  padding: 12px 65px;
+  cursor: pointer;
+  border: none;
+  margin-right: 16px;
 `;
 
 const Table = styled.table`
@@ -557,6 +583,14 @@ const filteredUserScores = sortedUserScores.filter((userScore) => {
   const userCollectionRef = collection(dbService, "users");
   const pointsCollectionRef = collection(dbService, "points");
 
+    
+  const handleEditButtonClick = () => {
+    const confirmSave = window.confirm("새로운 멤버를 추가하시겠습니까?");
+    if (confirmSave) {
+      handleAddButtonClick();
+    }
+  };
+
   const handleAddButtonClick = async () => {
     // 루프를 사용하여 각 인덱스에 대한 데이터 확인
     for (let index = 0; index < 15; index++) {
@@ -612,6 +646,16 @@ const filteredUserScores = sortedUserScores.filter((userScore) => {
           console.error("Error adding document: ", error);
         }
       }
+    }
+  };
+
+  // 취소 버튼
+  const handleCancelClick = () => {
+    const confirmSave = window.confirm("변경사항이 저장되지 않습니다.\n취소 하시겠습니까?");
+    if (confirmSave) {
+      setTimeout(() => {
+        window.location.reload(); // Refresh the page
+      }, 1000); 
     }
   };
 
@@ -766,9 +810,14 @@ const filteredUserScores = sortedUserScores.filter((userScore) => {
               </MemberNumText>
               <MemberNumText color={"#1A1A1A"}>명</MemberNumText>
             </FlexDiv>
-            <RegisterAddButton onClick={handleAddButtonClick}>
+            <FlexDiv>
+              <CancelButton onClick={handleCancelClick}>
+                취소하기
+              </CancelButton>
+            <RegisterAddButton onClick={handleEditButtonClick}>
               추가하기
             </RegisterAddButton>
+            </FlexDiv>
           </FirstDiv>
           <Table>
             <TableHead>
