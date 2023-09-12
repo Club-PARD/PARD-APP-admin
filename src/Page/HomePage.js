@@ -5,7 +5,6 @@ import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
-import FadeLoader from "react-spinners/FadeLoader";
 
 const DDiv = styled.div`
   background: #f6f6f6;
