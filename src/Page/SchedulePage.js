@@ -196,7 +196,7 @@ const EditButton = styled.button`
   font-style: normal;
   font-weight: 700;
   line-height: 24px;
-  padding: 12px 24px;
+  padding: 12px 16px;
   cursor: pointer;
 
   &:hover {
