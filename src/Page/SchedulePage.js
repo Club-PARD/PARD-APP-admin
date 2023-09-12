@@ -226,14 +226,6 @@ const FirstDiv = styled.div`
 const SchedulePage = () => {
   const [schedules, setSchedule] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
   
 
   useEffect(() => {
@@ -290,6 +282,47 @@ const SchedulePage = () => {
       }
     }
   };
+
+  // Modal 
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const ModalWrapper = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* 배경을 어둡게 표시 */
+  display: ${(props) => (props.isOpen ? "block" : "none")};
+`;
+
+const ModalContent = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 620px;
+  height: 552px;
+  background-color: white;
+`;
+
+const Modal = ({isOpen}) => {
+  return (
+    <ModalWrapper isOpen={isOpen}>
+          <ModalContent></ModalContent>
+    </ModalWrapper>
+
+  );
+
+};
+
 
   return (
     <DDiv>
@@ -370,6 +403,9 @@ const SchedulePage = () => {
           </ScheduleDiv>
         </LeftDiv>
       </BodyDiv>
+      <Modal 
+      isOpen={isModalOpen}
+      />
     </DDiv>
   );
 };
