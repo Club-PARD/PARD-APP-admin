@@ -222,8 +222,19 @@ const FirstDiv = styled.div`
   align-items: flex-end;
 `;
 
+
 const SchedulePage = () => {
   const [schedules, setSchedule] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+  
 
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -293,7 +304,7 @@ const SchedulePage = () => {
         <RightDiv>
           <FirstDiv>
             <HomeTitle>공식 일정</HomeTitle>
-            <EditButton>
+            <EditButton onClick={openModal}>
               <EditIcon src={require("../Assets/img/ScheduleCIcon.png")} />
               공식 일정 추가하기
             </EditButton>
@@ -327,7 +338,7 @@ const SchedulePage = () => {
         <LeftDiv>
           <FirstDiv>
             <HomeTitle>과제 일정</HomeTitle>
-            <EditButton>
+            <EditButton onClick={openModal}>
               <EditIcon src={require("../Assets/img/ScheduleCIcon.png")} />
               과제 일정 추가하기
             </EditButton>
