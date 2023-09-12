@@ -798,10 +798,10 @@ const MemberPage = () => {
                         }
                       )}
                   </TableMinText>
-                  <TableCell color={"#2A2A2A"} width={180} right={10}>
+                  <TableCell color={"#2A2A2A"} width={181} right={10}>
                     {userScore.member}
                   </TableCell>
-                  <TableCell color={"#2A2A2A"} width={170} right={10}>
+                  <TableCell color={"#2A2A2A"} width={171} right={10}>
                     {userScore.part}
                   </TableCell>
                   <TableCell width={180}>

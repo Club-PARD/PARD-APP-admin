@@ -67,7 +67,7 @@ const BodyDiv = styled.div`
 `;
 
 const Table = styled.table`
-  width: 1380px;
+  width: 1300px;
   border-collapse: collapse;
   border-spacing: 0;
   border-radius: 4px;
@@ -993,20 +993,20 @@ const ScorePage = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableHeaderCell width={140} style={{ background: "#F8F8F8" }}>
+              <TableHeaderCell width={136} style={{ background: "#F8F8F8" }}>
                 이름
               </TableHeaderCell>
-              <TableHeaderCell width={206}>MVP</TableHeaderCell>
-              <TableHeaderCell width={206}>스터디</TableHeaderCell>
-              <TableHeaderCell width={206}>소통</TableHeaderCell>
-              <TableHeaderCell width={206}>회고</TableHeaderCell>
+              <TableHeaderCell width={197}>MVP</TableHeaderCell>
+              <TableHeaderCell width={197}>스터디</TableHeaderCell>
+              <TableHeaderCell width={197}>소통</TableHeaderCell>
+              <TableHeaderCell width={197}>회고</TableHeaderCell>
               <TableHeaderCell
-                width={205}
+                width={197}
                 style={{ background: "rgba(255, 90, 90, 0.10)" }}
               >
                 벌점
               </TableHeaderCell>
-              <TableHeaderCell width={205} style={{ background: "#F8F8F8" }}>
+              <TableHeaderCell width={197} style={{ background: "#F8F8F8" }}>
                 점수 관리
               </TableHeaderCell>
             </TableRow>
@@ -1014,25 +1014,25 @@ const ScorePage = () => {
           <TableBody>
             {filteredUserScores.map((userScore, index) => (
               <TableRow key={index}>
-                <TableCell color={"#2A2A2A"} width={140}>
+                <TableCell color={"#2A2A2A"} width={136}>
                   {userScore.name}
                 </TableCell>
-                <TableCell color={"#64C59A"} width={206}>
+                <TableCell color={"#64C59A"} width={197}>
                   +{userScore.mvp}점
                 </TableCell>
-                <TableCell color={"#64C59A"} width={206}>
+                <TableCell color={"#64C59A"} width={197}>
                   +{userScore.study}잠
                 </TableCell>
-                <TableCell color={"#64C59A"} width={206}>
+                <TableCell color={"#64C59A"} width={197}>
                   +{userScore.communication}점
                 </TableCell>
-                <TableCell color={"#64C59A"} width={206}>
+                <TableCell color={"#64C59A"} width={197}>
                   +{userScore.retrospection}점
                 </TableCell>
-                <TableCell color={"#FF5A5A"} width={205.2}>
+                <TableCell color={"#FF5A5A"} width={197}>
                   {userScore.penalty}점
                 </TableCell>
-                <TableCell width={205}>
+                <TableCell width={197}>
                   <CheckScoreButton onClick={() => openModal(index)}>
                     점수 관리
                   </CheckScoreButton>
