@@ -40,11 +40,12 @@ const TitleText = styled.div`
 `;
 
 const HRLight = styled.hr`
-  width: 99.5%;
+  width: 91%;
   margin-top: 27px;
-  border: 1px dotted #d9d9d9;
+  border: 0.5px dotted #d9d9d9;
   background-color: #d9d9d9;
   margin-bottom: 10px;
+  margin-left: 10px;
 `;
 
 const Ul = styled.ul`
@@ -142,12 +143,15 @@ const UpArrowIcon = styled.img`
   width: 20px;
   height: 20px;
   margin-left: ${(props) => props.left}px;
+  margin-right: 20px;
 `;
 
 const DownArrowIcon = styled.img`
   width: 20px;
   height: 20px;
   margin-left: ${(props) => props.left}px;
+  margin-right: 20px;
+
 `;
 
 function NavBar() {
@@ -283,7 +287,7 @@ function NavBar() {
           <DisplayDiv onClick={() => setIsSubMemberOpen(!isSubMemberOpen)}>
             <DisplayTextDiv>
               <Icon
-                src={require("../../Assets/img/MemberIcon.png")}
+                src={require("../../Assets/img/NavBar_MemberIcon.png")}
                 width={24}
                 height={24}
                 right={14}
