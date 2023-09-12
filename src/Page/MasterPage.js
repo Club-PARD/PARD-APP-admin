@@ -28,33 +28,32 @@ const HomeTitle = styled.div`
 `;
 
 const SubTitle = styled.div`
-color: var(--black-background, #1A1A1A);
-/* Admin/A1-M-18 */
-font-family: 'Pretendard';
-font-size: 18px;
-font-style: normal;
-font-weight: 500;
-line-height: 24px; 
-margin-top: 1px;
+  color: var(--black-background, #1a1a1a);
+  /* Admin/A1-M-18 */
+  font-family: "Pretendard";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  margin-top: 1px;
 `;
 
 const BarText = styled.div`
   width: 2px;
-height: 24px;
-margin-top: 1px;
-margin-left: 12px;
-margin-right: 14px;
-background: linear-gradient(92deg, #5262F5 0%, #7B3FEF 100%);
-
+  height: 24px;
+  margin-top: 1px;
+  margin-left: 12px;
+  margin-right: 14px;
+  background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
 `;
 
 const MasterPage = () => {
   return (
     <DDiv>
-                   <CommonLogSection username="김파드님" />
+      <CommonLogSection username="김파드님" />
       <TitleDiv>
         <HomeTitle>회원관리 - 관리자 권한</HomeTitle>
-        <BarText/>
+        <BarText />
         <SubTitle>관리자를 추가하고 관리해보세요.</SubTitle>
       </TitleDiv>
     </DDiv>

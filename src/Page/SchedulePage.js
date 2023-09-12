@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
@@ -66,13 +66,13 @@ const BodyDiv = styled.div`
   display: flex;
   margin-top: 83px;
   margin-left: 80px;
-  width: 960px;
+  /* width: 960px; */
   height: 744px;
   /* background-color: red; */
 `;
 
 const RightDiv = styled.div`
-  width: 480px;
+  width: 602px;
   height: 744px;
   margin-right: 40px;
   /* background-color: gray; */
@@ -80,17 +80,18 @@ const RightDiv = styled.div`
 
 const LeftDiv = styled.div`
   height: 744px;
-  width: 480px;
+  width: 602px;
   /* background-color: blue; */
 `;
 
 const ScheduleDiv = styled.div`
   margin-top: 16px;
   height: 696px;
+  overflow: scroll;
 `;
 
 const ScheduleItem = styled.div`
-  width: 480px;
+  width: 600px;
   height: 120px;
   background-color: #ffffff;
   border: 1px solid #e0e0e0;
@@ -102,7 +103,7 @@ const ScheduleItem = styled.div`
 `;
 
 const ScheduleFirstDiv = styled.div`
-  margin-top: 16px;
+  margin-top: 24px;
   width: 100%;
   height: 32px;
   display: flex;
@@ -141,6 +142,7 @@ const DateDiv = styled.div`
 const FlextBoxDiv = styled.div`
   display: flex;
   align-items: center;
+  margin-bottom: 8px;
 `;
 
 const DelteButton = styled.button`
@@ -160,6 +162,7 @@ const DelteButton = styled.button`
   justify-content: center;
   margin-right: 24px;
   margin-bottom: 3px;
+  cursor: pointer;
 `;
 
 const DeleteIcon = styled.img`
@@ -179,6 +182,46 @@ const ContentText = styled.div`
   margin-top: 8px;
 `;
 
+const EditButton = styled.button`
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  border-radius: 8px;
+  border: 1px solid var(--primary-blue, #5262f5);
+  background: rgba(82, 98, 245, 0.1);
+  color: var(--primary-blue, #5262f5);
+  font-family: "Pretendard";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  padding: 12px 24px;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
+  }
+  &:active {
+    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
+  }
+`;
+
+const EditIcon = styled.img`
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+`;
+
+const FirstDiv = styled.div`
+  display: flex;
+  height: 48px;
+  width: 100%;
+  margin-bottom: 16px;
+  justify-content: space-between;
+  align-items: flex-end;
+`;
+
 const SchedulePage = () => {
   const [schedules, setSchedule] = useState([]);
 
@@ -188,6 +231,7 @@ const SchedulePage = () => {
         const data = await getDocs(collection(dbService, "schedules"));
         const newData = data.docs.map((doc) => ({ ...doc.data() }));
         setSchedule(newData);
+        console.log(newData);
       } catch (error) {
         console.error("Error fetching schedules:", error);
       }
@@ -200,7 +244,40 @@ const SchedulePage = () => {
     const sortedSchedules = [...schedules].sort(
       (a, b) => b.dueDate - a.dueDate
     );
-    return sortedSchedules.slice(0, 5);
+    const filteredSchedules = sortedSchedules.filter(
+      (schedule) => schedule.type === true
+    );
+    return filteredSchedules;
+  };
+
+  const getRecenTask = () => {
+    const sortedSchedules = [...schedules].sort(
+      (a, b) => b.dueDate - a.dueDate
+    );
+    const filteredSchedules = sortedSchedules.filter(
+      (schedule) => schedule.type === false
+    );
+    return filteredSchedules;
+  };
+
+  // 삭제 기능
+  const handleDeleteSchedule = async (documentId) => {
+    const userConfirmed = window.confirm("일정을 삭제하시겠습니까?");
+    
+    if (userConfirmed) {
+      try {
+        const scheduleRef = doc(dbService, "schedules", documentId);
+  
+        // 문서 삭제
+        await deleteDoc(scheduleRef);
+  
+        // 삭제가 성공하면 화면을 새로고침
+        window.location.reload();
+        alert("일정이 삭제되었습니다.");
+      } catch (error) {
+        console.error("Error deleting schedule:", error);
+      }
+    }
   };
 
   return (
@@ -214,7 +291,13 @@ const SchedulePage = () => {
       </TitleDiv>
       <BodyDiv>
         <RightDiv>
-          <HomeTitle>공식 일정</HomeTitle>
+          <FirstDiv>
+            <HomeTitle>공식 일정</HomeTitle>
+            <EditButton>
+              <EditIcon src={require("../Assets/img/ScheduleCIcon.png")} />
+              공식 일정 추가하기
+            </EditButton>
+          </FirstDiv>
           <ScheduleDiv>
             {getRecentSchedules().map((schedule, index) => (
               <ScheduleItem key={index}>
@@ -223,7 +306,7 @@ const SchedulePage = () => {
                     <PartNameDiv>{schedule.part}</PartNameDiv>
                     <DateDiv>{schedule.description}</DateDiv>
                   </FlextBoxDiv>
-                  <DelteButton>
+                  <DelteButton onClick={() => handleDeleteSchedule(schedule.sid)}>
                     <DeleteIcon src={require("../Assets/img/DeleteIcon.png")} />
                     삭제
                   </DelteButton>
@@ -242,29 +325,35 @@ const SchedulePage = () => {
           </ScheduleDiv>
         </RightDiv>
         <LeftDiv>
-          <HomeTitle>과제 일정</HomeTitle>
+          <FirstDiv>
+            <HomeTitle>과제 일정</HomeTitle>
+            <EditButton>
+              <EditIcon src={require("../Assets/img/ScheduleCIcon.png")} />
+              과제 일정 추가하기
+            </EditButton>
+          </FirstDiv>
           <ScheduleDiv>
-            {getRecentSchedules().map((schedule, index) => (
+            {getRecenTask().map((schedule, index) => (
               <ScheduleItem key={index}>
                 <ScheduleFirstDiv key={index}>
                   <FlextBoxDiv>
                     <PartNameDiv>{schedule.part}</PartNameDiv>
-                    <DateDiv>{schedule.description}</DateDiv>
+                    <DateDiv>{schedule.title}</DateDiv>
                   </FlextBoxDiv>
-                  <DelteButton>
+                  <DelteButton onClick={() => handleDeleteSchedule(schedule.sid)}>
                     <DeleteIcon src={require("../Assets/img/DeleteIcon.png")} />
                     삭제
                   </DelteButton>
                 </ScheduleFirstDiv>
+                <ContentText>{schedule.description}</ContentText>
                 <ContentText>
-                  일시 :{" "}
+                  마감 :{" "}
                   {format(
                     fromUnixTime(schedule.dueDate.seconds),
                     "M월 d일 EEEE HH:mm",
                     { locale: koLocale } // 한국어 로케일 설정
                   )}
                 </ContentText>
-                <ContentText>장소 : {schedule.place}</ContentText>
               </ScheduleItem>
             ))}
           </ScheduleDiv>

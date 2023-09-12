@@ -41,6 +41,17 @@ const SubTitle = styled.div`
   margin-top: 1px;
 `;
 
+const ScoreText = styled.div`
+color: var(--black-background, #1A1A1A);
+text-align: right;
+font-family: 'Pretendard';
+font-size: 16px;
+font-style: normal;
+font-weight: 500;
+line-height: 24px; 
+margin-right: 16px;
+`
+
 const BarText = styled.div`
   width: 2px;
   height: 24px;
@@ -54,13 +65,13 @@ const BodyDiv = styled.div`
   display: flex;
   margin-top: 83px;
   margin-left: 80px;
-  width: 960px;
+  /* width: 960px; */
   height: 744px;
   /* background-color: red; */
 `;
 
 const RightDiv = styled.div`
-  width: 480px;
+  width: 600px;
   height: 744px;
   margin-right: 40px;
   /* background-color: gray; */
@@ -72,7 +83,7 @@ const ScheduleDiv = styled.div`
 `;
 
 const ScheduleItem = styled.div`
-  width: 480px;
+  width: 600px;
   height: 120px;
   background-color: #ffffff;
   border: 1px solid #e0e0e0;
@@ -163,7 +174,7 @@ const ContentText = styled.div`
 
 const LeftDiv = styled.div`
   height: 744px;
-  width: 440px;
+  width: 540px;
   /* background-color: blue; */
 `;
 
@@ -172,7 +183,7 @@ const RankDiv = styled.div`
   height: 696px;
   border-radius: 8px;
   border: 1px solid var(--Gray30, #a3a3a3);
-  width: 440px;
+  width: 540px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -182,7 +193,7 @@ const RankDiv = styled.div`
 `;
 
 const RankingNumDiv = styled.div`
-  width: 409px;
+  width: 500px;
   height: 72px;
   display: flex;
   align-items: center;
@@ -235,7 +246,7 @@ const RankingFirstDiv = styled.div`
 `;
 
 const RankingHR = styled.hr`
-  width: 408px;
+  width: 500px;
   height: 0px;
   stroke-width: 1px;
   stroke: var(--Gray30, #a3a3a3);
@@ -346,12 +357,6 @@ const HomePage = () => {
                       <PartNameDiv>{schedule.part}</PartNameDiv>
                       <DateDiv>{schedule.description}</DateDiv>
                     </FlextBoxDiv>
-                    <DelteButton>
-                      <DeleteIcon
-                        src={require("../Assets/img/DeleteIcon.png")}
-                      />
-                      삭제
-                    </DelteButton>
                   </ScheduleFirstDiv>
                   <ContentText>
                     일시 :{" "}
@@ -384,7 +389,9 @@ const HomePage = () => {
                     <RankingName>{user.displayName}</RankingName>
                     <RankingPart>{user.part}</RankingPart>
                   </RankingFirstDiv>
+                  <ScoreText>
                   {user.totalPoints}점
+                  </ScoreText>
                 </RankingNumDiv>
                 <RankingHR />
               </>
