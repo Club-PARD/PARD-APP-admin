@@ -15,6 +15,7 @@ const AppContainer = styled.div`
 
 const NavBarContainer = styled.div`
   width: 15vw;
+  min-width: 250px;
   background-color: rgba(30, 30, 44, 1);
 `;
 
@@ -23,7 +24,6 @@ const MainContent = styled.div`
   background-color: #f6f6f6;
   /* padding: 20px; */
 `;
-
 
 function App() {
   return (
@@ -34,12 +34,12 @@ function App() {
         </NavBarContainer>
         <MainContent>
           <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/Score" element={<ScorePage />} />
-          <Route path="/Check" element={<CheckPage />} />
-          <Route path="/Schedule" element={<SchedulePage />} />
-          <Route path="/Member" element={<MemberPage />} />
-          <Route path="/Master" element={<MasterPage />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/Score" element={<ScorePage />} />
+            <Route path="/Check" element={<CheckPage />} />
+            <Route path="/Schedule" element={<SchedulePage />} />
+            <Route path="/Member" element={<MemberPage />} />
+            <Route path="/Master" element={<MasterPage />} />
           </Routes>
         </MainContent>
       </AppContainer>

@@ -5,6 +5,8 @@ import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 
 const DDiv = styled.div`
   background: #f6f6f6;
@@ -222,11 +224,10 @@ const FirstDiv = styled.div`
   align-items: flex-end;
 `;
 
-
 const SchedulePage = () => {
   const [schedules, setSchedule] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(true);
 
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -266,14 +267,14 @@ const SchedulePage = () => {
   // 삭제 기능
   const handleDeleteSchedule = async (documentId) => {
     const userConfirmed = window.confirm("일정을 삭제하시겠습니까?");
-    
+
     if (userConfirmed) {
       try {
         const scheduleRef = doc(dbService, "schedules", documentId);
-  
+
         // 문서 삭제
         await deleteDoc(scheduleRef);
-  
+
         // 삭제가 성공하면 화면을 새로고침
         window.location.reload();
         alert("일정이 삭제되었습니다.");
@@ -283,10 +284,16 @@ const SchedulePage = () => {
     }
   };
 
-  // Modal 
+  // Modal
 
   const openModal = () => {
     setIsModalOpen(true);
+    setIsRegisterModalOpen(true);
+  };
+
+  const openTaskModal = () => {
+    setIsModalOpen(true);
+    setIsRegisterModalOpen(false);
   };
 
   const closeModal = () => {
@@ -294,35 +301,467 @@ const SchedulePage = () => {
   };
 
   const ModalWrapper = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5); /* 배경을 어둡게 표시 */
-  display: ${(props) => (props.isOpen ? "block" : "none")};
-`;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* 배경을 어둡게 표시 */
+    display: ${(props) => (props.isOpen ? "block" : "none")};
+  `;
 
-const ModalContent = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 620px;
-  height: 552px;
-  background-color: white;
-`;
+  const ModalContent = styled.div`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 620px;
+    height: 552px;
+    background-color: white;
+    /* background-color: red; */
+  `;
 
-const Modal = ({isOpen}) => {
-  return (
-    <ModalWrapper isOpen={isOpen}>
-          <ModalContent></ModalContent>
-    </ModalWrapper>
+  const ModalTitleDiv = styled.div`
+    display: flex;
+    margin-left: 56px;
+    margin-top: 40px;
+    margin-bottom: 48px;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 36px;
+  `;
 
-  );
+  const ModalTitle = styled.div`
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 32px;
+  `;
 
-};
+  const CancelIcon = styled.img`
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    margin-right: 32px;
+  `;
 
+  const ModalSubTitle = styled.div`
+    height: 24px;
+    display: flex;
+    margin-left: 56px;
+    align-items: center;
+    margin-top: 41px;
+    margin-top: ${(props) => props.top || 41}px;
+  `;
+
+  const ModalContents = styled.div`
+    color: ${(props) => props.color};
+    font-family: "Pretendard";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: ${(props) => props.weight};
+    line-height: 24px;
+    margin-right: ${(props) => props.right}px;
+    margin-top: ${(props) => props.top}px;
+  `;
+
+  const DropdownWrapper = styled.div`
+    position: relative;
+    display: inline-block;
+    margin-top: 0px;
+    margin-left: 0px;
+    display: flex;
+    width: 130px;
+    justify-content: center;
+    align-items: center;
+    /* gap: 24px; */
+    border-radius: 2px;
+    border: 1px solid var(--primary-blue, #5262f5);
+    background: var(--White, #fff);
+  `;
+
+  const DropdownButton = styled.button`
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    background: ${(props) => props.Backcolor};
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    border: none;
+    padding: 8px 8px;
+    color: ${(props) => (props.color ? "#1A1A1A" : "#A3A3A3")};
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  `;
+
+  const ArrowTop1 = styled.img`
+    width: 14px;
+    height: 14px;
+    margin-left: 16px;
+    margin-bottom: 1px;
+    cursor: pointer;
+  `;
+
+  const DropdownContent = styled.div`
+    display: ${(props) => (props.isOpen ? "block" : "none")};
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    z-index: 1;
+    top: 100%;
+    left: 0;
+    border: 1px solid #ccc;
+  `;
+
+  const DropdownItem = styled.div`
+    padding: 10px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #ddd;
+    }
+  `;
+
+  const ReasonInput = styled.input`
+    width: 395px;
+    height: 42px;
+    border-radius: 4px;
+    border: 1px solid var(--Gray10, #e4e4e4);
+    background: var(--White, #fff);
+    color: var(--Gray30, #a3a3a3);
+    font-family: "Pretendard";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px;
+    padding-left: 20px;
+    margin-top: 25px;
+
+    &::placeholder {
+      color: var(--Gray30, #a3a3a3);
+      padding-right: 20px;
+    }
+  `;
+
+  const InputNumNum = styled.div`
+    color: var(--Gray30, #a3a3a3);
+    text-align: right;
+    font-family: "Pretendard";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+    margin-top: 16px;
+    margin-top: 4px;
+  `;
+
+  const CalendarButton = styled.button`
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    border-radius: 8px;
+    border: 1px solid var(--primary-blue, #5262f5);
+    background: rgba(82, 98, 245, 0.1);
+    color: var(--primary-blue, #5262f5);
+    font-family: "Pretendard";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 24px;
+    padding: 12px 16px;
+    cursor: pointer;
+
+    &:hover {
+      box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
+    }
+    &:active {
+      box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
+    }
+  `;
+
+  const CalendarIcon = styled.img`
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+  `;
+
+  const CustomCalendarContainer = styled.div`
+    position: absolute;
+    top: 390px;
+    left: 20%;
+    z-index: 1000;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-radius: 0;
+  `;
+
+  const RegisterButton = styled.button`
+    width: 556px;
+    height: 48px;
+    margin-left: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--primary-blue, #5262f5);
+    background: var(--primary-blue, #5262f5);
+    display: flex;
+    width: 556px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-blue, white);
+    /* Head/H1-SB-18 */
+    font-family: "Pretendard";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    margin-top: 66px;
+
+    &:hover {
+      box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
+    }
+    &:active {
+      box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
+    }
+  `;
+
+  const Modal = ({ isOpen, isRegisterModalOpen, onClose }) => {
+    const [isToggle, setIsToggle] = useState(false);
+    const [selectedOption, setSelectedOption] = useState(null);
+    const [inputText, setInputText] = useState("");
+    const [inputAbout, setInputAbout] = useState("");
+    // 닐짜 코드
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [calendarOpen, setCalendarOpen] = useState(false);
+
+    const handleDateChange = (date) => {
+      setSelectedDate(date);
+      setCalendarOpen(false);
+      console.log("선택 날짜 :", date);
+    };
+
+    const toggleCalendar = () => {
+      setCalendarOpen(!calendarOpen);
+    };
+
+    // 파트 선택 코드
+    const toggleDropdown = () => {
+      setIsToggle(!isToggle);
+    };
+
+    const handleOptionClick = (option) => {
+      if (option === "전체") {
+        setSelectedOption(null);
+      } else {
+        setSelectedOption(option);
+      }
+      setIsToggle(false);
+    };
+
+    const handleInputChange = (e) => {
+      const text = e.target.value;
+      if (text.length <= 10) {
+        setInputText(text);
+      }
+    };
+
+
+    const handlePlaceChange = (e) => {
+      const text = e.target.value;
+      if (text.length <= 10) {
+        setInputAbout(text);
+      }
+    };
+
+    const handleAboutChange = (e) => {
+      const text = e.target.value;
+      if (text.length <= 20) {
+        setInputAbout(text);
+      }
+    };
+
+    const options = [
+      "전체",
+      "서버파트",
+      "웹파트",
+      "iOS파트",
+      "디자인파트",
+      "기획파트",
+    ];
+
+    return (
+      <ModalWrapper isOpen={isOpen}>
+        <ModalContent>
+          <ModalTitleDiv>
+            {isRegisterModalOpen ? (
+              <ModalTitle>공식 일정 추가하기</ModalTitle>
+            ) : (
+              <ModalTitle>과제 추가</ModalTitle>
+            )}
+            <CancelIcon
+              src={require("../Assets/img/CancelButton.png")}
+              onClick={onClose}
+            />
+          </ModalTitleDiv>
+          {isRegisterModalOpen ? (
+            <>
+              <ModalSubTitle>
+                <ModalContents color={"#111"} right={46} weight={500}>
+                  일정 제목
+                </ModalContents>
+                <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                  <ReasonInput
+                    value={inputText}
+                    onChange={handleInputChange}
+                    placeholder="일정 제목을 10자 이내로 작성해주세요."
+                  />
+                  <InputNumNum>{inputText.length}/10</InputNumNum>
+                </ModalContents>
+              </ModalSubTitle>
+              <ModalSubTitle top={54}>
+                <ModalContents color={"#111"} right={81} weight={500}>
+                  일시
+                </ModalContents>
+                <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                  <CalendarButton onClick={toggleCalendar}>
+                    <CalendarIcon
+                      src={require("../Assets/img/ScheduleCIcon.png")}
+                      alt="Calendar Icon"
+                    />
+                    캘린더 보기
+                  </CalendarButton>
+                  {calendarOpen && (
+                    <CustomCalendarContainer>
+                      <Calendar
+                        onChange={handleDateChange}
+                        value={selectedDate}
+                      />
+                    </CustomCalendarContainer>
+                  )}
+                </ModalContents>
+              </ModalSubTitle>
+              <ModalSubTitle top={54}>
+                <ModalContents color={"#111"} right={81} weight={500}>
+                  장소
+                </ModalContents>
+                <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                  <ReasonInput
+                    value={inputAbout}
+                    onChange={handlePlaceChange}
+                    placeholder="일정 장소를 10자 이내로 작성해주세요."
+                  />
+                  <InputNumNum>{inputAbout.length}/10</InputNumNum>
+                </ModalContents>
+              </ModalSubTitle>
+              <ModalSubTitle top={54}>
+                <ModalContents color={"#111"} right={81} weight={500}>
+                  예시
+                </ModalContents>
+                <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                  
+                </ModalContents>
+              </ModalSubTitle>
+              <RegisterButton>추가하기</RegisterButton>
+            </>
+          ) : (
+            <>
+              <ModalSubTitle>
+                <ModalContents color={"#111"} right={81} weight={500}>
+                  파트
+                </ModalContents>
+                <ModalContents>
+                  <DropdownWrapper>
+                    <DropdownButton
+                      onClick={toggleDropdown}
+                      color={selectedOption}
+                    >
+                      {selectedOption || "전체"}
+                      {!isToggle ? (
+                        <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
+                      ) : (
+                        <ArrowTop1
+                          src={require("../Assets/img/PolygonDown.png")}
+                        />
+                      )}
+                    </DropdownButton>
+                    <DropdownContent isOpen={isToggle}>
+                      {options.map((option, index) => (
+                        <DropdownItem
+                          key={index}
+                          onClick={() => handleOptionClick(option)}
+                        >
+                          {option}
+                        </DropdownItem>
+                      ))}
+                    </DropdownContent>
+                  </DropdownWrapper>
+                </ModalContents>
+              </ModalSubTitle>
+              <ModalSubTitle>
+                <ModalContents color={"#111"} right={46} weight={500}>
+                  일정 제목
+                </ModalContents>
+                <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                  <ReasonInput
+                    value={inputText}
+                    onChange={handleInputChange}
+                    placeholder="일정 제목을 10자 이내로 작성해주세요."
+                  />
+                  <InputNumNum>{inputText.length}/10</InputNumNum>
+                </ModalContents>
+              </ModalSubTitle>
+              <ModalSubTitle top={54}>
+                <ModalContents color={"#111"} right={81} weight={500}>
+                  내용
+                </ModalContents>
+                <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                  <ReasonInput
+                    value={inputAbout}
+                    onChange={handleAboutChange}
+                    placeholder="본문 내용을 20자 이내로 작성해주세요. "
+                  />
+                  <InputNumNum>{inputAbout.length}/20</InputNumNum>
+                </ModalContents>
+              </ModalSubTitle>
+              <ModalSubTitle top={53}>
+                <ModalContents color={"#111"} right={46} weight={500}>
+                  제출 마감
+                </ModalContents>
+                <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                  <CalendarButton onClick={toggleCalendar}>
+                    <CalendarIcon
+                      src={require("../Assets/img/ScheduleCIcon.png")}
+                      alt="Calendar Icon"
+                    />
+                    캘린더 보기
+                  </CalendarButton>
+                  {calendarOpen && (
+                    <CustomCalendarContainer>
+                      <Calendar
+                        onChange={handleDateChange}
+                        value={selectedDate}
+                      />
+                    </CustomCalendarContainer>
+                  )}
+                </ModalContents>
+              </ModalSubTitle>
+              <RegisterButton>추가하기</RegisterButton>
+            </>
+          )}
+        </ModalContent>
+      </ModalWrapper>
+    );
+  };
 
   return (
     <DDiv>
@@ -350,7 +789,9 @@ const Modal = ({isOpen}) => {
                     <PartNameDiv>{schedule.part}</PartNameDiv>
                     <DateDiv>{schedule.description}</DateDiv>
                   </FlextBoxDiv>
-                  <DelteButton onClick={() => handleDeleteSchedule(schedule.sid)}>
+                  <DelteButton
+                    onClick={() => handleDeleteSchedule(schedule.sid)}
+                  >
                     <DeleteIcon src={require("../Assets/img/DeleteIcon.png")} />
                     삭제
                   </DelteButton>
@@ -371,7 +812,7 @@ const Modal = ({isOpen}) => {
         <LeftDiv>
           <FirstDiv>
             <HomeTitle>과제 일정</HomeTitle>
-            <EditButton onClick={openModal}>
+            <EditButton onClick={openTaskModal}>
               <EditIcon src={require("../Assets/img/ScheduleCIcon.png")} />
               과제 일정 추가하기
             </EditButton>
@@ -384,7 +825,9 @@ const Modal = ({isOpen}) => {
                     <PartNameDiv>{schedule.part}</PartNameDiv>
                     <DateDiv>{schedule.title}</DateDiv>
                   </FlextBoxDiv>
-                  <DelteButton onClick={() => handleDeleteSchedule(schedule.sid)}>
+                  <DelteButton
+                    onClick={() => handleDeleteSchedule(schedule.sid)}
+                  >
                     <DeleteIcon src={require("../Assets/img/DeleteIcon.png")} />
                     삭제
                   </DelteButton>
@@ -403,8 +846,10 @@ const Modal = ({isOpen}) => {
           </ScheduleDiv>
         </LeftDiv>
       </BodyDiv>
-      <Modal 
-      isOpen={isModalOpen}
+      <Modal
+        isOpen={isModalOpen}
+        isRegisterModalOpen={isRegisterModalOpen}
+        onClose={() => closeModal()}
       />
     </DDiv>
   );
