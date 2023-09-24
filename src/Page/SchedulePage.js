@@ -525,7 +525,7 @@ const SchedulePage = () => {
     font-style: normal;
     font-weight: 600;
     line-height: 24px;
-    margin-top: 66px;
+    margin-top: ${(props) => props.top || 66}px;
 
     &:hover {
       box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
@@ -533,6 +533,71 @@ const SchedulePage = () => {
     &:active {
       box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
     }
+  `;
+
+  const PreView = styled.div`
+    padding: 15px 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* align-items: center; */
+    /* gap: 12px; */
+    width: 245px;
+    height: 70px;
+    border-radius: 6px;
+    background: var(--black-card, #2a2a2a);
+    margin-top: 55px;
+  `;
+
+  const PreviewFlexBox = styled.div`
+    display: flex;
+    align-items: center;
+    height: auto;
+    /* background-color: red; */
+    margin-bottom: 13px;
+  `;
+
+const AboutText = styled.div`
+color: var(--White, #FFF);
+font-family: 'Pretendard';
+font-size: 12px;
+font-style: normal;
+font-weight: 700;
+line-height: 15px;
+margin-bottom: 13px;
+margin-left: 2px;
+`
+
+  const PreViewBox = styled.div`
+    border-radius: 3px;
+    border: 0.75px solid #5262f5;
+    background: var(--grabp, linear-gradient(92deg, #5262f5 0%, #7b3fef 100%));
+    color: var(--White, #fff);
+    font-family: "Pretendard";
+    font-size: 9px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 10.5px;
+    padding: 3px 9px;
+    margin-right: 6px;
+  `;
+  
+  const TitleText = styled.div`
+  color: var(--White, #FFF);
+font-family: 'Pretendard';
+font-size: 12px;
+font-style: normal;
+font-weight: 700;
+line-height: 15px; 
+`
+
+  const SubMessage = styled.div`
+    color: var(--Gray30, #a3a3a3);
+    font-family: "Pretendard";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
   `;
 
   const Modal = ({ isOpen, isRegisterModalOpen, onClose }) => {
@@ -574,7 +639,6 @@ const SchedulePage = () => {
         setInputText(text);
       }
     };
-
 
     const handlePlaceChange = (e) => {
       const text = e.target.value;
@@ -663,15 +727,27 @@ const SchedulePage = () => {
                   <InputNumNum>{inputAbout.length}/10</InputNumNum>
                 </ModalContents>
               </ModalSubTitle>
-              <ModalSubTitle top={54}>
-                <ModalContents color={"#111"} right={81} weight={500}>
+              <ModalSubTitle top={50}>
+                <ModalContents color={"#111"} right={46} weight={500}>
                   예시
+                  <SubMessage>* 앱 노출 화면</SubMessage>
                 </ModalContents>
                 <ModalContents color={"#A3A3A3"} right={0} weight={600}>
-                  
+                  <PreView>
+                    <PreviewFlexBox>
+                      <PreViewBox>전체</PreViewBox>
+                      <TitleText>{inputText}</TitleText>
+                    </PreviewFlexBox>
+                    <AboutText>
+                      {/* 일시 : {selectedDate.toString()} */}
+                    </AboutText>
+                    <AboutText>
+                      장소 : {inputAbout}
+                    </AboutText>
+                  </PreView>
                 </ModalContents>
               </ModalSubTitle>
-              <RegisterButton>추가하기</RegisterButton>
+              <RegisterButton top={100}>추가하기</RegisterButton>
             </>
           ) : (
             <>
