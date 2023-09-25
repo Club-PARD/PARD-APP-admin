@@ -5,8 +5,12 @@ import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "react-calendar/dist/Calendar.css";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import "react-datepicker/dist/react-datepicker.css";
 
 const DDiv = styled.div`
   background: #f6f6f6;
@@ -496,7 +500,7 @@ const SchedulePage = () => {
 
   const CustomCalendarContainer = styled.div`
     position: absolute;
-    top: 390px;
+    top: 250px;
     left: 20%;
     z-index: 1000;
     background-color: white;
@@ -557,16 +561,16 @@ const SchedulePage = () => {
     margin-bottom: 13px;
   `;
 
-const AboutText = styled.div`
-color: var(--White, #FFF);
-font-family: 'Pretendard';
-font-size: 12px;
-font-style: normal;
-font-weight: 700;
-line-height: 15px;
-margin-bottom: 13px;
-margin-left: 2px;
-`
+  const AboutText = styled.div`
+    color: var(--White, #fff);
+    font-family: "Pretendard";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 15px;
+    margin-bottom: 13px;
+    margin-left: 2px;
+  `;
 
   const PreViewBox = styled.div`
     border-radius: 3px;
@@ -581,15 +585,15 @@ margin-left: 2px;
     padding: 3px 9px;
     margin-right: 6px;
   `;
-  
+
   const TitleText = styled.div`
-  color: var(--White, #FFF);
-font-family: 'Pretendard';
-font-size: 12px;
-font-style: normal;
-font-weight: 700;
-line-height: 15px; 
-`
+    color: var(--White, #fff);
+    font-family: "Pretendard";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 15px;
+  `;
 
   const SubMessage = styled.div`
     color: var(--Gray30, #a3a3a3);
@@ -706,9 +710,12 @@ line-height: 15px;
                   </CalendarButton>
                   {calendarOpen && (
                     <CustomCalendarContainer>
-                      <Calendar
+                      <DatePicker
+                        selected={selectedDate}
                         onChange={handleDateChange}
-                        value={selectedDate}
+                        showTimeSelect
+                        timeIntervals={15}
+                        dateFormat="yyyy-MM-dd HH:mm"
                       />
                     </CustomCalendarContainer>
                   )}
@@ -741,9 +748,7 @@ line-height: 15px;
                     <AboutText>
                       {/* 일시 : {selectedDate.toString()} */}
                     </AboutText>
-                    <AboutText>
-                      장소 : {inputAbout}
-                    </AboutText>
+                    <AboutText>장소 : {inputAbout}</AboutText>
                   </PreView>
                 </ModalContents>
               </ModalSubTitle>
