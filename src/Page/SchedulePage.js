@@ -5,12 +5,7 @@ import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import "react-calendar/dist/Calendar.css";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
-import "react-datepicker/dist/react-datepicker.css";
+
 
 const DDiv = styled.div`
   background: #f6f6f6;
@@ -447,7 +442,7 @@ const SchedulePage = () => {
     font-weight: 500;
     line-height: 18px;
     padding-left: 20px;
-    margin-top: 25px;
+    margin-top: ${(props) => props.top || 25}px;
 
     &::placeholder {
       color: var(--Gray30, #a3a3a3);
@@ -465,49 +460,6 @@ const SchedulePage = () => {
     line-height: 16px;
     margin-top: 16px;
     margin-top: 4px;
-  `;
-
-  const CalendarButton = styled.button`
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    border-radius: 8px;
-    border: 1px solid var(--primary-blue, #5262f5);
-    background: rgba(82, 98, 245, 0.1);
-    color: var(--primary-blue, #5262f5);
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 24px;
-    padding: 12px 16px;
-    cursor: pointer;
-
-    &:hover {
-      box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-    }
-    &:active {
-      box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-    }
-  `;
-
-  const CalendarIcon = styled.img`
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
-  `;
-
-  const CustomCalendarContainer = styled.div`
-    position: absolute;
-    top: 250px;
-    left: 20%;
-    z-index: 1000;
-    background-color: white;
-    border: 1px solid #ccc;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border: none;
-    border-radius: 0;
   `;
 
   const RegisterButton = styled.button`
@@ -543,7 +495,7 @@ const SchedulePage = () => {
     padding: 15px 18px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    /* justify-content: center; */
     /* align-items: center; */
     /* gap: 12px; */
     width: 245px;
@@ -568,7 +520,7 @@ const SchedulePage = () => {
     font-style: normal;
     font-weight: 700;
     line-height: 15px;
-    margin-bottom: 13px;
+    margin-bottom: 7px;
     margin-left: 2px;
   `;
 
@@ -609,18 +561,14 @@ const SchedulePage = () => {
     const [selectedOption, setSelectedOption] = useState(null);
     const [inputText, setInputText] = useState("");
     const [inputAbout, setInputAbout] = useState("");
+    const [selectedDate, setSelectedDate] = useState("");
+
     // 닐짜 코드
-    const [selectedDate, setSelectedDate] = useState(null);
-    const [calendarOpen, setCalendarOpen] = useState(false);
-
-    const handleDateChange = (date) => {
-      setSelectedDate(date);
-      setCalendarOpen(false);
-      console.log("선택 날짜 :", date);
-    };
-
-    const toggleCalendar = () => {
-      setCalendarOpen(!calendarOpen);
+    const handleDateChange = (e) => {
+      const text = e.target.value;
+      if (text.length <= 20) {
+        setSelectedDate(text);
+      }
     };
 
     // 파트 선택 코드
@@ -684,7 +632,7 @@ const SchedulePage = () => {
           {isRegisterModalOpen ? (
             <>
               <ModalSubTitle>
-                <ModalContents color={"#111"} right={46} weight={500}>
+                <ModalContents color={"#111"} right={45.5} weight={500}>
                   일정 제목
                 </ModalContents>
                 <ModalContents color={"#A3A3A3"} right={0} weight={600}>
@@ -701,24 +649,12 @@ const SchedulePage = () => {
                   일시
                 </ModalContents>
                 <ModalContents color={"#A3A3A3"} right={0} weight={600}>
-                  <CalendarButton onClick={toggleCalendar}>
-                    <CalendarIcon
-                      src={require("../Assets/img/ScheduleCIcon.png")}
-                      alt="Calendar Icon"
-                    />
-                    캘린더 보기
-                  </CalendarButton>
-                  {calendarOpen && (
-                    <CustomCalendarContainer>
-                      <DatePicker
-                        selected={selectedDate}
-                        onChange={handleDateChange}
-                        showTimeSelect
-                        timeIntervals={15}
-                        dateFormat="yyyy-MM-dd HH:mm"
-                      />
-                    </CustomCalendarContainer>
-                  )}
+                <ReasonInput
+                    value={selectedDate}
+                    top={50}
+                    onChange={handleDateChange}
+                    placeholder="ex) 9월 20일 토요일 13:00-17:00"
+                  />
                 </ModalContents>
               </ModalSubTitle>
               <ModalSubTitle top={54}>
@@ -746,7 +682,7 @@ const SchedulePage = () => {
                       <TitleText>{inputText}</TitleText>
                     </PreviewFlexBox>
                     <AboutText>
-                      {/* 일시 : {selectedDate.toString()} */}
+                      일시 : 
                     </AboutText>
                     <AboutText>장소 : {inputAbout}</AboutText>
                   </PreView>
@@ -819,21 +755,6 @@ const SchedulePage = () => {
                   제출 마감
                 </ModalContents>
                 <ModalContents color={"#A3A3A3"} right={0} weight={600}>
-                  <CalendarButton onClick={toggleCalendar}>
-                    <CalendarIcon
-                      src={require("../Assets/img/ScheduleCIcon.png")}
-                      alt="Calendar Icon"
-                    />
-                    캘린더 보기
-                  </CalendarButton>
-                  {calendarOpen && (
-                    <CustomCalendarContainer>
-                      <Calendar
-                        onChange={handleDateChange}
-                        value={selectedDate}
-                      />
-                    </CustomCalendarContainer>
-                  )}
                 </ModalContents>
               </ModalSubTitle>
               <RegisterButton>추가하기</RegisterButton>
