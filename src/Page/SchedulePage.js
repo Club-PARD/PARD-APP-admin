@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
-import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
+import { collection, getDocs,addDoc, doc, deleteDoc, Timestamp, updateDoc } from "firebase/firestore";
 import { dbService } from "../fbase";
-import { format, fromUnixTime } from "date-fns";
+import { format, fromUnixTime, differenceInDays } from "date-fns";
 import koLocale from "date-fns/locale/ko";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import style from '../Styles/calendar.module.scss'
-
+import style from "../Styles/calendar.module.scss";
 
 const DDiv = styled.div`
   background: #f6f6f6;
@@ -485,6 +484,7 @@ const SchedulePage = () => {
     font-weight: 600;
     line-height: 24px;
     margin-top: ${(props) => props.top || 66}px;
+    cursor: pointer;
 
     &:hover {
       box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
@@ -511,9 +511,16 @@ const SchedulePage = () => {
   const PreviewFlexBox = styled.div`
     display: flex;
     align-items: center;
+    justify-content: space-between;
     height: auto;
     /* background-color: red; */
     margin-bottom: 13px;
+  `;
+
+  const FlexBox = styled.div`
+    display: flex;
+    align-items: center;
+    flex-direction: row;
   `;
 
   const AboutText = styled.div`
@@ -550,6 +557,15 @@ const SchedulePage = () => {
     line-height: 15px;
   `;
 
+  const DDayText = styled.div`
+    color: var(--Gray10, #e4e4e4);
+    font-family: "Pretendard";
+    font-size: 9px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 12px;
+  `;
+
   const SubMessage = styled.div`
     color: var(--Gray30, #a3a3a3);
     font-family: "Pretendard";
@@ -566,17 +582,32 @@ const SchedulePage = () => {
     const [inputAbout, setInputAbout] = useState("");
     // 닐짜 코드
     const [selectedDate, setSelectedDate] = useState();
-    const [calendarOpen, setCalendarOpen] = useState(false);
-
-
+    const [selectedTime, setSelectedTime] = useState(new Date());
+    const [calendarOpen, setCalendarOpen] = useState(false); 
+    
     const handleDateChange = (date) => {
       setSelectedDate(date);
+      setSelectedTime(date);
       if (selectedDate) {
         // 날짜와 시간이 모두 선택되었을 때 실행되는 로직
         setCalendarOpen(false);
       }
       console.log("선택 날짜 :", date);
     };
+
+    // d-day 구하기
+    function calculateDateDifference(selectedDateStr) {
+      const today = new Date();
+
+      const selectedDate = new Date(selectedDateStr);
+
+      const daysDifference = differenceInDays(selectedDate, today);
+
+      const formattedDifference =
+        daysDifference === 0 ? "D-day" : `D-${Math.abs(daysDifference)}`;
+
+      return formattedDifference;
+    }
 
     // 파트 선택 코드
     const toggleDropdown = () => {
@@ -622,6 +653,38 @@ const SchedulePage = () => {
       "기획파트",
     ];
 
+    // 일정 등록 코드 
+    const handleRegisterButtonClicked = async () => {
+      try {
+        // selectedTime 값을 Timestamp로 변환 (Firestore에 저장할 수 있는 형식으로)
+        const selectedTimeTimestamp = Timestamp.fromDate(selectedTime);
+    
+        // Firestore에 데이터를 추가하고, 반환된 문서의 ID를 받음
+        const docRef = await addDoc(collection(dbService, "schedules"), {
+          dueDate: selectedTimeTimestamp,
+          type: true, 
+          place: inputAbout,
+          title: inputText,
+          part: "전체",
+        });
+    
+        // // 생성된 문서의 ID를 사용하여 "sid" 필드를 업데이트
+        // await updateDoc(doc(doc(dbService, "schedules", docRef.id)), {
+        //   sid: docRef.id,
+        // });
+    
+        alert('일정이 추가되었습니다.');
+        onClose();
+        setTimeout(() => {
+          window.location.reload(); // 페이지 새로고침
+        }, 1000);
+      } catch (error) {
+        console.error('일정 추가 실패:', error);
+        alert('일정 추가 중 오류가 발생했습니다.');
+      }
+    };
+    
+
     return (
       <ModalWrapper isOpen={isOpen}>
         <ModalContent>
@@ -656,17 +719,17 @@ const SchedulePage = () => {
                   일시
                 </ModalContents>
                 <ModalContents color={"#A3A3A3"} right={0} weight={600}>
-                      <DatePicker
-                      placeholderText="날짜를 선택하세요" 
-                      className={style.datePicker}
-                      calendarClassName={style.calenderWrapper}
-                        selected={selectedDate}
-                        onChange={handleDateChange}
-                        showTimeSelect
-                        timeIntervals={15}
-                        dateFormat="yyyy-MM-dd HH:mm"
-                        shouldCloseOnSelect={false}
-                      />
+                  <DatePicker
+                    placeholderText="날짜를 선택하세요"
+                    className={style.datePicker}
+                    calendarClassName={style.calenderWrapper}
+                    selected={selectedDate}
+                    onChange={handleDateChange}
+                    showTimeSelect
+                    timeIntervals={15}
+                    dateFormat="yyyy-MM-dd HH:mm"
+                    shouldCloseOnSelect={false}
+                  />
                 </ModalContents>
               </ModalSubTitle>
               <ModalSubTitle top={54}>
@@ -690,17 +753,26 @@ const SchedulePage = () => {
                 <ModalContents color={"#A3A3A3"} right={0} weight={600}>
                   <PreView>
                     <PreviewFlexBox>
-                      <PreViewBox>전체</PreViewBox>
-                      <TitleText>{inputText}</TitleText>
+                      <FlexBox>
+                        <PreViewBox>전체</PreViewBox>
+                        <TitleText>{inputText}</TitleText>
+                      </FlexBox>
+                      <DDayText>
+                        {calculateDateDifference(selectedTime)}
+                      </DDayText>
                     </PreviewFlexBox>
                     <AboutText>
-                      일시 : 
+                      일시 :{" "}
+                      {format(selectedTime, "M월 d일 EEEE HH:mm", {
+                        locale: koLocale,
+                      })}
                     </AboutText>
                     <AboutText>장소 : {inputAbout}</AboutText>
                   </PreView>
                 </ModalContents>
               </ModalSubTitle>
-              <RegisterButton top={100}>추가하기</RegisterButton>
+              <RegisterButton top={100} onClick={handleRegisterButtonClicked}>
+추가하기</RegisterButton>
             </>
           ) : (
             <>
@@ -767,17 +839,17 @@ const SchedulePage = () => {
                   제출 마감
                 </ModalContents>
                 <ModalContents color={"#A3A3A3"} right={0} weight={600}>
-                <DatePicker
-                      placeholderText="날짜를 선택하세요" 
-                      className={style.datePicker}
-                      calendarClassName={style.calenderWrapper}
-                        selected={selectedDate}
-                        onChange={handleDateChange}
-                        showTimeSelect
-                        timeIntervals={15}
-                        dateFormat="yyyy-MM-dd HH:mm"
-                        shouldCloseOnSelect={false}
-                      />
+                  <DatePicker
+                    placeholderText="날짜를 선택하세요"
+                    className={style.datePicker}
+                    calendarClassName={style.calenderWrapper}
+                    selected={selectedDate}
+                    onChange={handleDateChange}
+                    showTimeSelect
+                    timeIntervals={15}
+                    dateFormat="yyyy-MM-dd HH:mm"
+                    shouldCloseOnSelect={false}
+                  />
                 </ModalContents>
               </ModalSubTitle>
               <RegisterButton>추가하기</RegisterButton>
