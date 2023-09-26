@@ -5,6 +5,9 @@ import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import style from '../Styles/calendar.module.scss'
 
 
 const DDiv = styled.div`
@@ -442,7 +445,7 @@ const SchedulePage = () => {
     font-weight: 500;
     line-height: 18px;
     padding-left: 20px;
-    margin-top: ${(props) => props.top || 25}px;
+    margin-top: 25px;
 
     &::placeholder {
       color: var(--Gray30, #a3a3a3);
@@ -561,14 +564,18 @@ const SchedulePage = () => {
     const [selectedOption, setSelectedOption] = useState(null);
     const [inputText, setInputText] = useState("");
     const [inputAbout, setInputAbout] = useState("");
-    const [selectedDate, setSelectedDate] = useState("");
-
     // 닐짜 코드
-    const handleDateChange = (e) => {
-      const text = e.target.value;
-      if (text.length <= 20) {
-        setSelectedDate(text);
+    const [selectedDate, setSelectedDate] = useState();
+    const [calendarOpen, setCalendarOpen] = useState(false);
+
+
+    const handleDateChange = (date) => {
+      setSelectedDate(date);
+      if (selectedDate) {
+        // 날짜와 시간이 모두 선택되었을 때 실행되는 로직
+        setCalendarOpen(false);
       }
+      console.log("선택 날짜 :", date);
     };
 
     // 파트 선택 코드
@@ -632,7 +639,7 @@ const SchedulePage = () => {
           {isRegisterModalOpen ? (
             <>
               <ModalSubTitle>
-                <ModalContents color={"#111"} right={45.5} weight={500}>
+                <ModalContents color={"#111"} right={46} weight={500}>
                   일정 제목
                 </ModalContents>
                 <ModalContents color={"#A3A3A3"} right={0} weight={600}>
@@ -649,12 +656,17 @@ const SchedulePage = () => {
                   일시
                 </ModalContents>
                 <ModalContents color={"#A3A3A3"} right={0} weight={600}>
-                <ReasonInput
-                    value={selectedDate}
-                    top={50}
-                    onChange={handleDateChange}
-                    placeholder="ex) 9월 20일 토요일 13:00-17:00"
-                  />
+                      <DatePicker
+                      placeholderText="날짜를 선택하세요" 
+                      className={style.datePicker}
+                      calendarClassName={style.calenderWrapper}
+                        selected={selectedDate}
+                        onChange={handleDateChange}
+                        showTimeSelect
+                        timeIntervals={15}
+                        dateFormat="yyyy-MM-dd HH:mm"
+                        shouldCloseOnSelect={false}
+                      />
                 </ModalContents>
               </ModalSubTitle>
               <ModalSubTitle top={54}>
@@ -755,6 +767,17 @@ const SchedulePage = () => {
                   제출 마감
                 </ModalContents>
                 <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                <DatePicker
+                      placeholderText="날짜를 선택하세요" 
+                      className={style.datePicker}
+                      calendarClassName={style.calenderWrapper}
+                        selected={selectedDate}
+                        onChange={handleDateChange}
+                        showTimeSelect
+                        timeIntervals={15}
+                        dateFormat="yyyy-MM-dd HH:mm"
+                        shouldCloseOnSelect={false}
+                      />
                 </ModalContents>
               </ModalSubTitle>
               <RegisterButton>추가하기</RegisterButton>
