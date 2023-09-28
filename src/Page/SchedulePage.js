@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
-import { collection, getDocs,addDoc, doc, deleteDoc, Timestamp, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  doc,
+  deleteDoc,
+  Timestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { dbService } from "../fbase";
 import { format, fromUnixTime, differenceInDays } from "date-fns";
 import koLocale from "date-fns/locale/ko";
@@ -583,8 +591,8 @@ const SchedulePage = () => {
     // 닐짜 코드
     const [selectedDate, setSelectedDate] = useState();
     const [selectedTime, setSelectedTime] = useState(new Date());
-    const [calendarOpen, setCalendarOpen] = useState(false); 
-    
+    const [calendarOpen, setCalendarOpen] = useState(false);
+
     const handleDateChange = (date) => {
       setSelectedDate(date);
       setSelectedTime(date);
@@ -653,37 +661,71 @@ const SchedulePage = () => {
       "기획파트",
     ];
 
-    // 일정 등록 코드 
+    // 일정 등록 코드
     const handleRegisterButtonClicked = async () => {
       try {
         // selectedTime 값을 Timestamp로 변환 (Firestore에 저장할 수 있는 형식으로)
         const selectedTimeTimestamp = Timestamp.fromDate(selectedTime);
-    
+
         // Firestore에 데이터를 추가하고, 반환된 문서의 ID를 받음
         const docRef = await addDoc(collection(dbService, "schedules"), {
           dueDate: selectedTimeTimestamp,
-          type: true, 
+          type: true,
           place: inputAbout,
           title: inputText,
           part: "전체",
         });
-    
-        // // 생성된 문서의 ID를 사용하여 "sid" 필드를 업데이트
-        // await updateDoc(doc(doc(dbService, "schedules", docRef.id)), {
-        //   sid: docRef.id,
-        // });
-    
-        alert('일정이 추가되었습니다.');
+
+        if(docRef){
+          const docRefid = doc(dbService, "schedules", docRef.id);
+          updateDoc(docRefid, { 
+            sid: docRef.id
+          });
+      }
+
+        alert("일정이 추가되었습니다.");
         onClose();
         setTimeout(() => {
           window.location.reload(); // 페이지 새로고침
         }, 1000);
       } catch (error) {
-        console.error('일정 추가 실패:', error);
-        alert('일정 추가 중 오류가 발생했습니다.');
+        console.error("일정 추가 실패:", error);
+        alert("일정 추가 중 오류가 발생했습니다.");
       }
     };
-    
+
+    // 과제 등록 
+    const handleRegisterTaskButtonClicked = async () => {
+      try {
+        // selectedTime 값을 Timestamp로 변환 (Firestore에 저장할 수 있는 형식으로)
+        const selectedTimeTimestamp = Timestamp.fromDate(selectedTime);
+
+        // Firestore에 데이터를 추가하고, 반환된 문서의 ID를 받음
+        const docRef = await addDoc(collection(dbService, "schedules"), {
+          dueDate: selectedTimeTimestamp,
+          type: false,
+          place: inputAbout,
+          title: inputText,
+          part: selectedOption,
+        });
+
+        if(docRef){
+          const docRefid = doc(dbService, "schedules", docRef.id);
+          updateDoc(docRefid, { 
+            sid: docRef.id
+          });
+      }
+
+        alert("과제 일정이 추가되었습니다.");
+        onClose();
+        setTimeout(() => {
+          window.location.reload(); // 페이지 새로고침
+        }, 1000);
+      } catch (error) {
+        console.error("일정 추가 실패:", error);
+        alert("일정 추가 중 오류가 발생했습니다.");
+      }
+    };
 
     return (
       <ModalWrapper isOpen={isOpen}>
@@ -772,7 +814,8 @@ const SchedulePage = () => {
                 </ModalContents>
               </ModalSubTitle>
               <RegisterButton top={100} onClick={handleRegisterButtonClicked}>
-추가하기</RegisterButton>
+                추가하기
+              </RegisterButton>
             </>
           ) : (
             <>
@@ -852,7 +895,7 @@ const SchedulePage = () => {
                   />
                 </ModalContents>
               </ModalSubTitle>
-              <RegisterButton>추가하기</RegisterButton>
+              <RegisterButton onClick={handleRegisterTaskButtonClicked}>추가하기</RegisterButton>
             </>
           )}
         </ModalContent>
