@@ -60,8 +60,8 @@ const BodyDiv = styled.div`
   display: flex;
   margin-top: 16px;
   margin-left: 80px;
-  width: 1396px;
-  height: 700px;
+  max-width: 1300px;
+  width: 90%;  height: 700px;
   margin-bottom: 10px;
   overflow-y: scroll;
 `;
@@ -78,7 +78,7 @@ const TableHead = styled.thead`
   border-bottom: 1px solid #a3a3a3;
   position: sticky; /* 고정 위치로 설정 */
   top: 0; /* 화면 상단에 고정 */
-  z-index: 1; /* 다른 콘텐츠 위에 표시 */
+  /* z-index: 1;  */
 `;
 const TableBody = styled.tbody`
   display: block; /* 블록 레벨로 설정 */
@@ -593,9 +593,12 @@ const ScorePage = () => {
           const scoreDigit = parseFloat(scoreMatch[1]);
           let selectedType;
           switch (selectedScore) {
-            case "MVP (+5점)":
+            case "주요 행사 MVP (+5점)":
               selectedType = "최고";
               break;
+              case "세미나 파트별 MVP (+3점)":
+                selectedType = "최고";
+                break;
             case "스터디 개최 및 수료 (+5점)":
               selectedType = "스터디";
               break;
@@ -672,7 +675,8 @@ const ScorePage = () => {
     };
 
     const ScoreList = [
-      "MVP (+5점)",
+      "주요 행사 MVP (+5점)",
+      "세미나 파트별 MVP (+3점)",
       "스터디 개최 및 수료 (+5점)",
       "파드 소통 인증 (+1점)",
       "디스콰이엇 회고 (+3점)",
@@ -680,6 +684,7 @@ const ScorePage = () => {
       "세미나 결석 벌점 (-2점)",
       "과제 지각 벌점 (-0.5점)",
       "과제 미제출 (-1점)",
+      "벌점 조정"
     ];
 
     const ScoreoggleDropdown = () => {
@@ -993,20 +998,20 @@ const ScorePage = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableHeaderCell width={136} style={{ background: "#F8F8F8" }}>
+              <TableHeaderCell width={140} style={{ background: "#F8F8F8" }}>
                 이름
               </TableHeaderCell>
-              <TableHeaderCell width={197}>MVP</TableHeaderCell>
-              <TableHeaderCell width={197}>스터디</TableHeaderCell>
-              <TableHeaderCell width={197}>소통</TableHeaderCell>
-              <TableHeaderCell width={197}>회고</TableHeaderCell>
+              <TableHeaderCell width={180}>MVP</TableHeaderCell>
+              <TableHeaderCell width={180}>스터디</TableHeaderCell>
+              <TableHeaderCell width={180}>소통</TableHeaderCell>
+              <TableHeaderCell width={180}>회고</TableHeaderCell>
               <TableHeaderCell
-                width={197}
+                width={180}
                 style={{ background: "rgba(255, 90, 90, 0.10)" }}
               >
                 벌점
               </TableHeaderCell>
-              <TableHeaderCell width={197} style={{ background: "#F8F8F8" }}>
+              <TableHeaderCell width={180} style={{ background: "#F8F8F8" }}>
                 점수 관리
               </TableHeaderCell>
             </TableRow>
@@ -1014,25 +1019,25 @@ const ScorePage = () => {
           <TableBody>
             {filteredUserScores.map((userScore, index) => (
               <TableRow key={index}>
-                <TableCell color={"#2A2A2A"} width={136}>
+                <TableCell color={"#2A2A2A"} width={140}>
                   {userScore.name}
                 </TableCell>
-                <TableCell color={"#64C59A"} width={197}>
+                <TableCell color={"#64C59A"} width={180}>
                   +{userScore.mvp}점
                 </TableCell>
-                <TableCell color={"#64C59A"} width={197}>
+                <TableCell color={"#64C59A"} width={180}>
                   +{userScore.study}잠
                 </TableCell>
-                <TableCell color={"#64C59A"} width={197}>
+                <TableCell color={"#64C59A"} width={180}>
                   +{userScore.communication}점
                 </TableCell>
-                <TableCell color={"#64C59A"} width={197}>
+                <TableCell color={"#64C59A"} width={180}>
                   +{userScore.retrospection}점
                 </TableCell>
-                <TableCell color={"#FF5A5A"} width={197}>
+                <TableCell color={"#FF5A5A"} width={180}>
                   {userScore.penalty}점
                 </TableCell>
-                <TableCell width={197}>
+                <TableCell width={180}>
                   <CheckScoreButton onClick={() => openModal(index)}>
                     점수 관리
                   </CheckScoreButton>

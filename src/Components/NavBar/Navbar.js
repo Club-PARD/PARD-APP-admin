@@ -199,7 +199,7 @@ function NavBar() {
         <li>
           <DisplayDiv>
             <DisplayTextDiv bottom={0} active={pathname.startsWith("/Check")}>
-              {pathname.startsWith("/notice") ? (
+              {pathname.startsWith("/Check") ? (
                 <>
                   <Icon
                     src={require("../../Assets/img/CheckIcon.png")}
@@ -218,7 +218,7 @@ function NavBar() {
                   />
                 </>
               )}
-              <MenuLink to="/Check" active={pathname.startsWith("/notice")}>
+              <MenuLink to="/Check" active={pathname.startsWith("/Check")}>
                 출결 관리
               </MenuLink>
             </DisplayTextDiv>
@@ -283,45 +283,34 @@ function NavBar() {
             </DisplayTextDiv>
           </DisplayDiv>
         </li>
-        <MenuItem isSubMemberOpen={isSubMemberOpen} top={15}>
-          <DisplayDiv onClick={() => setIsSubMemberOpen(!isSubMemberOpen)}>
-            <DisplayTextDiv>
-              <Icon
-                src={require("../../Assets/img/NavBar_MemberIcon.png")}
-                width={24}
-                height={24}
-                right={14}
-              />
-              <span
-                onClick={() => setIsSubMemberOpen(!isSubMemberOpen)}
-                style={{ cursor: "pointer" }}
-              >
-                회원{" "}
-              </span>
+        <li>
+          <DisplayDiv>
+            <DisplayTextDiv bottom={0} active={pathname.startsWith("/Member")}>
+              {pathname.startsWith("/Member") ? (
+                <>
+                  <Icon
+                    src={require("../../Assets/img/NavBar_MemberIcon.png")}
+                    width={24}
+                    height={24}
+                    right={14}
+                  />
+                </>
+              ) : (
+                <>
+                  <Icon
+                    src={require("../../Assets/img/NavBar_MemberIcon.png")}
+                    width={24}
+                    height={24}
+                    right={14}
+                  />
+                </>
+              )}
+              <MenuLink to="/Member" active={pathname.startsWith("/Member")}>
+                사용자 관리 
+              </MenuLink>
             </DisplayTextDiv>
-            {isSubMemberOpen ? (
-              <UpArrowIcon src={require("../../Assets/img/UpArrow.png")} />
-            ) : (
-              <DownArrowIcon src={require("../../Assets/img/DownArrow.png")} />
-            )}
           </DisplayDiv>
-          {isSubMemberOpen && (
-            <Ul>
-              <li>
-                <MenuLink to="/Member" active={pathname.startsWith("/Member")}>
-                  <CircleIcon active={pathname.startsWith("/Member")} />
-                  회원 관리
-                </MenuLink>
-              </li>
-              <li>
-                <MenuLink to="/Master" active={pathname.startsWith("/Master")}>
-                  <CircleIcon active={pathname.startsWith("/Master")} />
-                  관리자 권한
-                </MenuLink>
-              </li>
-            </Ul>
-          )}
-        </MenuItem>
+        </li>
         <li>
           <DisplayDiv>
             <DisplayTextDiv>

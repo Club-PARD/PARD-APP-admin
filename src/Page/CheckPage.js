@@ -16,7 +16,8 @@ const DDiv = styled.div`
   margin: 0 auto;
   height: 100%;
   /* background-color: red; */
-  overflow-y: hidden;
+  overflow-x: hidden;
+  /* overflow-y: hidden; */
 `;
 
 const TitleDiv = styled.div`
@@ -60,7 +61,8 @@ const BodyDiv = styled.div`
   display: flex;
   /* margin-top: 16px; */
   margin-left: 80px;
-  width: 1396px;
+  max-width: 1300px;
+  width: 90%;
   height: 744px;
   overflow: scroll;
 `;
@@ -283,12 +285,11 @@ const CheckPage = () => {
         scheduleIds.sort((a, b) => a.dueDate - b.dueDate);
 
         setScheduleKeys(scheduleIds); // 여기서 scheduleKeys 상태를 설정합니다.
-        console.log('sid : ',scheduleIds)
+        console.log("sid : ", scheduleIds);
       } catch (error) {
         console.error("Error fetching schedules:", error);
       }
     };
-
 
     const fetchData = async () => {
       const data = await getDocs(collection(dbService, "users")); // create라는 collection 안에 모든 document를 읽어올 때 사용한다.
@@ -378,28 +379,28 @@ const CheckPage = () => {
 
   // 업데이트 관련 코드
 
-const updateUser = async (index, idx, newData) => {
-  const updatedUserDatas = [...userDatas];
-  updatedUserDatas[index] = {
-    ...updatedUserDatas[index],
-    attendInfo: { ...updatedUserDatas[index].attendInfo, [idx]: newData },
+  const updateUser = async (index, idx, newData) => {
+    const updatedUserDatas = [...userDatas];
+    updatedUserDatas[index] = {
+      ...updatedUserDatas[index],
+      attendInfo: { ...updatedUserDatas[index].attendInfo, [idx]: newData },
+    };
+    setUserDatas(updatedUserDatas);
+
+    // attend 맵 업데이트
+    const updatedAttend = { ...updatedUserDatas[index].attend };
+    updatedAttend[scheduleKeys[idx]] = newData; // scheduleKeys를 사용하여 업데이트
+    updatedUserDatas[index].attend = updatedAttend;
+
+    // Firestore에 업데이트
+    const userDocRef = doc(dbService, "users", updatedUserDatas[index].uid);
+    await updateDoc(userDocRef, {
+      attendInfo: updatedUserDatas[index].attendInfo,
+      attend: updatedAttend, // attend 맵 업데이트
+    });
+
+    console.log("Firestore 문서 업데이트 성공!");
   };
-  setUserDatas(updatedUserDatas);
-
-  // attend 맵 업데이트
-  const updatedAttend = { ...updatedUserDatas[index].attend };
-  updatedAttend[scheduleKeys[idx]] = newData; // scheduleKeys를 사용하여 업데이트
-  updatedUserDatas[index].attend = updatedAttend;
-
-  // Firestore에 업데이트
-  const userDocRef = doc(dbService, "users", updatedUserDatas[index].uid);
-  await updateDoc(userDocRef, {
-    attendInfo: updatedUserDatas[index].attendInfo,
-    attend: updatedAttend, // attend 맵 업데이트
-  });
-
-  console.log("Firestore 문서 업데이트 성공!");
-};
 
   // 출석 결석 지각 버튼
   const AttendBox = styled.div`
