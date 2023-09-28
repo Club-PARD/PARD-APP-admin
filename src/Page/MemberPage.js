@@ -62,7 +62,8 @@ const BodyDiv = styled.div`
   flex-direction: column;
   margin-top: 83px;
   margin-left: 80px;
-  width: 1340px;
+  max-width: 1300px;
+  width: 90%;  
   height: 744px;
   /* background-color: red; */
 `;
@@ -168,7 +169,7 @@ const CancelButton = styled.button`
 `;
 
 const Table = styled.table`
-  width: 1100px;
+  /* width: 1100px; */
   border-collapse: collapse;
   border-spacing: 0;
   border-radius: 4px;
@@ -697,22 +698,16 @@ const MemberPage = () => {
                 <TableHeaderCell width={120} style={{ background: "#F8F8F8" }}>
                   이름
                 </TableHeaderCell>
-                <TableHeaderCell
-                  style={{ background: "#F8F8F8" }}
-                  width={197.5}
-                >
+                <TableHeaderCell style={{ background: "#F8F8F8" }} width={180}>
                   이메일
                 </TableHeaderCell>
-                <TableHeaderCell
-                  style={{ background: "#F8F8F8" }}
-                  width={197.5}
-                >
+                <TableHeaderCell style={{ background: "#F8F8F8" }} width={180}>
                   전화번호
                 </TableHeaderCell>
-                <TableHeaderCell style={{ background: "#F8F8F8" }} width={190}>
+                <TableHeaderCell style={{ background: "#F8F8F8" }} width={180}>
                   최근 로그인
                 </TableHeaderCell>
-                <TableHeaderCell style={{ background: "#F8F8F8" }} width={190}>
+                <TableHeaderCell style={{ background: "#F8F8F8" }} width={180}>
                   <DropdownWrapper>
                     <DropdownButton
                       onClick={handleArrowTopClick}
@@ -740,7 +735,7 @@ const MemberPage = () => {
                     </DropdownContent>
                   </DropdownWrapper>
                 </TableHeaderCell>
-                <TableHeaderCell width={180} style={{ background: "#F8F8F8" }}>
+                <TableHeaderCell width={151} style={{ background: "#F8F8F8" }}>
                   <DropdownWrapper>
                     <DropdownButton
                       onClick={handleArrowPartClick}
@@ -782,13 +777,13 @@ const MemberPage = () => {
                   <TableCell color={"#2A2A2A"} width={120}>
                     {userScore.name}
                   </TableCell>
-                  <TableMinText color={"#2A2A2A"} width={197.5}>
+                  <TableMinText color={"#2A2A2A"} width={180}>
                     {userScore.emali}
                   </TableMinText>
-                  <TableCell color={"#2A2A2A"} width={197.5}>
+                  <TableCell color={"#2A2A2A"} width={180}>
                     {userScore.phone}
                   </TableCell>
-                  <TableMinText color={"#2A2A2A"} width={190}>
+                  <TableMinText color={"#2A2A2A"} width={180}>
                     {userScore.lastLogin &&
                       format(
                         fromUnixTime(userScore.lastLogin.seconds),
@@ -798,10 +793,10 @@ const MemberPage = () => {
                         }
                       )}
                   </TableMinText>
-                  <TableCell color={"#2A2A2A"} width={181} right={10}>
+                  <TableCell color={"#2A2A2A"} width={171} right={10}>
                     {userScore.member}
                   </TableCell>
-                  <TableCell color={"#2A2A2A"} width={171} right={10}>
+                  <TableCell color={"#2A2A2A"} width={142} right={10}>
                     {userScore.part}
                   </TableCell>
                   <TableCell width={180}>

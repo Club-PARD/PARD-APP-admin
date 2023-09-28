@@ -61,7 +61,8 @@ const BodyDiv = styled.div`
   margin-top: 16px;
   margin-left: 80px;
   max-width: 1300px;
-  width: 90%;  height: 700px;
+  width: 90%;  
+  height: 700px;
   margin-bottom: 10px;
   overflow-y: scroll;
 `;
