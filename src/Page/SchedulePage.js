@@ -378,6 +378,7 @@ const SchedulePage = () => {
     line-height: 24px;
     margin-right: ${(props) => props.right}px;
     margin-top: ${(props) => props.top}px;
+    /* background-color: red; */
   `;
 
   const DropdownWrapper = styled.div`
@@ -458,6 +459,7 @@ const SchedulePage = () => {
     padding-left: 20px;
     margin-top: 25px;
     color: var(--black-background, #1A1A1A);
+    /* background-color: blue; */
 
     &::placeholder {
       color: var(--Gray30, #a3a3a3);
@@ -518,7 +520,6 @@ const SchedulePage = () => {
     height: 70px;
     border-radius: 6px;
     background: var(--black-card, #2a2a2a);
-    margin-top: 55px;
   `;
 
   const PreviewFlexBox = styled.div`
@@ -797,7 +798,7 @@ const SchedulePage = () => {
                   예시
                   <SubMessage>* 앱 노출 화면</SubMessage>
                 </ModalContents>
-                <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                <ModalContents color={"#A3A3A3"} right={0} weight={600} top={55}>
                   <PreView>
                     <PreviewFlexBox>
                       <FlexBox>
