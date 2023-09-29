@@ -63,11 +63,10 @@ const BodyDiv = styled.div`
   margin-top: 83px;
   margin-left: 80px;
   max-width: 1300px;
-  width: 90%;  
+  width: 90%;
   height: 744px;
   /* background-color: red; */
 `;
-
 
 const BodyAddDiv = styled.div`
   display: flex;
@@ -75,7 +74,7 @@ const BodyAddDiv = styled.div`
   margin-top: 83px;
   margin-left: 80px;
   /* max-width: 1300px; */
-  width: 77%;  
+  width: 77%;
   height: 744px;
   /* background-color: red; */
 `;
@@ -773,7 +772,7 @@ const MemberPage = () => {
                     </DropdownContent>
                   </DropdownWrapper>
                 </TableHeaderCell>
-                <TableHeaderCell width={180} style={{ background: "#F8F8F8" }}>
+                <TableHeaderCell width={166} style={{ background: "#F8F8F8" }}>
                   관리
                 </TableHeaderCell>
               </TableRow>
@@ -809,7 +808,7 @@ const MemberPage = () => {
                   <TableCell color={"#2A2A2A"} width={142} right={10}>
                     {userScore.part}
                   </TableCell>
-                  <TableCell width={180}>
+                  <TableCell width={166}>
                     <CheckScoreButton>관리</CheckScoreButton>
                   </TableCell>
                 </TableRow>
@@ -845,16 +844,10 @@ const MemberPage = () => {
                 <TableHeaderCell width={120} style={{ background: "#F8F8F8" }}>
                   이름
                 </TableHeaderCell>
-                <TableHeaderCell
-                  style={{ background: "#F8F8F8" }}
-                  width={170}
-                >
+                <TableHeaderCell style={{ background: "#F8F8F8" }} width={170}>
                   이메일
                 </TableHeaderCell>
-                <TableHeaderCell
-                  style={{ background: "#F8F8F8" }}
-                  width={170}
-                >
+                <TableHeaderCell style={{ background: "#F8F8F8" }} width={170}>
                   전화번호
                 </TableHeaderCell>
                 <TableHeaderCell style={{ background: "#F8F8F8" }} width={170}>
