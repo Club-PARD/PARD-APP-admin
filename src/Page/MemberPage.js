@@ -671,6 +671,393 @@ const MemberPage = () => {
     }
   };
 
+  // 모달 관련 코드
+  const [modals, setModals] = useState(
+    new Array(filteredUserScores.length).fill(false)
+  );
+
+  const openModal = (index) => {
+    const newModals = [...modals];
+    newModals[index] = true;
+    setModals(newModals);
+    console.log("버튼 누름..");
+  };
+
+  // Function to close a specific modal by index
+  const closeModal = (index) => {
+    const newModals = [...modals];
+    newModals[index] = false;
+    setModals(newModals);
+  };
+
+  const ModalWrapper = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.1);
+    display: ${(props) => (props.isModalOpen ? "block" : "none")};
+  `;
+
+  const ModalContent = styled.div`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 620px;
+    height: 552px;
+    background-color: white;
+  `;
+
+  const ModalTitleDiv = styled.div`
+    display: flex;
+    margin-left: 56px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 36px;
+  `;
+
+  const ModalTitle = styled.div`
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 32px;
+  `;
+
+  const CancelIcon = styled.img`
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    margin-right: 32px;
+  `;
+
+  const ModalSubTitle = styled.div`
+    height: 24px;
+    display: flex;
+    margin-left: 56px;
+    align-items: center;
+    margin-top: 24px;
+    margin-top: ${(props) => props.top || 46}px;
+  `;
+
+  const ModalContents = styled.div`
+    color: ${(props) => props.color};
+    font-family: "Pretendard";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: ${(props) => props.weight};
+    line-height: 24px;
+    margin-right: ${(props) => props.right}px;
+    margin-top: ${(props) => props.top}px;
+  `;
+
+  const Input = styled.input`
+    width: 395px;
+    height: 42px;
+    border-radius: 4px;
+    border: 1px solid var(--Gray10, #e4e4e4);
+    background: var(--White, #fff);
+    color: var(--Gray30, #a3a3a3);
+    font-family: "Pretendard";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px;
+    padding-left: 20px;
+
+    &::placeholder {
+      color: var(--Gray30, #a3a3a3);
+      padding-right: 20px;
+    }
+  `;
+  const UpdateButton = styled.button`
+    width: 556px;
+    height: 48px;
+    margin-left: 32px;
+    border-radius: 8px;
+    background: var(--primary-blue, #5262f5);
+    display: flex;
+    width: 556px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    color: var(--White, #fff);
+    font-family: "Pretendard";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    margin-top: 66px;
+    border: none;
+
+    &:hover {
+      box-shadow: 0px 4px 8px 0px #5262f5;
+    }
+    &:active {
+      box-shadow: 0px 4px 8px 0px #5262f5 inset;
+    }
+  `;
+
+  const DropdownWrapperModal = styled.div`
+    position: relative;
+    display: inline-block;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    width: 125px;
+    border-radius: 2px;
+    border: 1px solid var(--primary-blue, #5262f5);
+    background: var(--White, #fff);
+  `;
+
+  const DropdownButtonModal = styled.button`
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    background: ${(props) => props.Backcolor};
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    border: none;
+    padding: 8px 12px;
+    color: ${(props) => (props.color ? "#1A1A1A" : "#A3A3A3")};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  `;
+
+  const DropdownContentModal = styled.div`
+    display: ${(props) => (props.isOpen ? "block" : "none")};
+    position: absolute;
+    background-color: #f1f1f1;
+    width: 125px;
+    z-index: 1;
+    top: 100%;
+    /* left: 22px; */
+    border-radius: 2px 2px 0px 0px;
+    border: 1px solid var(--primary-blue, #5262f5);
+    background: var(--White, #fff);
+  `;
+
+  const DropdownItemModal = styled.div`
+    padding: 10px;
+    cursor: pointer;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 18px;
+    &:hover {
+      background-color: #ddd;
+    }
+  `;
+
+  const Modal = ({
+    isModalOpen,
+    onModalClose,
+    name,
+    part,
+    uid,
+    Num,
+    level,
+  }) => {
+    const [inputName, setInputName] = useState(name);
+    const [inputPhoneNum, setInputPhoneNum] = useState(Num);
+    const [selectedOption, setSelectedOption] = useState(part);
+    const [selectedLevelOption, setSelectedLevelOption] = useState(level);
+    const [toggleToPart, setToggleToPart] = useState(false);
+    const [toggleToLevel, setToggleToLever] = useState(false);
+
+    const handleNameChange = (e) => {
+      const text = e.target.value;
+      if (text.length <= 10) {
+        setInputName(text);
+      }
+    };
+
+    const handlePhoneNumChange = (e) => {
+      const text = e.target.value;
+      if (text.length <= 20) {
+        setInputPhoneNum(text);
+      }
+    };
+
+    const PartOption = [
+      "서버파트",
+      "웹파트",
+      "iOS파트",
+      "디자인파트",
+      "기획파트",
+    ];
+
+    const LevelOption = ["파디", "운영진", "거친파도", "잔잔파도"];
+
+    const handleOptionClick = (option) => {
+      if (option === "전체") {
+        setSelectedOption(null);
+      } else {
+        setSelectedOption(option);
+      }
+      setToggleToPart(false);
+    };
+
+    const handleOptionLevelClick = (option) => {
+      if (option === "전체") {
+        setSelectedLevelOption(null);
+      } else {
+        setSelectedLevelOption(option);
+      }
+      setToggleToLever(false);
+    };
+
+    const toggleDropdownPart = () => {
+      setToggleToPart(!toggleToPart);
+    };
+
+    const toggleDropdownLevel = () => {
+      setToggleToLever(!toggleToLevel);
+    };
+
+    // 업데이트 코드
+    const handleUpdateButtonClick = async () => {
+      const confirmUpdate = window.confirm("사용자 정보를 수정하시겠습니까?");
+
+      if (confirmUpdate) {
+        try {
+          // Update user document in Firestore
+          const userDocRef = doc(dbService, "users", uid); // Assuming your user collection is named "users"
+          const updates = {
+            name: inputName,
+            phone: inputPhoneNum,
+            part: selectedOption,
+            member: selectedLevelOption,
+          };
+
+          if (selectedLevelOption === "운영진") {
+            updates.isAdmin = true;
+            updates.isMaster = true;
+          }
+
+          await updateDoc(userDocRef, updates);
+
+          alert("사용자 정보가 업데이트되었습니다.");
+          onModalClose();
+          window.location.reload();
+        } catch (error) {
+          console.error("사용자 정보 업데이트 실패:", error);
+          alert("사용자 정보 업데이트 중 오류가 발생했습니다.");
+        }
+      }
+    };
+
+    return (
+      <ModalWrapper isModalOpen={isModalOpen}>
+        <ModalContent>
+          <ModalTitleDiv>
+            <ModalTitle>사용자 정보 수정하기</ModalTitle>
+            <CancelIcon
+              src={require("../Assets/img/CancelButton.png")}
+              onClick={onModalClose}
+            />
+          </ModalTitleDiv>{" "}
+          <ModalSubTitle>
+            <ModalContents color={"#111"} right={71} weight={500}>
+              이름
+            </ModalContents>
+            <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+              <Input
+                value={inputName}
+                onChange={handleNameChange}
+                placeholder="이름을 10자 이내로 작성해주세요."
+              />
+            </ModalContents>
+          </ModalSubTitle>
+          <ModalSubTitle>
+            <ModalContents color={"#111"} right={41} weight={500}>
+              전화번호
+            </ModalContents>
+            <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+              <Input
+                value={inputPhoneNum}
+                onChange={handlePhoneNumChange}
+                placeholder="이름을 10자 이내로 작성해주세요."
+              />
+            </ModalContents>
+          </ModalSubTitle>
+          <ModalSubTitle>
+            <ModalContents color={"#111"} right={71} weight={500}>
+              구분
+            </ModalContents>
+            <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+              <DropdownWrapperModal>
+                <DropdownButtonModal onClick={toggleDropdownLevel}>
+                  {selectedLevelOption || level}
+                  {!toggleToLevel ? (
+                    <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
+                  ) : (
+                    <ArrowTop1 src={require("../Assets/img/PolygonDown.png")} />
+                  )}
+                </DropdownButtonModal>
+                <DropdownContentModal isOpen={toggleToLevel}>
+                  {LevelOption.map((option, index) => (
+                    <DropdownItemModal
+                      key={index}
+                      onClick={() => handleOptionLevelClick(option)}
+                    >
+                      {option}
+                    </DropdownItemModal>
+                  ))}
+                </DropdownContentModal>
+              </DropdownWrapperModal>
+            </ModalContents>
+          </ModalSubTitle>
+          <ModalSubTitle>
+            <ModalContents color={"#111"} right={71} weight={500}>
+              파트
+            </ModalContents>
+            <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+              <DropdownWrapperModal>
+                <DropdownButtonModal onClick={toggleDropdownPart}>
+                  {selectedOption || part}
+                  {!toggleToPart ? (
+                    <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
+                  ) : (
+                    <ArrowTop1 src={require("../Assets/img/PolygonDown.png")} />
+                  )}
+                </DropdownButtonModal>
+                <DropdownContentModal isOpen={toggleToPart}>
+                  {PartOption.map((option, index) => (
+                    <DropdownItemModal
+                      key={index}
+                      onClick={() => handleOptionClick(option)}
+                    >
+                      {option}
+                    </DropdownItemModal>
+                  ))}
+                </DropdownContentModal>
+              </DropdownWrapperModal>
+            </ModalContents>
+          </ModalSubTitle>
+          <UpdateButton onClick={handleUpdateButtonClick}>
+            저장하기
+          </UpdateButton>
+        </ModalContent>
+      </ModalWrapper>
+    );
+  };
+
   return (
     <DDiv>
       <CommonLogSection username="김파드님" />
@@ -809,8 +1196,19 @@ const MemberPage = () => {
                     {userScore.part}
                   </TableCell>
                   <TableCell width={166}>
-                    <CheckScoreButton>관리</CheckScoreButton>
+                    <CheckScoreButton onClick={() => openModal(index)}>
+                      관리
+                    </CheckScoreButton>
                   </TableCell>
+                  <Modal
+                    isModalOpen={modals[index]}
+                    onModalClose={() => closeModal(index)}
+                    name={userScore.name}
+                    part={userScore.part}
+                    uid={userScore.uid}
+                    Num={userScore.phone}
+                    level={userScore.member}
+                  />
                 </TableRow>
               ))}
             </tbody>
