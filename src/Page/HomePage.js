@@ -42,15 +42,15 @@ const SubTitle = styled.div`
 `;
 
 const ScoreText = styled.div`
-color: var(--black-background, #1A1A1A);
-text-align: right;
-font-family: 'Pretendard';
-font-size: 16px;
-font-style: normal;
-font-weight: 500;
-line-height: 24px; 
-margin-right: 16px;
-`
+  color: var(--black-background, #1a1a1a);
+  text-align: right;
+  font-family: "Pretendard";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  margin-right: 16px;
+`;
 
 const BarText = styled.div`
   width: 2px;
@@ -79,12 +79,12 @@ const RightDiv = styled.div`
 
 const ScheduleDiv = styled.div`
   margin-top: 16px;
-  height: 696px;
+  height: 656px;
 `;
 
 const ScheduleItem = styled.div`
   width: 600px;
-  height: 120px;
+  height: 115px;
   background-color: #ffffff;
   border: 1px solid #e0e0e0;
   margin-bottom: 22px;
@@ -136,31 +136,6 @@ const FlextBoxDiv = styled.div`
   align-items: center;
 `;
 
-const DelteButton = styled.button`
-  width: 55px;
-  height: 28px;
-  border-radius: 4px;
-  border: 1px solid var(--Gray30, #a3a3a3);
-  background: var(--Gray-5, #f8f8f8);
-  color: var(--Gray30, #a3a3a3);
-  font-family: "Pretendard";
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 24px;
-  margin-bottom: 3px;
-`;
-
-const DeleteIcon = styled.img`
-  width: 16px;
-  height: 16px;
-  margin-right: 2px;
-`;
-
 const ContentText = styled.div`
   color: var(--black-background, #1a1a1a);
   font-family: "Pretendard";
@@ -180,7 +155,7 @@ const LeftDiv = styled.div`
 
 const RankDiv = styled.div`
   margin-top: 16px;
-  height: 696px;
+  height: 660px;
   border-radius: 8px;
   border: 1px solid var(--Gray30, #a3a3a3);
   width: 540px;
@@ -254,9 +229,8 @@ const RankingHR = styled.hr`
 
 const HomePage = () => {
   const [schedules, setSchedule] = useState([]);
-  const [score, setScore] = useState([]);
+  const [score, setScore] = useState();
   const [userRankings, setUserRankings] = useState([]);
-  const [isLoadingRankings, setIsLoadingRankings] = useState(true); // 로딩 중 여부를 나타내는 상태
 
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -307,13 +281,12 @@ const HomePage = () => {
             });
           }
         }
+        setScore(rankings);
 
         // 3. 사용자를 totalPoints로 정렬하여 순위 설정
         rankings.sort((a, b) => b.totalPoints - a.totalPoints);
-
         // 순위를 상태에 설정
         setUserRankings(rankings);
-        setIsLoadingRankings(false);
         console.log("user Ranking :", rankings);
       } catch (error) {
         console.error("Error calculating rankings:", error);
@@ -328,7 +301,7 @@ const HomePage = () => {
   }, [schedules]);
 
   useEffect(() => {
-    console.log("Updated schedules data:", score);
+    console.log("Updated score data:", score);
   }, [score]);
 
   const getRecentSchedules = () => {
@@ -349,27 +322,27 @@ const HomePage = () => {
       <BodyDiv>
         <RightDiv>
           <HomeTitle>일정 업데이트</HomeTitle>
-            <ScheduleDiv>
-              {getRecentSchedules().map((schedule, index) => (
-                <ScheduleItem key={index}>
-                  <ScheduleFirstDiv key={index}>
-                    <FlextBoxDiv>
-                      <PartNameDiv>{schedule.part}</PartNameDiv>
-                      <DateDiv>{schedule.description}</DateDiv>
-                    </FlextBoxDiv>
-                  </ScheduleFirstDiv>
-                  <ContentText>
-                    일시 :{" "}
-                    {format(
-                      fromUnixTime(schedule.dueDate.seconds),
-                      "M월 d일 EEEE HH:mm",
-                      { locale: koLocale } // 한국어 로케일 설정
-                    )}
-                  </ContentText>
-                  <ContentText>장소 : {schedule.place}</ContentText>
-                </ScheduleItem>
-              ))}
-            </ScheduleDiv>
+          <ScheduleDiv>
+            {getRecentSchedules().map((schedule, index) => (
+              <ScheduleItem key={index}>
+                <ScheduleFirstDiv key={index}>
+                  <FlextBoxDiv>
+                    <PartNameDiv>{schedule.part}</PartNameDiv>
+                    <DateDiv>{schedule.description}</DateDiv>
+                  </FlextBoxDiv>
+                </ScheduleFirstDiv>
+                <ContentText>
+                  일시 :{" "}
+                  {format(
+                    fromUnixTime(schedule.dueDate.seconds),
+                    "M월 d일 EEEE HH:mm",
+                    { locale: koLocale } // 한국어 로케일 설정
+                  )}
+                </ContentText>
+                <ContentText>장소 : {schedule.place}</ContentText>
+              </ScheduleItem>
+            ))}
+          </ScheduleDiv>
         </RightDiv>
         <LeftDiv>
           <HomeTitle>점수 업데이트</HomeTitle>
@@ -389,9 +362,7 @@ const HomePage = () => {
                     <RankingName>{user.displayName}</RankingName>
                     <RankingPart>{user.part}</RankingPart>
                   </RankingFirstDiv>
-                  <ScoreText>
-                  {user.totalPoints}점
-                  </ScoreText>
+                  <ScoreText>{user.totalPoints}점</ScoreText>
                 </RankingNumDiv>
                 <RankingHR />
               </>
