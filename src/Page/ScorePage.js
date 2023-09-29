@@ -62,7 +62,7 @@ const BodyDiv = styled.div`
   margin-top: 16px;
   margin-left: 80px;
   max-width: 1300px;
-  width: 90%;  
+  width: 90%;
   height: 700px;
   margin-bottom: 10px;
   overflow-y: scroll;
@@ -151,7 +151,7 @@ const DropdownWrapper = styled.div`
   margin-top: 89px;
   margin-left: 80px;
   display: flex;
-  width: 104px;
+  width: 125px;
   justify-content: center;
   align-items: center;
   gap: 24px;
@@ -179,7 +179,7 @@ const DropdownContent = styled.div`
   display: ${(props) => (props.isOpen ? "block" : "none")};
   position: absolute;
   background-color: #f1f1f1;
-  min-width: 160px;
+  width: 125px;
   z-index: 1;
   top: 100%;
   left: 0;
@@ -189,10 +189,10 @@ const DropdownContent = styled.div`
 const DropdownItem = styled.div`
   padding: 10px;
   cursor: pointer;
+  background: var(--White, #FFF);
 
   &:hover {
-    background-color: #ddd;
-  }
+    background: var(--primary-blue-10, #EEEFFE);  }
 `;
 
 const CheckScoreButton = styled.button`
@@ -220,6 +220,14 @@ const CheckScoreButton = styled.button`
   &:active {
     box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
   }
+`;
+
+const ArrowTop1 = styled.img`
+  width: 14px;
+  height: 14px;
+  margin-left: 16px;
+  margin-bottom: 1px;
+  cursor: pointer;
 `;
 
 const ScorePage = () => {
@@ -598,9 +606,9 @@ const ScorePage = () => {
             case "주요 행사 MVP (+5점)":
               selectedType = "최고";
               break;
-              case "세미나 파트별 MVP (+3점)":
-                selectedType = "최고";
-                break;
+            case "세미나 파트별 MVP (+3점)":
+              selectedType = "최고";
+              break;
             case "스터디 개최 및 수료 (+5점)":
               selectedType = "스터디";
               break;
@@ -686,7 +694,7 @@ const ScorePage = () => {
       "세미나 결석 벌점 (-2점)",
       "과제 지각 벌점 (-0.5점)",
       "과제 미제출 (-1점)",
-      "벌점 조정"
+      "벌점 조정",
     ];
 
     const ScoreoggleDropdown = () => {
@@ -987,6 +995,11 @@ const ScorePage = () => {
       <DropdownWrapper>
         <DropdownButton onClick={toggleDropdown}>
           {selectedOption || "전체"}
+          {!isOpen ? (
+            <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
+          ) : (
+            <ArrowTop1 src={require("../Assets/img/PolygonDown.png")} />
+          )}
         </DropdownButton>
         <DropdownContent isOpen={isOpen}>
           {options.map((option, index) => (
