@@ -516,7 +516,7 @@ const ScorePage = () => {
   `;
 
   const ReasonInput = styled.input`
-    width: 400px;
+    width: 385px;
     height: 42px;
     border-radius: 4px;
     border: 1px solid var(--Gray10, #e4e4e4);
@@ -567,7 +567,7 @@ const ScorePage = () => {
     font-weight: 600;
     line-height: 24px;
     margin-top: 66px;
-
+    border: none;
     &:hover {
       box-shadow: 0px 4px 8px 0px #5262f5;
     }
