@@ -860,7 +860,7 @@ const MemberPage = () => {
     font-weight: 600;
     line-height: 18px;
     &:hover {
-      background-color: #ddd;
+      background: var(--primary-blue-10, #eeeffe);
     }
   `;
 
