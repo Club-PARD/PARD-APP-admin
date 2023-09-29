@@ -61,7 +61,6 @@ const DisplayDiv = styled.div`
   width: 100%;
   justify-content: space-between;
   cursor: pointer;
-
 `;
 
 const DisplayTextDiv = styled.div`
@@ -76,10 +75,10 @@ const DisplayTextDiv = styled.div`
   &:hover {
     background: #323553;
   }
-  background: ${(props) => (props.active
-    ? "var(--grabp, linear-gradient(92deg, #5262F5 0%, #7B3FEF 100%))"
-    : "transparent")};
-
+  background: ${(props) =>
+    props.active
+      ? "var(--grabp, linear-gradient(92deg, #5262F5 0%, #7B3FEF 100%))"
+      : "transparent"};
 `;
 
 const Icon = styled.img`
@@ -120,12 +119,10 @@ const MenuLink = styled(Link)`
   &:hover {
     background: #323553;
   }
-  background: ${(props) => (props.active
-    ? "var(--grabp, linear-gradient(92deg, #5262F5 0%, #7B3FEF 100%))"
-    : "transparent")};
-
-
-  
+  background: ${(props) =>
+    props.active
+      ? "var(--grabp, linear-gradient(92deg, #5262F5 0%, #7B3FEF 100%))"
+      : "transparent"};
 `;
 
 const CircleIcon = styled.span`
@@ -151,7 +148,6 @@ const DownArrowIcon = styled.img`
   height: 20px;
   margin-left: ${(props) => props.left}px;
   margin-right: 20px;
-
 `;
 
 function NavBar() {
@@ -226,7 +222,10 @@ function NavBar() {
         </li>
         <li>
           <DisplayDiv>
-            <DisplayTextDiv bottom={0} active={pathname.startsWith("/Schedule")}>
+            <DisplayTextDiv
+              bottom={0}
+              active={pathname.startsWith("/Schedule")}
+            >
               {pathname.startsWith("/re") ? (
                 <>
                   <Icon
@@ -246,7 +245,10 @@ function NavBar() {
                   />
                 </>
               )}
-              <MenuLink to="/Schedule" active={pathname.startsWith("/Schedule")}>
+              <MenuLink
+                to="/Schedule"
+                active={pathname.startsWith("/Schedule")}
+              >
                 일정 관리
               </MenuLink>
             </DisplayTextDiv>
@@ -306,14 +308,19 @@ function NavBar() {
                 </>
               )}
               <MenuLink to="/Member" active={pathname.startsWith("/ㅁㄴㅇ")}>
-                사용자 관리 
+                사용자 관리
               </MenuLink>
             </DisplayTextDiv>
           </DisplayDiv>
         </li>
         <li>
           <DisplayDiv>
-            <DisplayTextDiv>
+            <DisplayTextDiv
+              onClick={() => {
+                window.open("https://pard-notice.oopy.io", "_blank");
+              }}
+              style={{ cursor: "pointer" }}
+            >
               {pathname.startsWith("/setting") ? (
                 <>
                   <Icon
@@ -333,9 +340,7 @@ function NavBar() {
                   />
                 </>
               )}
-              <MenuLink to="/setting" active={pathname.startsWith("/setting")}>
-                공식 노션 바로가기
-              </MenuLink>
+              <MenuLink>공식 노션 바로가기</MenuLink>
             </DisplayTextDiv>
           </DisplayDiv>
         </li>
