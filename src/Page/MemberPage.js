@@ -17,12 +17,12 @@ const DDiv = styled.div`
   margin: 0 auto;
   height: 100%;
   /* background-color: red; */
-  overflow-y: hidden;
+  /* overflow-y: hidden; */
 `;
 
 const TitleDiv = styled.div`
   display: flex;
-  margin-top: 36px;
+  margin-top: 25px;
   margin-left: 80px;
   align-items: center;
 `;
@@ -64,6 +64,18 @@ const BodyDiv = styled.div`
   margin-left: 80px;
   max-width: 1300px;
   width: 90%;  
+  height: 744px;
+  /* background-color: red; */
+`;
+
+
+const BodyAddDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 83px;
+  margin-left: 80px;
+  /* max-width: 1300px; */
+  width: 77%;  
   height: 744px;
   /* background-color: red; */
 `;
@@ -140,7 +152,7 @@ const RegisterAddButton = styled.button`
   padding: 12px 65px;
   cursor: pointer;
   border: none;
-  margin-right: 183px;
+  /* margin-right: 183px; */
   &:hover {
     box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
   }
@@ -443,7 +455,6 @@ const DropdownItem1 = styled.div`
 
 const MemberPage = () => {
   const [userScores, setUserScores] = useState([]);
-  const [selectedOption, setSelectedOption] = useState(null);
   const [addable, setAddable] = useState(true);
   const [isOpen, setIsOpen] = useState(Array(15).fill(false));
   const [isOpenPart, setIsOpenPart] = useState(Array(15).fill(false));
@@ -533,7 +544,6 @@ const MemberPage = () => {
     const updatedIsOpen = [...isOpen];
     updatedIsOpen[index] = !updatedIsOpen[index]; // 선택한 인덱스의 Dropdown 열림 상태를 반전
     setIsOpen(updatedIsOpen);
-    setSelectedOption(index); // 선택한 인덱스 설정
   };
 
   const handleMemberClick = (member, index) => {
@@ -808,7 +818,7 @@ const MemberPage = () => {
           </Table>
         </BodyDiv>
       ) : (
-        <BodyDiv>
+        <BodyAddDiv>
           <FirstDiv>
             <FlexDiv>
               <MemberNumText color={"#1A1A1A"} right={4}>
@@ -837,20 +847,20 @@ const MemberPage = () => {
                 </TableHeaderCell>
                 <TableHeaderCell
                   style={{ background: "#F8F8F8" }}
-                  width={197.5}
+                  width={170}
                 >
                   이메일
                 </TableHeaderCell>
                 <TableHeaderCell
                   style={{ background: "#F8F8F8" }}
-                  width={197.5}
+                  width={170}
                 >
                   전화번호
                 </TableHeaderCell>
-                <TableHeaderCell style={{ background: "#F8F8F8" }} width={190}>
+                <TableHeaderCell style={{ background: "#F8F8F8" }} width={170}>
                   최근 로그인
                 </TableHeaderCell>
-                <TableHeaderCell style={{ background: "#F8F8F8" }} width={190}>
+                <TableHeaderCell style={{ background: "#F8F8F8" }} width={170}>
                   구분
                 </TableHeaderCell>
                 <TableHeaderCell width={180} style={{ background: "#F8F8F8" }}>
@@ -872,10 +882,10 @@ const MemberPage = () => {
                       onChange={(e) => handleNameInputChange(e, index)}
                     />
                   </TableCell>
-                  <TableMinText color={"#2A2A2A"} width={197.5}>
+                  <TableMinText color={"#2A2A2A"} width={170}>
                     -
                   </TableMinText>
-                  <TableCell color={"#2A2A2A"} width={197.5}>
+                  <TableCell color={"#2A2A2A"} width={170}>
                     <PhoneNumInputBox
                       type="text"
                       placeholder="입력"
@@ -883,10 +893,10 @@ const MemberPage = () => {
                       onChange={(e) => handlePhoneInputChange(e, index)}
                     />
                   </TableCell>
-                  <TableMinText color={"#2A2A2A"} width={190}>
+                  <TableMinText color={"#2A2A2A"} width={170}>
                     -
                   </TableMinText>
-                  <TableCell color={"#2A2A2A"} width={190}>
+                  <TableCell color={"#2A2A2A"} width={170}>
                     <DropdownWrapper>
                       <DropdownButton
                         onClick={() => toggleDropdown(index)}
@@ -934,7 +944,7 @@ const MemberPage = () => {
               ))}
             </tbody>
           </Table>
-        </BodyDiv>
+        </BodyAddDiv>
       )}
     </DDiv>
   );
