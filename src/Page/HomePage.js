@@ -5,9 +5,10 @@ import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
+import { PacmanLoader } from "react-spinners";
 
 const DDiv = styled.div`
-  background: #FFF;
+  background: #fff;
   margin: 0 auto;
   height: 100%;
   /* background-color: red; */
@@ -231,6 +232,7 @@ const HomePage = () => {
   const [schedules, setSchedule] = useState([]);
   const [score, setScore] = useState();
   const [userRankings, setUserRankings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -281,6 +283,7 @@ const HomePage = () => {
             });
           }
         }
+        setLoading(false);
         setScore(rankings);
 
         // 3. 사용자를 totalPoints로 정렬하여 순위 설정
@@ -309,6 +312,14 @@ const HomePage = () => {
       (a, b) => b.dueDate - a.dueDate
     );
     return sortedSchedules.slice(0, 5);
+  };
+
+  const override = {
+    display: "flex",
+    margin: "0 auto",
+    marginTop : "210px",
+    borderColor: "#5262F5",
+    textAlign: "center",
   };
 
   return (
@@ -347,26 +358,42 @@ const HomePage = () => {
         <LeftDiv>
           <HomeTitle>점수 업데이트</HomeTitle>
           <RankDiv>
-            {userRankings.map((user, index) => (
+            {loading ? (
+             <>
+              <PacmanLoader
+                color="#5262F5"
+                loading={loading}
+                cssOverride={override}
+                size={100}
+              />
+              <h1>
+                로딩중..
+              </h1>
+             </>
+            ) : (
               <>
-                <RankingNumDiv key={user.uid}>
-                  <RankingFirstDiv key={index}>
-                    <RankingNum
-                      style={{
-                        backgroundColor: index < 3 ? "#EEEFFE" : "#F8F8F8",
-                        color: index < 3 ? "#5262F5" : "#A3A3A3",
-                      }}
-                    >
-                      {index + 1}
-                    </RankingNum>
-                    <RankingName>{user.displayName}</RankingName>
-                    <RankingPart>{user.part}</RankingPart>
-                  </RankingFirstDiv>
-                  <ScoreText>{user.totalPoints}점</ScoreText>
-                </RankingNumDiv>
-                <RankingHR />
+                {userRankings.map((user, index) => (
+                  <>
+                    <RankingNumDiv key={user.uid}>
+                      <RankingFirstDiv key={index}>
+                        <RankingNum
+                          style={{
+                            backgroundColor: index < 3 ? "#EEEFFE" : "#F8F8F8",
+                            color: index < 3 ? "#5262F5" : "#A3A3A3",
+                          }}
+                        >
+                          {index + 1}
+                        </RankingNum>
+                        <RankingName>{user.displayName}</RankingName>
+                        <RankingPart>{user.part}</RankingPart>
+                      </RankingFirstDiv>
+                      <ScoreText>{user.totalPoints}점</ScoreText>
+                    </RankingNumDiv>
+                    <RankingHR />
+                  </>
+                ))}
               </>
-            ))}
+            )}
           </RankDiv>
         </LeftDiv>
       </BodyDiv>
