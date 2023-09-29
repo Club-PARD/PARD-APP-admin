@@ -13,7 +13,7 @@ import {
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
-// const { Timestamp } = require('@google-cloud/firestore');
+import { PacmanLoader } from "react-spinners";
 
 const DDiv = styled.div`
   background: #fff;
@@ -962,7 +962,17 @@ const ScorePage = () => {
       </ModalWrapper>
     );
   };
+  // 로딩 관련 코드
+  const override = {
+    display: "flex",
+    margin: "0 auto",
+    marginTop: "210px",
+    borderColor: "#5262F5",
+    textAlign: "center",
+  };
+  const [loading, setLoading] = useState(true);
 
+  // 토글 버튼
   const options = [
     "전체",
     "서버파트",
@@ -1054,6 +1064,7 @@ const ScorePage = () => {
         }
 
         setUserScores(scores);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching user scores:", error);
       }
@@ -1119,40 +1130,63 @@ const ScorePage = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredUserScores.map((userScore, index) => (
-              <TableRow key={index}>
-                <TableCell color={"#2A2A2A"} width={140}>
-                  {userScore.name}
-                </TableCell>
-                <TableCell color={"#64C59A"} width={180}>
-                  +{userScore.mvp}점
-                </TableCell>
-                <TableCell color={"#64C59A"} width={180}>
-                  +{userScore.study}잠
-                </TableCell>
-                <TableCell color={"#64C59A"} width={180}>
-                  +{userScore.communication}점
-                </TableCell>
-                <TableCell color={"#64C59A"} width={180}>
-                  +{userScore.retrospection}점
-                </TableCell>
-                <TableCell color={"#FF5A5A"} width={180}>
-                  {userScore.penalty}점
-                </TableCell>
-                <TableCell width={180}>
-                  <CheckScoreButton onClick={() => openModal(index)}>
-                    점수 관리
-                  </CheckScoreButton>
-                  <Modal
-                    isOpen={modals[index] || false}
-                    onClose={() => closeModal(index)}
-                    name={userScore.name}
-                    part={userScore.part}
-                    pid={userScore.pid}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
+            {loading ? (
+              <>
+                <PacmanLoader
+                  color="#5262F5"
+                  loading={loading}
+                  cssOverride={override}
+                  size={100}
+                />
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <h1>로딩중..</h1>
+                </div>
+              </>
+            ) : (
+              <>
+                {filteredUserScores.map((userScore, index) => (
+                  <TableRow key={index}>
+                    <TableCell color={"#2A2A2A"} width={140}>
+                      {userScore.name}
+                    </TableCell>
+                    <TableCell color={"#64C59A"} width={180}>
+                      +{userScore.mvp}점
+                    </TableCell>
+                    <TableCell color={"#64C59A"} width={180}>
+                      +{userScore.study}잠
+                    </TableCell>
+                    <TableCell color={"#64C59A"} width={180}>
+                      +{userScore.communication}점
+                    </TableCell>
+                    <TableCell color={"#64C59A"} width={180}>
+                      +{userScore.retrospection}점
+                    </TableCell>
+                    <TableCell color={"#FF5A5A"} width={180}>
+                      {userScore.penalty}점
+                    </TableCell>
+                    <TableCell width={180}>
+                      <CheckScoreButton onClick={() => openModal(index)}>
+                        점수 관리
+                      </CheckScoreButton>
+                      <Modal
+                        isOpen={modals[index] || false}
+                        onClose={() => closeModal(index)}
+                        name={userScore.name}
+                        part={userScore.part}
+                        pid={userScore.pid}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </>
+            )}
           </TableBody>
         </Table>
       </BodyDiv>
