@@ -103,7 +103,7 @@ const ScheduleDiv = styled.div`
 
 const ScheduleItem = styled.div`
   width: 600px;
-  height: 120px;
+  height: 115px;
   background-color: #ffffff;
   border: 1px solid #e0e0e0;
   margin-bottom: 22px;
