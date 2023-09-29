@@ -16,7 +16,7 @@ import koLocale from "date-fns/locale/ko";
 // const { Timestamp } = require('@google-cloud/firestore');
 
 const DDiv = styled.div`
-  background: #FFF;
+  background: #fff;
   height: 100%;
   overflow-y: hidden;
   margin: 0 auto;
@@ -244,9 +244,12 @@ const ScorePage = () => {
   };
 
   const closeModal = (index) => {
-    const newModals = [...modals];
-    newModals[index] = false;
-    setModals(newModals);
+    const result = window.confirm("변경사항을 저장하지 않고 나가시겠습니까?");
+    if (result) {
+      const newModals = [...modals];
+      newModals[index] = false;
+      setModals(newModals);
+    }
   };
 
   const ModalWrapper = styled.div`
@@ -528,7 +531,7 @@ const ScorePage = () => {
     font-weight: 500;
     line-height: 18px;
     padding-right: 20px;
-    color: var(--black-background, #1A1A1A);
+    color: var(--black-background, #1a1a1a);
     padding-left: 20px;
 
     &::placeholder {

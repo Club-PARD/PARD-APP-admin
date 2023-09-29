@@ -306,8 +306,12 @@ const SchedulePage = () => {
   };
 
   const closeModal = () => {
-    setIsModalOpen(false);
+    const result = window.confirm("변경사항을 저장하지 않고 나가시겠습니까?");
+    if (result) {
+      setIsModalOpen(false);
+    }
   };
+  
 
   const ModalWrapper = styled.div`
     position: fixed;

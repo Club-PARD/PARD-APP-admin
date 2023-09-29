@@ -683,11 +683,13 @@ const MemberPage = () => {
     console.log("버튼 누름..");
   };
 
-  // Function to close a specific modal by index
   const closeModal = (index) => {
-    const newModals = [...modals];
-    newModals[index] = false;
-    setModals(newModals);
+    const result = window.confirm("변경사항을 저장하지 않고 나가시겠습니까?");
+    if (result) {
+      const newModals = [...modals];
+      newModals[index] = false;
+      setModals(newModals);
+    }
   };
 
   const ModalWrapper = styled.div`
