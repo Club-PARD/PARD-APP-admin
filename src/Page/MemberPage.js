@@ -1244,19 +1244,19 @@ const MemberPage = () => {
                 <TableHeaderCell width={120} style={{ background: "#F8F8F8" }}>
                   이름
                 </TableHeaderCell>
-                <TableHeaderCell style={{ background: "#F8F8F8" }} width={170}>
+                <TableHeaderCell style={{ background: "#F8F8F8" }} width={193}>
                   이메일
                 </TableHeaderCell>
-                <TableHeaderCell style={{ background: "#F8F8F8" }} width={170}>
+                <TableHeaderCell style={{ background: "#F8F8F8" }} width={193}>
                   전화번호
                 </TableHeaderCell>
-                <TableHeaderCell style={{ background: "#F8F8F8" }} width={170}>
+                <TableHeaderCell style={{ background: "#F8F8F8" }} width={195}>
                   최근 로그인
                 </TableHeaderCell>
-                <TableHeaderCell style={{ background: "#F8F8F8" }} width={170}>
+                <TableHeaderCell style={{ background: "#F8F8F8" }} width={195}>
                   구분
                 </TableHeaderCell>
-                <TableHeaderCell width={180} style={{ background: "#F8F8F8" }}>
+                <TableHeaderCell width={195} style={{ background: "#F8F8F8" }}>
                   파트
                 </TableHeaderCell>
               </TableRow>
@@ -1275,10 +1275,10 @@ const MemberPage = () => {
                       onChange={(e) => handleNameInputChange(e, index)}
                     />
                   </TableCell>
-                  <TableMinText color={"#2A2A2A"} width={170}>
+                  <TableMinText color={"#2A2A2A"} width={193}>
                     -
                   </TableMinText>
-                  <TableCell color={"#2A2A2A"} width={170}>
+                  <TableCell color={"#2A2A2A"} width={193}>
                     <PhoneNumInputBox
                       type="text"
                       placeholder="입력"
@@ -1286,10 +1286,10 @@ const MemberPage = () => {
                       onChange={(e) => handlePhoneInputChange(e, index)}
                     />
                   </TableCell>
-                  <TableMinText color={"#2A2A2A"} width={170}>
+                  <TableMinText color={"#2A2A2A"} width={195}>
                     -
                   </TableMinText>
-                  <TableCell color={"#2A2A2A"} width={170}>
+                  <TableCell color={"#2A2A2A"} width={195}>
                     <DropdownWrapper>
                       <DropdownButton
                         onClick={() => toggleDropdown(index)}
@@ -1313,7 +1313,7 @@ const MemberPage = () => {
                       </DropdownContent>
                     </DropdownWrapper>
                   </TableCell>
-                  <TableCell color={"#2A2A2A"} width={180}>
+                  <TableCell color={"#2A2A2A"} width={195}>
                     <DropdownWrapper1>
                       <DropdownButton1
                         onClick={() => toggleDropdownPart(index)}
