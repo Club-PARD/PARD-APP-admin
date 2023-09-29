@@ -429,7 +429,7 @@ const ScorePage = () => {
     margin-top: 12px;
     margin-left: 40px;
     display: flex;
-    width: 200px;
+    width: 220px;
     height: 40px;
     justify-content: center;
     align-items: center;
@@ -442,7 +442,7 @@ const ScorePage = () => {
     cursor: pointer;
     width: 100%;
     height: 100%;
-    width: 170px;
+    width: 220px;
     background-color: white;
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
@@ -481,17 +481,35 @@ const ScorePage = () => {
     height: 26px;
     flex-shrink: 0;
     border-radius: 4px;
-    background: var(--Gray10, #e4e4e4);
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--black-background, #1a1a1a);
+    color: ${(props) => {
+      const score = props.score;
+      if (score > 0) {
+        return "#64C59A";
+      } else if (score < 0) {
+        return "#FF5A5A";
+      } else {
+        return "var(--black-background, #1a1a1a)";
+      }
+    }};
     font-family: "Pretendard";
     font-size: 16px;
     font-style: normal;
     font-weight: 600;
     line-height: 24px;
     margin-right: 8px;
+    background: ${(props) => {
+      const score = props.score;
+      if (score > 0) {
+        return "rgba(100, 197, 154, 0.15)";
+      } else if (score < 0) {
+        return "rgba(255, 90, 90, 0.10)";
+      } else {
+        return "var(--Gray10, #e4e4e4)";
+      }
+    }};
   `;
 
   const UnitText = styled.div`
@@ -857,7 +875,7 @@ const ScorePage = () => {
                 </ModalContents>
                 <DropdownWrapper1>
                   <DropdownButton1 onClick={ScoreoggleDropdown}>
-                    {selectedScoreReason || "전체"}
+                    {selectedScoreReason || "선택"}
                     {isDropdownOpen ? (
                       <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
                     ) : (
@@ -898,7 +916,15 @@ const ScorePage = () => {
                     />
                   </>
                 ) : (
-                  <ScoreDiv>
+                  <ScoreDiv
+                    score={
+                      selectedScore && selectedScore.match(/(-?\d+(\.\d+)?)점/)
+                        ? parseFloat(
+                            selectedScore.match(/(-?\d+(\.\d+)?)점/)[1]
+                          )
+                        : 0
+                    }
+                  >
                     {selectedScore && selectedScore.match(/(-?\d+(\.\d+)?)점/)
                       ? selectedScore.match(/(-?\d+(\.\d+)?)점/)[1]
                       : 0}
