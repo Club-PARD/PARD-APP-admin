@@ -125,33 +125,8 @@ const MenuLink = styled(Link)`
       : "transparent"};
 `;
 
-const CircleIcon = styled.span`
-  display: inline-block;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  /* background-color: ${(props) => (props.active ? "#0079E0" : "#FFFFFF")}; */
-  background-color: white;
-  margin-right: 8px;
-  margin-left: 40px;
-`;
-
-const UpArrowIcon = styled.img`
-  width: 20px;
-  height: 20px;
-  margin-left: ${(props) => props.left}px;
-  margin-right: 20px;
-`;
-
-const DownArrowIcon = styled.img`
-  width: 20px;
-  height: 20px;
-  margin-left: ${(props) => props.left}px;
-  margin-right: 20px;
-`;
 
 function NavBar() {
-  const [isSubMemberOpen, setIsSubMemberOpen] = useState(false);
   const { pathname } = useLocation(); // 현재 페이지의 URL을 가져옴
 
   return (
@@ -307,7 +282,7 @@ function NavBar() {
                   />
                 </>
               )}
-              <MenuLink to="/Member" active={pathname.startsWith("/ㅁㄴㅇ")}>
+              <MenuLink to="/Login" active={pathname.startsWith("/ㅁㄴㅇ")}>
                 사용자 관리
               </MenuLink>
             </DisplayTextDiv>
