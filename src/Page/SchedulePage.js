@@ -453,6 +453,7 @@ const SchedulePage = () => {
     line-height: 18px;
     padding-left: 20px;
     margin-top: 25px;
+    color: var(--black-background, #1A1A1A);
 
     &::placeholder {
       color: var(--Gray30, #a3a3a3);

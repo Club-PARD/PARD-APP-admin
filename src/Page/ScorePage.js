@@ -528,6 +528,8 @@ const ScorePage = () => {
     font-weight: 500;
     line-height: 18px;
     padding-right: 20px;
+    color: var(--black-background, #1A1A1A);
+    padding-left: 20px;
 
     &::placeholder {
       color: var(--Gray30, #a3a3a3);
