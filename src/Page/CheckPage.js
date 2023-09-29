@@ -393,13 +393,13 @@ const CheckPage = () => {
     updatedUserDatas[index].attend = updatedAttend;
 
     // Firestore에 업데이트
-    const userDocRef = doc(dbService, "users", updatedUserDatas[index].uid);
-    await updateDoc(userDocRef, {
-      attendInfo: updatedUserDatas[index].attendInfo,
-      attend: updatedAttend, // attend 맵 업데이트
-    });
+    // const userDocRef = doc(dbService, "users", updatedUserDatas[index].uid);
+    // await updateDoc(userDocRef, {
+    //   attendInfo: updatedUserDatas[index].attendInfo,
+    //   attend: updatedAttend, // attend 맵 업데이트
+    // });
 
-    console.log("Firestore 문서 업데이트 성공!");
+    // console.log("Firestore 문서 업데이트 성공!");
   };
 
   // 출석 결석 지각 버튼
