@@ -173,6 +173,9 @@ const DropdownButton = styled.button`
   line-height: 24px;
   border: none;
   padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 const DropdownContent = styled.div`
