@@ -189,7 +189,7 @@ function NavBar() {
                   />
                 </>
               )}
-              <MenuLink to="/Check" active={pathname.startsWith("/Check")}>
+              <MenuLink to="/Check" active={pathname.startsWith("/asd")}>
                 출결 관리
               </MenuLink>
             </DisplayTextDiv>
@@ -222,7 +222,7 @@ function NavBar() {
               )}
               <MenuLink
                 to="/Schedule"
-                active={pathname.startsWith("/Schedule")}
+                active={pathname.startsWith("/Scheduasdle")}
               >
                 일정 관리
               </MenuLink>
