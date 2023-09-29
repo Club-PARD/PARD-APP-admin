@@ -305,7 +305,7 @@ function NavBar() {
                   />
                 </>
               )}
-              <MenuLink to="/Member" active={pathname.startsWith("/Member")}>
+              <MenuLink to="/Member" active={pathname.startsWith("/ㅁㄴㅇ")}>
                 사용자 관리 
               </MenuLink>
             </DisplayTextDiv>
