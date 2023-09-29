@@ -161,7 +161,7 @@ function NavBar() {
                   />
                 </>
               )}
-              <MenuLink to="/" active={pathname === "/"}>
+              <MenuLink to="/" active={pathname === "/as"}>
                 홈
               </MenuLink>
             </DisplayTextDiv>
