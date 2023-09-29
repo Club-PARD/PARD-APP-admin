@@ -22,7 +22,7 @@ const NavBarContainer = styled.div`
 
 const MainContent = styled.div`
   flex: 1;
-  background-color: #f6f6f6;
+  background-color: #FFF;
   /* padding: 20px; */
 `;
 
