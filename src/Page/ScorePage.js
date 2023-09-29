@@ -579,15 +579,36 @@ const ScorePage = () => {
     }
   `;
 
+  const ScoreInput = styled.input`
+    width: 42px;
+    height: 26px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    border: 1px solid var(--primary-blue, #5262f5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    margin-right: 8px;
+    text-align: center;
+  `;
+
   // 모달 컴포넌트
   const Modal = ({ isOpen, onClose, name, part, pid }) => {
     const [points, setPoints] = useState([]); // Points 데이터를 저장할 상태 변수
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(true);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedScoreReason, setSelectedScoreReason] = useState(null);
-    const [selectedScore, setSelectedScore] = useState(0); // State to store the selected score
+    const [selectedScore, setSelectedScore] = useState(0); 
+    const [score, setScore] = useState();
+    const [inputText, setInputText] = useState(""); 
+    const [editScore, setEditScore] = useState(false); 
 
-    const [inputText, setInputText] = useState(""); // State to store input text
 
     const handleInputChange = (e) => {
       const text = e.target.value;
@@ -644,8 +665,8 @@ const ScorePage = () => {
             currentDate === null &&
             selectedType === null
           ) {
-            console.log("값", selectedType);
-            console.log("시간", scoreDigit);
+            // console.log("값", selectedType);
+            // console.log("시간", scoreDigit);
             alert("빈칸 확인해");
           } else {
             try {
@@ -709,8 +730,16 @@ const ScorePage = () => {
 
     const handleScoreClick = (option) => {
       setSelectedScoreReason(option);
+    
+      if (option === "벌점 조정") {
+        setEditScore(true);
+      } else {
+        setEditScore(false);
+      }
+    
       setIsDropdownOpen(false);
     };
+    
 
     // Points 데이터를 가져오는 함수
     const fetchPoints = async () => {
@@ -847,11 +876,26 @@ const ScorePage = () => {
                 <ModalContents color={"#111"} right={71} weight={500}>
                   점수
                 </ModalContents>
-                <ScoreDiv>
-                  {selectedScore && selectedScore.match(/(-?\d+(\.\d+)?)점/)
-                    ? selectedScore.match(/(-?\d+(\.\d+)?)점/)[1]
-                    : 0}
-                </ScoreDiv>
+                {/* {selectedScore === "벌점 조정" ? ( */}
+                { editScore ? (
+                  <>
+                    <ScoreInput
+                      type="text"
+                      value={score}
+                      onChange={(e) => {
+                        const value = parseFloat(e.target.value);
+                        setSelectedScore(`벌점 조정 (${value}점)`);
+                        // setScore(value);
+                      }}
+                    />
+                  </>
+                ) : (
+                  <ScoreDiv>
+                    {selectedScore && selectedScore.match(/(-?\d+(\.\d+)?)점/)
+                      ? selectedScore.match(/(-?\d+(\.\d+)?)점/)[1]
+                      : 0}
+                  </ScoreDiv>
+                )}
                 <UnitText>점</UnitText>
                 <UnitSubText>
                   * 파드너십에서 점수 분야를 고르면 자동으로 점수가 입력돼요.
