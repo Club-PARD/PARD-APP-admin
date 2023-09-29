@@ -223,14 +223,6 @@ const CheckScoreButton = styled.button`
   }
 `;
 
-const ArrowTop1 = styled.img`
-  width: 14px;
-  height: 14px;
-  margin-left: 16px;
-  margin-bottom: 1px;
-  cursor: pointer;
-`;
-
 const ScorePage = () => {
   const [userScores, setUserScores] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -450,6 +442,7 @@ const ScorePage = () => {
     cursor: pointer;
     width: 100%;
     height: 100%;
+    width: 170px;
     background-color: white;
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
@@ -458,6 +451,9 @@ const ScorePage = () => {
     font-weight: 600;
     line-height: 24px;
     border: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   `;
 
   const DropdownContent1 = styled.div`
@@ -598,17 +594,24 @@ const ScorePage = () => {
     text-align: center;
   `;
 
+  const ArrowTop1 = styled.img`
+    width: 14px;
+    height: 14px;
+    /* margin-right: 8px; */
+    cursor: pointer;
+    margin-top: 3px;
+  `;
+
   // 모달 컴포넌트
   const Modal = ({ isOpen, onClose, name, part, pid }) => {
     const [points, setPoints] = useState([]); // Points 데이터를 저장할 상태 변수
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(true);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedScoreReason, setSelectedScoreReason] = useState(null);
-    const [selectedScore, setSelectedScore] = useState(0); 
+    const [selectedScore, setSelectedScore] = useState(0);
     const [score, setScore] = useState();
-    const [inputText, setInputText] = useState(""); 
-    const [editScore, setEditScore] = useState(false); 
-
+    const [inputText, setInputText] = useState("");
+    const [editScore, setEditScore] = useState(false);
 
     const handleInputChange = (e) => {
       const text = e.target.value;
@@ -730,16 +733,15 @@ const ScorePage = () => {
 
     const handleScoreClick = (option) => {
       setSelectedScoreReason(option);
-    
+
       if (option === "벌점 조정") {
         setEditScore(true);
       } else {
         setEditScore(false);
       }
-    
+
       setIsDropdownOpen(false);
     };
-    
 
     // Points 데이터를 가져오는 함수
     const fetchPoints = async () => {
@@ -810,8 +812,8 @@ const ScorePage = () => {
               <HR top={24} />
               <RowTitleDiv>
                 <RowTitle right={57}>파드너십</RowTitle>
-                <RowTitle right={103}>점수</RowTitle>
-                <RowTitle right={203}>내용</RowTitle>
+                <RowTitle right={113}>점수</RowTitle>
+                <RowTitle right={193}>내용</RowTitle>
                 <RowTitle right={0}>날짜</RowTitle>
               </RowTitleDiv>
               <HR top={8} />
@@ -825,7 +827,7 @@ const ScorePage = () => {
                         <RowContentType right={40} width={60}>
                           {point.type === "최고" ? "MVP" : point.type}
                         </RowContentType>
-                        <RowContentDigit right={30} width={40}>
+                        <RowContentDigit right={25} width={45}>
                           {" "}
                           {point.digit > 0
                             ? `+${point.digit}점`
@@ -856,6 +858,13 @@ const ScorePage = () => {
                 <DropdownWrapper1>
                   <DropdownButton1 onClick={ScoreoggleDropdown}>
                     {selectedScoreReason || "전체"}
+                    {isDropdownOpen ? (
+                      <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
+                    ) : (
+                      <ArrowTop1
+                        src={require("../Assets/img/PolygonDown.png")}
+                      />
+                    )}
                   </DropdownButton1>
                   <DropdownContent1 isOpen={isDropdownOpen}>
                     {ScoreList.map((option, index) => (
@@ -877,7 +886,7 @@ const ScorePage = () => {
                   점수
                 </ModalContents>
                 {/* {selectedScore === "벌점 조정" ? ( */}
-                { editScore ? (
+                {editScore ? (
                   <>
                     <ScoreInput
                       type="text"
@@ -885,7 +894,6 @@ const ScorePage = () => {
                       onChange={(e) => {
                         const value = parseFloat(e.target.value);
                         setSelectedScore(`벌점 조정 (${value}점)`);
-                        // setScore(value);
                       }}
                     />
                   </>
