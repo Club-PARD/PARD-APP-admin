@@ -189,10 +189,11 @@ const DropdownContent = styled.div`
 const DropdownItem = styled.div`
   padding: 10px;
   cursor: pointer;
-  background: var(--White, #FFF);
+  background: var(--White, #fff);
 
   &:hover {
-    background: var(--primary-blue-10, #EEEFFE);  }
+    background: var(--primary-blue-10, #eeeffe);
+  }
 `;
 
 const CheckScoreButton = styled.button`
