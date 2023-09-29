@@ -12,7 +12,7 @@ import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import React, { useEffect, useState } from "react";
 
 const DDiv = styled.div`
-  background: #f6f6f6;
+  background: #FFF;
   margin: 0 auto;
   height: 100%;
   /* background-color: red; */

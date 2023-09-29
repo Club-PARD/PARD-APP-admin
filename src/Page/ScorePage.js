@@ -16,7 +16,7 @@ import koLocale from "date-fns/locale/ko";
 // const { Timestamp } = require('@google-cloud/firestore');
 
 const DDiv = styled.div`
-  background: #f6f6f6;
+  background: #FFF;
   height: 100%;
   overflow-y: hidden;
   margin: 0 auto;

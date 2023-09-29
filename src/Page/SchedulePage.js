@@ -18,7 +18,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import style from "../Styles/calendar.module.scss";
 
 const DDiv = styled.div`
-  background: #f6f6f6;
+  background: #FFF;
   margin: 0 auto;
   height: 100%;
   /* background-color: red; */
