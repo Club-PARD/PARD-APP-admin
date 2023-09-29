@@ -19,6 +19,7 @@ const DDiv = styled.div`
   background: #f6f6f6;
   height: 100%;
   overflow-y: hidden;
+  margin: 0 auto;
 `;
 
 const TitleDiv = styled.div`
