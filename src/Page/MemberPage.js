@@ -62,7 +62,7 @@ const BodyDiv = styled.div`
   flex-direction: column;
   margin-top: 83px;
   margin-left: 80px;
-  max-width: 1300px;
+  max-width: 1240px;
   width: 90%;
   height: 744px;
   /* background-color: red; */

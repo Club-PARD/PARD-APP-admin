@@ -69,7 +69,7 @@ const BodyDiv = styled.div`
 `;
 
 const Table = styled.table`
-  width: 1300px;
+  width: 1200px;
   border-collapse: collapse;
   border-spacing: 0;
   border-radius: 4px;

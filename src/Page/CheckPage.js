@@ -216,7 +216,7 @@ const EditButton = styled.button`
   line-height: 24px;
   padding: 12px 36px;
   cursor: pointer;
-  margin-right: 60px;
+  margin-right: 140px;
 
   &:hover {
     box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
@@ -240,7 +240,7 @@ const SaveButton = styled.button`
   line-height: 24px;
   padding: 12px 52px;
   cursor: pointer;
-  margin-right: 60px;
+  margin-right: 140px;
   background: var(--primary-blue, #5262f5);
   border: none;
 
