@@ -3,6 +3,7 @@ import styled from "styled-components";
 import NavBar from "./Components/NavBar/Navbar";
 import CheckPage from "./Page/CheckPage";
 import HomePage from "./Page/HomePage";
+import LoginPage from "./Page/LoginPage";
 import MasterPage from "./Page/MasterPage";
 import MemberPage from "./Page/MemberPage";
 import SchedulePage from "./Page/SchedulePage";
@@ -29,9 +30,9 @@ function App() {
   return (
     <Router>
       <AppContainer>
-        <NavBarContainer>
+        {/* <NavBarContainer>
           <NavBar />
-        </NavBarContainer>
+        </NavBarContainer> */}
         <MainContent>
           <Routes>
             <Route path="/" element={<HomePage />} />
@@ -40,6 +41,7 @@ function App() {
             <Route path="/Schedule" element={<SchedulePage />} />
             <Route path="/Member" element={<MemberPage />} />
             <Route path="/Master" element={<MasterPage />} />
+            <Route path="/Login" element={<LoginPage />} />
           </Routes>
         </MainContent>
       </AppContainer>

@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
+import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
     apiKey: "AIzaSyArT5Wdakh1mXAi8ygFaK7yaYe4qupec7Q",
@@ -15,5 +16,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const dbService = getFirestore(app); //  firebase DB => DB를 관리
+const auth = getAuth(app);
 
-export { app, dbService, analytics };
+export { app, dbService, analytics, auth };
