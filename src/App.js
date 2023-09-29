@@ -30,9 +30,9 @@ function App() {
   return (
     <Router>
       <AppContainer>
-        {/* <NavBarContainer>
+        <NavBarContainer>
           <NavBar />
-        </NavBarContainer> */}
+        </NavBarContainer>
         <MainContent>
           <Routes>
             <Route path="/" element={<HomePage />} />
