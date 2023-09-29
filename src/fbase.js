@@ -19,3 +19,4 @@ const dbService = getFirestore(app); //  firebase DB => DB를 관리
 const auth = getAuth(app);
 
 export { app, dbService, analytics, auth };
+

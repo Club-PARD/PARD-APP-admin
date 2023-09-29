@@ -1,4 +1,7 @@
 import styled from "styled-components";
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { auth, dbService } from '../fbase';
+
 
 const Div = styled.div`
   background: #f6f6f6;
@@ -76,6 +79,19 @@ const GoogleLoginButton = styled.button`
 `;
 
 const LoginPage = () => {
+
+    function handleGoogleLogin() {
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider) 
+          .then((data) => {
+              alert("로그인 성공")
+              console.log(data.email);
+          })
+          .catch((err) => {
+            console.log("로그인 실패 ", err);
+          });
+      }
+
   return (
     <Div>
       <FlexDiv>
@@ -86,7 +102,7 @@ const LoginPage = () => {
       <Body3>
         * 본 사이트는 관리자 권한이 있는 사용자만 접근 가능한 사이트 입니다.
       </Body3>
-      <GoogleLoginButton>
+      <GoogleLoginButton onClick={handleGoogleLogin}>
         <img src={require("../Assets/img/Login/GoogleLogo.png")} />
         구글로 로그인 하기
       </GoogleLoginButton>
@@ -94,3 +110,38 @@ const LoginPage = () => {
   );
 };
 export default LoginPage;
+
+
+// function handleGoogleLogin() {
+//     const provider = new GoogleAuthProvider();
+//     signInWithPopup(auth, provider)
+//       .then((data) => {
+//         const user = data.user;
+//         const userEmail = user.email;
+
+//         const usersRef = dbService.collection("users");
+//         const query = usersRef.where("email", "==", userEmail).limit(1);
+//         query
+//           .get()
+//           .then((querySnapshot) => {
+//             if (!querySnapshot.empty) {
+//               const doc = querySnapshot.docs[0].data();
+//               const isAdmin = doc.isAdmin;
+
+//               if (isAdmin) {
+//                 alert("로그인 성공!");
+//               } else {
+//                 alert("로그인 실패: 권한 없음");
+//               }
+//             } else {
+//               alert("로그인 실패: 해당 사용자 정보 없음");
+//             }
+//           })
+//           .catch((error) => {
+//             console.error("Firestore에서 문서 가져오기 오류:", error);
+//           });
+//       })
+//       .catch((error) => {
+//         console.log("Google 로그인 오류:", error);
+//       });
+//   }
