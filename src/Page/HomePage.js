@@ -15,7 +15,7 @@ const DDiv = styled.div`
 `;
 const TitleDiv = styled.div`
   display: flex;
-  margin-top: 36px;
+  margin-top: 25px;
   margin-left: 80px;
   align-items: center;
 `;
