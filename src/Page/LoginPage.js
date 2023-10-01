@@ -1,10 +1,15 @@
 import styled from "styled-components";
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { auth, dbService } from '../fbase';
-
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth, dbService} from "../fbase";
+import {
+  collection,
+  getDocs,
+  where,
+  query
+} from "firebase/firestore";
 
 const Div = styled.div`
-  background: #FFF;
+  background: #fff;
   margin: 0 auto;
   height: 100%;
   overflow-x: hidden;
@@ -79,19 +84,46 @@ const GoogleLoginButton = styled.button`
 `;
 
 const LoginPage = () => {
-
-    function handleGoogleLogin() {
-        const provider = new GoogleAuthProvider();
-        signInWithPopup(auth, provider) 
-          .then((data) => {
-              alert("로그인 성공")
-              console.log(data.email);
+  // 로그인 코드
+  function handleGoogleLogin() {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((data) => {
+        const user = data.user;
+        const userEmail = user.email;
+  
+        const pointsQuery = query(
+          collection(dbService, "users"),
+          where("email", "==", userEmail)
+        );
+        getDocs(pointsQuery)
+          .then((querySnapshot) => {
+            if (!querySnapshot.empty) {
+              const doc = querySnapshot.docs[0].data();
+              const isAdmin = doc.isAdmin;
+  
+              if (isAdmin) {
+                alert("로그인 성공!");
+                localStorage.setItem("token", process.env.Adimin_Token);
+              } else {
+                alert("로그인 실패: 권한 없음");
+              }
+            } else {
+              alert("로그인 실패: 해당 사용자 정보 없음");
+            }
           })
-          .catch((err) => {
-            console.log("로그인 실패 ", err);
+          .catch((error) => {
+            console.error("Firestore에서 문서 가져오기 오류:", error);
           });
-      }
-
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+  
+  
+  
+  
   return (
     <Div>
       <FlexDiv>
@@ -110,38 +142,3 @@ const LoginPage = () => {
   );
 };
 export default LoginPage;
-
-
-// function handleGoogleLogin() {
-//     const provider = new GoogleAuthProvider();
-//     signInWithPopup(auth, provider)
-//       .then((data) => {
-//         const user = data.user;
-//         const userEmail = user.email;
-
-//         const usersRef = dbService.collection("users");
-//         const query = usersRef.where("email", "==", userEmail).limit(1);
-//         query
-//           .get()
-//           .then((querySnapshot) => {
-//             if (!querySnapshot.empty) {
-//               const doc = querySnapshot.docs[0].data();
-//               const isAdmin = doc.isAdmin;
-
-//               if (isAdmin) {
-//                 alert("로그인 성공!");
-//               } else {
-//                 alert("로그인 실패: 권한 없음");
-//               }
-//             } else {
-//               alert("로그인 실패: 해당 사용자 정보 없음");
-//             }
-//           })
-//           .catch((error) => {
-//             console.error("Firestore에서 문서 가져오기 오류:", error);
-//           });
-//       })
-//       .catch((error) => {
-//         console.log("Google 로그인 오류:", error);
-//       });
-//   }
