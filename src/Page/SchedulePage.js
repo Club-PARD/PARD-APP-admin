@@ -311,6 +311,10 @@ const SchedulePage = () => {
       setIsModalOpen(false);
     }
   };
+
+  const closeModalWidhtUppdate = () => {
+    setIsModalOpen(false);
+  };
   
 
   const ModalWrapper = styled.div`
@@ -598,7 +602,7 @@ const SchedulePage = () => {
     line-height: 16px;
   `;
 
-  const Modal = ({ isOpen, isRegisterModalOpen, onClose }) => {
+  const Modal = ({ isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate }) => {
     const [isToggle, setIsToggle] = useState(false);
     const [selectedOption, setSelectedOption] = useState(null);
     const [inputText, setInputText] = useState("");
@@ -699,7 +703,8 @@ const SchedulePage = () => {
       }
 
         alert("일정이 추가되었습니다.");
-        onClose();
+        closeModalWidhtUppdate();
+        // onClose();
         setTimeout(() => {
           window.location.reload(); // 페이지 새로고침
         }, 1000);
@@ -732,7 +737,8 @@ const SchedulePage = () => {
       }
 
         alert("과제 일정이 추가되었습니다.");
-        onClose();
+        // onClose();
+        closeModalWidhtUppdate();
         setTimeout(() => {
           window.location.reload(); // 페이지 새로고침
         }, 1000);
@@ -1005,6 +1011,7 @@ const SchedulePage = () => {
         isOpen={isModalOpen}
         isRegisterModalOpen={isRegisterModalOpen}
         onClose={() => closeModal()}
+        closeModalWidhtUppdate = {()=>closeModalWidhtUppdate()}
       />
     </DDiv>
   );

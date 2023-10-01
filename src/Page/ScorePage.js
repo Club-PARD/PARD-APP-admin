@@ -110,7 +110,7 @@ const TableHeaderCell = styled.th`
   border-top: 1px solid var(--Gray30, #a3a3a3);
   border-left: 0.5px solid var(--Gray30, #a3a3a3);
   border-right: 0.5px solid var(--Gray30, #a3a3a3);
-  background: #F0F9F5;
+  background: #f0f9f5;
 
   &:first-child {
     border-radius: 4px 0px 0px 0px;
@@ -204,7 +204,7 @@ const DropdownItem = styled.div`
   font-style: normal;
   font-weight: 600;
   line-height: 18px;
-   &:hover {
+  &:hover {
     background-color: #eeeffe;
   }
 `;
@@ -255,6 +255,12 @@ const ScorePage = () => {
       newModals[index] = false;
       setModals(newModals);
     }
+  };
+
+  const closeModalWidhtUppdate = (index) => {
+    const newModals = [...modals];
+    newModals[index] = false;
+    setModals(newModals);
   };
 
   const ModalWrapper = styled.div`
@@ -647,7 +653,14 @@ const ScorePage = () => {
   `;
 
   // 모달 컴포넌트
-  const Modal = ({ isOpen, onClose, name, part, pid }) => {
+  const Modal = ({
+    isOpen,
+    onClose,
+    name,
+    part,
+    pid,
+    closeModalWidhtUppdate,
+  }) => {
     const [points, setPoints] = useState([]); // Points 데이터를 저장할 상태 변수
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(true);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -669,7 +682,18 @@ const ScorePage = () => {
       console.log("read Data");
     }, []);
 
-    const handleAddButtonClick = async () => {
+    const handleAddButtonClick = () => {
+      const result = window.confirm("점수를 추가하시겠습니까?");
+      if (result) {
+        if(selectedScore || inputText === null) {
+          window.confirm("모든 내용을 입력해주세요!");
+        } else {
+          UpdateScore();
+        }
+      }
+    };
+
+    const UpdateScore = async () => {
       if (selectedScore && inputText) {
         const scoreMatch = selectedScore.match(/(-?\d+(\.\d+)?)점/);
 
@@ -746,7 +770,8 @@ const ScorePage = () => {
               // Points 데이터를 다시 불러옴
               // fetchPoints();
               window.location.reload();
-              onClose();
+              // onClose();
+              closeModalWidhtUppdate();
             } catch (error) {
               console.error("Error updating Points data:", error);
             }
@@ -1141,10 +1166,7 @@ const ScorePage = () => {
               <TableHeaderCell width={180}>스터디</TableHeaderCell>
               <TableHeaderCell width={180}>소통</TableHeaderCell>
               <TableHeaderCell width={180}>회고</TableHeaderCell>
-              <TableHeaderCell
-                width={180}
-                style={{ background: "#FFEFEF" }}
-              >
+              <TableHeaderCell width={180} style={{ background: "#FFEFEF" }}>
                 벌점
               </TableHeaderCell>
               <TableHeaderCell width={180} style={{ background: "#F8F8F8" }}>
@@ -1168,8 +1190,7 @@ const ScorePage = () => {
                     justifyContent: "center",
                     alignItems: "center",
                   }}
-                >
-                </div>
+                ></div>
               </>
             ) : (
               <>
@@ -1203,6 +1224,9 @@ const ScorePage = () => {
                         name={userScore.name}
                         part={userScore.part}
                         pid={userScore.pid}
+                        coseModalWidhtUppdate={() =>
+                          closeModalWidhtUppdate(index)
+                        }
                       />
                     </TableCell>
                   </TableRow>
