@@ -109,7 +109,7 @@ const TableHeaderCell = styled.th`
   border-top: 1px solid var(--Gray30, #a3a3a3);
   border-left: 0.5px solid var(--Gray30, #a3a3a3);
   border-right: 0.5px solid var(--Gray30, #a3a3a3);
-  background: rgba(100, 197, 154, 0.1);
+  background: #F0F9F5;
 
   &:first-child {
     border-left: 1px solid var(--Gray30, #a3a3a3);

@@ -110,7 +110,7 @@ const TableHeaderCell = styled.th`
   border-top: 1px solid var(--Gray30, #a3a3a3);
   border-left: 0.5px solid var(--Gray30, #a3a3a3);
   border-right: 0.5px solid var(--Gray30, #a3a3a3);
-  background: rgba(100, 197, 154, 0.1);
+  background: #F0F9F5;
 
   &:first-child {
     border-radius: 4px 0px 0px 0px;
@@ -1142,7 +1142,7 @@ const ScorePage = () => {
               <TableHeaderCell width={180}>회고</TableHeaderCell>
               <TableHeaderCell
                 width={180}
-                style={{ background: "rgba(255, 90, 90, 0.10)" }}
+                style={{ background: "#FFEFEF" }}
               >
                 벌점
               </TableHeaderCell>
