@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 const Nav = styled.nav`
   flex: 1;
-  background-color: rgba(30, 30, 44, 1);
+  background: var(--black-card, #2a2a2a);
   color: white;
   display: flex;
   flex-direction: column;
@@ -87,20 +87,6 @@ const Icon = styled.img`
   margin-right: ${(props) => props.right}px;
 `;
 
-const MenuItem = styled.li`
-  display: block;
-  font-family: "NotoSansKR";
-  min-height: 30px;
-  margin-top: 10px;
-  height: auto;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 140%;
-  margin-bottom: 5px;
-  margin-top: ${(props) => props.top}px;
-`;
-
 const MenuLink = styled(Link)`
   text-decoration: none;
   display: flex;
@@ -109,13 +95,12 @@ const MenuLink = styled(Link)`
   /* gap: 8px; */
   height: 48px;
   margin-top: 5px;
-  /* background-color: red; */
-  font-family: "NotoSansKR";
-  font-size: 16px;
+  color: var(--White, #fff);
+  font-family: "Pretendard";
+  font-size: 18px;
   font-style: normal;
-  font-weight: 400;
-  line-height: 140%;
-  color: white;
+  font-weight: 600;
+  line-height: 24px;
   &:hover {
     background: #323553;
   }
@@ -124,7 +109,6 @@ const MenuLink = styled(Link)`
       ? "var(--grabp, linear-gradient(92deg, #5262F5 0%, #7B3FEF 100%))"
       : "transparent"};
 `;
-
 
 function NavBar() {
   const { pathname } = useLocation(); // 현재 페이지의 URL을 가져옴

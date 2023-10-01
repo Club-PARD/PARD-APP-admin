@@ -17,7 +17,7 @@ const AppContainer = styled.div`
 const NavBarContainer = styled.div`
   width: 15vw;
   min-width: 250px;
-  background-color: rgba(30, 30, 44, 1);
+  background: var(--black-card, #2A2A2A);
 `;
 
 const MainContent = styled.div`
