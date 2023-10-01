@@ -36,7 +36,7 @@ const TitleText = styled.div`
   font-style: normal;
   font-weight: 500;
   line-height: 24px;
-  margin-top: 7px;
+  margin-top: 3px;
 `;
 
 const HRLight = styled.hr`
