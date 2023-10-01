@@ -1160,7 +1160,7 @@ const ScorePage = () => {
                       +{userScore.mvp}점
                     </TableCell>
                     <TableCell color={"#64C59A"} width={180}>
-                      +{userScore.study}잠
+                      +{userScore.study}점
                     </TableCell>
                     <TableCell color={"#64C59A"} width={180}>
                       +{userScore.communication}점
