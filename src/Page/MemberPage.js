@@ -1206,7 +1206,7 @@ const MemberPage = () => {
                     {userScore.name}
                   </TableCell>
                   <TableMinText color={"#2A2A2A"} width={180}>
-                    {userScore.emali}
+                    {userScore.email}
                   </TableMinText>
                   <TableCell color={"#2A2A2A"} width={180}>
                     {userScore.phone}
