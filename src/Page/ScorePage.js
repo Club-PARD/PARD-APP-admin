@@ -113,6 +113,7 @@ const TableHeaderCell = styled.th`
   background: rgba(100, 197, 154, 0.1);
 
   &:first-child {
+    border-radius: 4px 0px 0px 0px;
     border-left: 1px solid var(--Gray30, #a3a3a3);
   }
 
@@ -149,7 +150,7 @@ const DropdownWrapper = styled.div`
   position: relative;
   display: inline-block;
   margin-top: 89px;
-  margin-left: 80px;
+  margin-left: 83px;
   display: flex;
   width: 125px;
   justify-content: center;
@@ -186,16 +187,24 @@ const DropdownContent = styled.div`
   z-index: 1;
   top: 100%;
   left: 0;
-  border: 1px solid #ccc;
+  margin-top: 5px;
+  border: 1px solid var(--primary-blue, #5262f5);
 `;
 
 const DropdownItem = styled.div`
   padding: 10px;
   cursor: pointer;
   background: var(--White, #fff);
-
-  &:hover {
-    background: var(--primary-blue-10, #eeeffe);
+  border: 0.5px solid var(--primary-blue, #5262f5);
+  text-align: center;
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
+   &:hover {
+    background-color: #eeeffe;
   }
 `;
 
