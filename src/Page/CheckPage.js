@@ -271,6 +271,30 @@ const SaveButton = styled.button`
   }
 `;
 
+const FlexDiv = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const CancelButton = styled.button`
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  border-radius: 8px;
+  background: var(--Gray10, #e4e4e4);
+  color: var(--black-card, #2a2a2a);
+  font-family: "Pretendard";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  padding: 12px 65px;
+  cursor: pointer;
+  border: none;
+  margin-right: 16px;
+`;
+
 const EditIcon = styled.img`
   width: 24px;
   height: 24px;
@@ -641,7 +665,10 @@ const CheckPage = () => {
             수정하기
           </EditButton>
         ) : (
+          <FlexDiv>
+          <CancelButton onClick={() => setAddable(true)}>취소하기</CancelButton>
           <SaveButton onClick={handleEditButtonClick}>저장하기</SaveButton>
+          </FlexDiv>
         )}
       </FirstDiv>
       {addable ? (
