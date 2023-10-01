@@ -685,11 +685,7 @@ const ScorePage = () => {
     const handleAddButtonClick = () => {
       const result = window.confirm("점수를 추가하시겠습니까?");
       if (result) {
-        if(selectedScore || inputText === null) {
-          window.confirm("모든 내용을 입력해주세요!");
-        } else {
-          UpdateScore();
-        }
+        UpdateScore();
       }
     };
 
@@ -732,13 +728,10 @@ const ScorePage = () => {
           };
 
           if (
-            inputText === null &&
-            currentDate === null &&
+            inputText === null ||
+            currentDate === null ||
             selectedType === null
           ) {
-            // console.log("값", selectedType);
-            // console.log("시간", scoreDigit);
-            alert("빈칸 확인해");
           } else {
             try {
               // Points 데이터를 업데이트할 때는 기존 데이터를 가져온 후 새로운 데이터를 추가하고 다시 업데이트합니다.
@@ -780,6 +773,8 @@ const ScorePage = () => {
           // 선택한 점수에서 일치하는 패턴을 찾을 수 없는 경우의 처리
           alert("점수 형식이 올바르지 않습니다.");
         }
+      } else {
+        window.confirm("빈칸을 확인해주세요");
       }
     };
 
