@@ -5,7 +5,7 @@ import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
-import { PacmanLoader } from "react-spinners";
+import { FadeLoader } from "react-spinners";
 
 const DDiv = styled.div`
   background: #fff;
@@ -317,7 +317,7 @@ const HomePage = () => {
   const override = {
     display: "flex",
     margin: "0 auto",
-    marginTop : "210px",
+    marginTop : "300px",
     borderColor: "#5262F5",
     textAlign: "center",
   };
@@ -339,7 +339,7 @@ const HomePage = () => {
                 <ScheduleFirstDiv key={index}>
                   <FlextBoxDiv>
                     <PartNameDiv>{schedule.part}</PartNameDiv>
-                    <DateDiv>{schedule.description}</DateDiv>
+                    <DateDiv>{schedule.title}</DateDiv>
                   </FlextBoxDiv>
                 </ScheduleFirstDiv>
                 <ContentText>
@@ -360,15 +360,12 @@ const HomePage = () => {
           <RankDiv>
             {loading ? (
              <>
-              <PacmanLoader
+              <FadeLoader
                 color="#5262F5"
                 loading={loading}
                 cssOverride={override}
-                size={100}
+                size={50}
               />
-              <h1>
-                로딩중..
-              </h1>
              </>
             ) : (
               <>
