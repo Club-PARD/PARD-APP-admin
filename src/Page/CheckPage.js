@@ -12,7 +12,7 @@ import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import React, { useEffect, useState } from "react";
 
 const DDiv = styled.div`
-  background: #FFF;
+  background: #fff;
   margin: 0 auto;
   height: 100%;
   /* background-color: red; */
@@ -84,14 +84,12 @@ const TableHead = styled.thead`
   border-bottom: 1px solid #a3a3a3;
   /* overflow-x : scroll; */
   border-radius: 4px 0px 0px 0px;
-
 `;
 
 const TableRow = styled.tr`
   border-bottom: 1px solid #ddd;
   display: flex;
   border-radius: 4px 0px 0px 0px;
-
 `;
 
 const TableHeaderCell = styled.th`
@@ -176,8 +174,8 @@ const DropdownButton = styled.button`
   border: none;
   padding: 8px 12px;
   display: flex;
-    justify-content: space-between;
-    align-items: center;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const DropdownContent = styled.div`
@@ -190,19 +188,23 @@ const DropdownContent = styled.div`
   left: 0;
   border: 1px solid #ccc;
   margin-top: 5px;
-  border: 1px solid var(--primary-blue, #5262F5);
-
+  border: 1px solid var(--primary-blue, #5262f5);
 `;
 
 const DropdownItem = styled.div`
   padding: 10px;
   cursor: pointer;
   background: var(--White, #fff);
-  border: 0.5px solid var(--primary-blue, #5262F5);
-
-  &:hover {
-    background-color: #EEEFFE;
-
+  border: 0.5px solid var(--primary-blue, #5262f5);
+  text-align: center;
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
+  / &:hover {
+    background-color: #eeeffe;
   }
 `;
 
@@ -274,11 +276,11 @@ const EditIcon = styled.img`
   margin-right: 8px;
 `;
 const ArrowTop1 = styled.img`
-width: 14px;
-height: 14px;
-/* margin-right: 8px; */
-cursor: pointer;
-margin-top: 3px;
+  width: 14px;
+  height: 14px;
+  /* margin-right: 8px; */
+  cursor: pointer;
+  margin-top: 3px;
 `;
 
 const CheckPage = () => {
@@ -617,10 +619,10 @@ const CheckPage = () => {
           <DropdownButton onClick={toggleDropdown}>
             {selectedOption || "전체"}
             {!isOpen ? (
-            <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
-          ) : (
-            <ArrowTop1 src={require("../Assets/img/PolygonDown.png")} />
-          )}
+              <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
+            ) : (
+              <ArrowTop1 src={require("../Assets/img/PolygonDown.png")} />
+            )}
           </DropdownButton>
           <DropdownContent isOpen={isOpen}>
             {options.map((option, index) => (
