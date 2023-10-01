@@ -280,7 +280,6 @@ const ArrowTop1 = styled.img`
   height: 14px;
   /* margin-right: 8px; */
   cursor: pointer;
-  margin-top: 3px;
 `;
 
 const CheckPage = () => {

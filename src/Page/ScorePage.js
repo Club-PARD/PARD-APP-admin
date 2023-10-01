@@ -642,7 +642,7 @@ const ScorePage = () => {
     height: 14px;
     /* margin-right: 8px; */
     cursor: pointer;
-    margin-top: 3px;
+    /* margin-top: 3px; */
   `;
 
   // 모달 컴포넌트
