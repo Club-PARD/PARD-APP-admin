@@ -486,7 +486,6 @@ const MemberPage = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedPartFilter, setSelectedPartFilter] = useState("파트");
   const [isdropdownPart, setIsdropdownPart] = useState(false);
-
   // User 정보 읽기
 
   const sortedUserScores = userScores.sort((a, b) => {
@@ -713,6 +712,12 @@ const MemberPage = () => {
     }
   };
 
+  const closeModalUpdate = (index) => {
+    const newModals = [...modals];
+    newModals[index] = false;
+    setModals(newModals);
+  };
+
   const ModalWrapper = styled.div`
     position: fixed;
     top: 0;
@@ -817,12 +822,16 @@ const MemberPage = () => {
     line-height: 24px;
     margin-top: 66px;
     border: none;
-
+    cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+    background: ${(props) => (props.disabled ? "#A3A3A3" : "#5262f5")};
     &:hover {
-      box-shadow: 0px 4px 8px 0px #5262f5;
+      box-shadow: ${(props) =>
+        props.disabled ? "none" : "0px 4px 8px 0px #5262f5"};
     }
+
     &:active {
-      box-shadow: 0px 4px 8px 0px #5262f5 inset;
+      box-shadow: ${(props) =>
+        props.disabled ? "none" : "0px 4px 8px 0px #5262f5 inset"};
     }
   `;
 
@@ -893,6 +902,7 @@ const MemberPage = () => {
   const Modal = ({
     isModalOpen,
     onModalClose,
+    closeModalUpdate,
     name,
     part,
     uid,
@@ -905,15 +915,18 @@ const MemberPage = () => {
     const [selectedLevelOption, setSelectedLevelOption] = useState(level);
     const [toggleToPart, setToggleToPart] = useState(false);
     const [toggleToLevel, setToggleToLever] = useState(false);
+    const [isEditm, setIsEdit] = useState(false);
 
     const handleNameChange = (e) => {
       const text = e.target.value;
+      setIsEdit(true);
       if (text.length <= 10) {
         setInputName(text);
       }
     };
 
     const handlePhoneNumChange = (e) => {
+      setIsEdit(true);
       const text = e.target.value;
       if (text.length <= 20) {
         setInputPhoneNum(text);
@@ -934,6 +947,7 @@ const MemberPage = () => {
       if (option === "전체") {
         setSelectedOption(null);
       } else {
+        setIsEdit(true);
         setSelectedOption(option);
       }
       setToggleToPart(false);
@@ -943,6 +957,7 @@ const MemberPage = () => {
       if (option === "전체") {
         setSelectedLevelOption(null);
       } else {
+        setIsEdit(true);
         setSelectedLevelOption(option);
       }
       setToggleToLever(false);
@@ -979,7 +994,8 @@ const MemberPage = () => {
           await updateDoc(userDocRef, updates);
 
           alert("사용자 정보가 업데이트되었습니다.");
-          onModalClose();
+          // onModalClose();
+          closeModalUpdate();
           window.location.reload();
         } catch (error) {
           console.error("사용자 정보 업데이트 실패:", error);
@@ -1076,7 +1092,7 @@ const MemberPage = () => {
               </DropdownWrapperModal>
             </ModalContents>
           </ModalSubTitle>
-          <UpdateButton onClick={handleUpdateButtonClick}>
+          <UpdateButton disabled={!isEditm} onClick={handleUpdateButtonClick}>
             저장하기
           </UpdateButton>
         </ModalContent>
@@ -1237,6 +1253,7 @@ const MemberPage = () => {
                   <Modal
                     isModalOpen={modals[index]}
                     onModalClose={() => closeModal(index)}
+                    closeModalUpdate={() => closeModalUpdate(index)}
                     name={userScore.name}
                     part={userScore.part}
                     uid={userScore.uid}
