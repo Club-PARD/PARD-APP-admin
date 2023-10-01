@@ -6,6 +6,8 @@ import {
   getDocs,
   updateDoc,
   doc,
+  query,
+  where,
   addDoc,
 } from "firebase/firestore";
 import { dbService } from "../fbase";
@@ -908,6 +910,7 @@ const MemberPage = () => {
     uid,
     Num,
     level,
+    pid
   }) => {
     const [inputName, setInputName] = useState(name);
     const [inputPhoneNum, setInputPhoneNum] = useState(Num);
@@ -977,8 +980,7 @@ const MemberPage = () => {
 
       if (confirmUpdate) {
         try {
-          // Update user document in Firestore
-          const userDocRef = doc(dbService, "users", uid); // Assuming your user collection is named "users"
+          const userDocRef = doc(dbService, "users", uid);
           const updates = {
             name: inputName,
             phone: inputPhoneNum,
@@ -991,10 +993,35 @@ const MemberPage = () => {
             updates.isMaster = true;
           }
 
-          await updateDoc(userDocRef, updates);
+          if (selectedLevelOption === "운영진" || selectedLevelOption === "거친 파도" || selectedLevelOption === "잔잔 파도") {
+            // Initialize attend and attendInfo fields
+            updates.attend = {};
+            updates.attendInfo = {};
+          }
+          
+          // Find the points document by pid
+          const pointsQuery = query(collection(dbService, "points"), where("pid", "==", pid));
+          const pointsQuerySnapshot = await getDocs(pointsQuery);
+          
+          if (!pointsQuerySnapshot.empty) {
+            const pointsDocRef = pointsQuerySnapshot.docs[0].ref;
+            const pointsUpdates = {
+              beePoints: [],
+              pid: pid,
+              points: [],
+              uid: uid,
+            };
+          
+            // Update the points document
+            await updateDoc(pointsDocRef, pointsUpdates);
+          }
+          
+          // Update the user document in Firestore
+          const userDocRefUp = doc(dbService, "users", uid);
+          await updateDoc(userDocRefUp, updates);
+          
 
           alert("사용자 정보가 업데이트되었습니다.");
-          // onModalClose();
           closeModalUpdate();
           window.location.reload();
         } catch (error) {
@@ -1259,6 +1286,7 @@ const MemberPage = () => {
                     uid={userScore.uid}
                     Num={userScore.phone}
                     level={userScore.member}
+                    pid={userScore.pid}
                   />
                 </TableRow>
               ))}
