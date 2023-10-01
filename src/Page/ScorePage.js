@@ -1093,17 +1093,19 @@ const ScorePage = () => {
           const totalPoints =
             mvpPoints + studyPoints + communicationPoints + retrospectionPoints;
 
-          scores.push({
-            name: userData.name,
-            pid: userData.pid,
-            mvp: mvpPoints,
-            study: studyPoints,
-            communication: communicationPoints,
-            retrospection: retrospectionPoints,
-            penalty: penaltyPoints, // 벌점 포인트
-            total: totalPoints, // 전체 포인트 합계
-            part: userData.part,
-          });
+          if (userData.member !== "운영진" && userData.member !== "잔잔파도") {
+            scores.push({
+              name: userData.name,
+              pid: userData.pid,
+              mvp: mvpPoints,
+              study: studyPoints,
+              communication: communicationPoints,
+              retrospection: retrospectionPoints,
+              penalty: penaltyPoints, // 벌점 포인트
+              total: totalPoints, // 전체 포인트 합계
+              part: userData.part,
+            });
+          }
         }
 
         setUserScores(scores);

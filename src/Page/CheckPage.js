@@ -398,9 +398,11 @@ const CheckPage = () => {
     .filter((user) => user.name) // name 속성이 정의된 요소만 필터링
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  const filteredUserScores = selectedOption
-    ? sortedUserScores.filter((userScore) => userScore.part === selectedOption)
-    : sortedUserScores;
+    const filteredUserScores = selectedOption
+    ? sortedUserScores.filter((userScore) => userScore.part === selectedOption && userScore.member !== '운영진' && userScore.member !== '잔잔파도')
+    : sortedUserScores.filter((userScore) => userScore.member !== '운영진' && userScore.member !== '잔잔파도');
+  
+  
 
   // 업데이트 관련 코드
 
