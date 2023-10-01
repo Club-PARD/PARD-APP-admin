@@ -419,7 +419,9 @@ const CheckPage = () => {
 
   const AttendButton = styled.button`
     display: flex;
-    padding: 4px 12px;
+    /* padding: 4px 12px; */
+    width: 45px;
+    height: 24px;
     justify-content: center;
     align-items: center;
     gap: 10px;
