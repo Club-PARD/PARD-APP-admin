@@ -395,6 +395,17 @@ const CheckPage = () => {
     }
   };
 
+  const handleCancelClick = () => {
+    const confirmSave = window.confirm(
+      "변경사항이 저장되지 않습니다.\n취소 하시겠습니까?"
+    );
+    if (confirmSave) {
+      setTimeout(() => {
+        window.location.reload(); // Refresh the page
+      }, 1000);
+    }
+  };
+
   // 필터 관련 코드
   const options = [
     "전체",
@@ -666,7 +677,7 @@ const CheckPage = () => {
           </EditButton>
         ) : (
           <FlexDiv>
-          <CancelButton onClick={() => setAddable(true)}>취소하기</CancelButton>
+          <CancelButton onClick={handleCancelClick}>취소하기</CancelButton>
           <SaveButton onClick={handleEditButtonClick}>저장하기</SaveButton>
           </FlexDiv>
         )}
