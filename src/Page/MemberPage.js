@@ -799,6 +799,7 @@ const MemberPage = () => {
     font-weight: 500;
     line-height: 18px;
     padding-left: 20px;
+    color: var(--black-background, #1A1A1A);
 
     &::placeholder {
       color: var(--Gray30, #a3a3a3);
@@ -869,6 +870,7 @@ const MemberPage = () => {
     display: flex;
     align-items: center;
     justify-content: center;
+    color: var(--black-background, #1A1A1A);
   `;
 
   const DropdownContentModal = styled.div`
