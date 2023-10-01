@@ -933,7 +933,7 @@ const SchedulePage = () => {
                 <ScheduleFirstDiv key={index}>
                   <FlextBoxDiv>
                     <PartNameDiv>{schedule.part}</PartNameDiv>
-                    <DateDiv>{schedule.description}</DateDiv>
+                    <DateDiv>{schedule.title}</DateDiv>
                   </FlextBoxDiv>
                   <DelteButton
                     onClick={() => handleDeleteSchedule(schedule.sid)}
