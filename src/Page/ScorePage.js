@@ -463,17 +463,30 @@ const ScorePage = () => {
     display: ${(props) => (props.isOpen ? "block" : "none")};
     position: absolute;
     background-color: #f1f1f1;
-    min-width: 160px;
+    min-width: 218px;
     z-index: 1;
     top: 100%;
     left: 0;
     border: 1px solid #ccc;
+    margin-top: 5px;
+    border: 1px solid var(--primary-blue, #5262f5);
   `;
 
   const DropdownItem1 = styled.div`
     padding: 10px;
     cursor: pointer;
-
+    background: var(--White, #fff);
+    border: 0.5px solid var(--primary-blue, #5262f5);
+    text-align: center;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 18px;
+    &:hover {
+      background-color: #eeeffe;
+    }
     &:hover {
       background-color: #ddd;
     }

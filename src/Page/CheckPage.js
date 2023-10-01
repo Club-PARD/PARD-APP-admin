@@ -203,7 +203,7 @@ const DropdownItem = styled.div`
   font-style: normal;
   font-weight: 600;
   line-height: 18px;
-  / &:hover {
+   &:hover {
     background-color: #eeeffe;
   }
 `;
