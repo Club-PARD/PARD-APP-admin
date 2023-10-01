@@ -13,7 +13,7 @@ import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
 
 const DDiv = styled.div`
-  background: #FFF;
+  background: #fff;
   margin: 0 auto;
   height: 100%;
   /* background-color: red; */
@@ -385,21 +385,31 @@ const DropdownContent = styled.div`
   display: ${(props) => (props.isOpen ? "block" : "none")};
   position: absolute;
   background-color: #f1f1f1;
-  min-width: 145px;
+  min-width: ${(props) => props.width}px;
   z-index: 1;
   top: 100%;
   left: 22px;
   border-radius: 2px 2px 0px 0px;
-  border: 1px solid var(--primary-blue, #5262f5);
   background: var(--White, #fff);
+  border: 1px solid var(--primary-blue, #5262f5);
+  margin-top: ${(props) => props.top || 5}px;
+  margin-left: ${(props) => props.left}px;
 `;
 
 const DropdownItem = styled.div`
   padding: 10px;
   cursor: pointer;
-
+  background: var(--White, #fff);
+  border: 0.5px solid var(--primary-blue, #5262f5);
+  text-align: center;
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
   &:hover {
-    background-color: #ddd;
+    background-color: #eeeffe;
   }
 `;
 
@@ -438,6 +448,7 @@ const DropdownContent1 = styled.div`
   z-index: 1;
   top: 100%;
   left: 22px;
+  margin-top: 1px;
   border-radius: 2px 2px 0px 0px;
   border: 1px solid var(--primary-blue, #5262f5);
   background: var(--White, #fff);
@@ -446,9 +457,17 @@ const DropdownContent1 = styled.div`
 const DropdownItem1 = styled.div`
   padding: 10px;
   cursor: pointer;
-
+  background: var(--White, #fff);
+  border: 0.5px solid var(--primary-blue, #5262f5);
+  text-align: center;
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
   &:hover {
-    background-color: #ddd;
+    background-color: #eeeffe;
   }
 `;
 
@@ -851,8 +870,6 @@ const MemberPage = () => {
     border: 1px solid var(--primary-blue, #5262f5);
     background: var(--White, #fff);
     margin-top: 5px;
-
-    
   `;
 
   const DropdownItemModal = styled.div`
@@ -1126,7 +1143,11 @@ const MemberPage = () => {
                         />
                       )}
                     </DropdownButton>
-                    <DropdownContent isOpen={isDropdownOpen}>
+                    <DropdownContent
+                      isOpen={isDropdownOpen}
+                      left={-5}
+                      width={145}
+                    >
                       {memberFillter.map((memberOption, memberIndex) => (
                         <DropdownItem
                           key={memberIndex}
@@ -1154,7 +1175,11 @@ const MemberPage = () => {
                         />
                       )}
                     </DropdownButton>
-                    <DropdownContent isOpen={isdropdownPart}>
+                    <DropdownContent
+                      isOpen={isdropdownPart}
+                      left={-7}
+                      width={120}
+                    >
                       {partFillter.map((memberOption, memberIndex) => (
                         <DropdownItem
                           key={memberIndex}
@@ -1302,7 +1327,12 @@ const MemberPage = () => {
                       >
                         {selectedMembers[index] || "선택"}
                       </DropdownButton>
-                      <DropdownContent isOpen={isOpen[index]}>
+                      <DropdownContent
+                        isOpen={isOpen[index]}
+                        left={-7}
+                        width={160}
+                        top={1}
+                      >
                         {" "}
                         {/* 인덱스에 따라 열림 상태 설정 */}
                         {member.map((memberOption, memberIndex) => (
