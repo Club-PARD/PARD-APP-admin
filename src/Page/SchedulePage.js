@@ -18,7 +18,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import style from "../Styles/calendar.module.scss";
 
 const DDiv = styled.div`
-  background: #FFF;
+  background: #fff;
   margin: 0 auto;
   height: 100%;
   /* background-color: red; */
@@ -315,7 +315,6 @@ const SchedulePage = () => {
   const closeModalWidhtUppdate = () => {
     setIsModalOpen(false);
   };
-  
 
   const ModalWrapper = styled.div`
     position: fixed;
@@ -437,24 +436,24 @@ const SchedulePage = () => {
     top: 100%;
     left: 0;
     margin-top: 5px;
-  border: 1px solid var(--primary-blue, #5262f5);
-    `;
+    border: 1px solid var(--primary-blue, #5262f5);
+  `;
 
   const DropdownItem = styled.div`
-  padding: 10px;
-  cursor: pointer;
-  background: var(--White, #fff);
-  border: 0.5px solid var(--primary-blue, #5262f5);
-  text-align: center;
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 18px;
-   &:hover {
-    background-color: #eeeffe;
-  }
+    padding: 10px;
+    cursor: pointer;
+    background: var(--White, #fff);
+    border: 0.5px solid var(--primary-blue, #5262f5);
+    text-align: center;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 18px;
+    &:hover {
+      background-color: #eeeffe;
+    }
   `;
 
   const ReasonInput = styled.input`
@@ -471,7 +470,7 @@ const SchedulePage = () => {
     line-height: 18px;
     padding-left: 20px;
     margin-top: 25px;
-    color: var(--black-background, #1A1A1A);
+    color: var(--black-background, #1a1a1a);
     /* background-color: blue; */
 
     &::placeholder {
@@ -602,7 +601,12 @@ const SchedulePage = () => {
     line-height: 16px;
   `;
 
-  const Modal = ({ isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate }) => {
+  const Modal = ({
+    isOpen,
+    isRegisterModalOpen,
+    onClose,
+    closeModalWidhtUppdate,
+  }) => {
     const [isToggle, setIsToggle] = useState(false);
     const [selectedOption, setSelectedOption] = useState(null);
     const [inputText, setInputText] = useState("");
@@ -680,71 +684,101 @@ const SchedulePage = () => {
       "기획파트",
     ];
 
-    // 일정 등록 코드
-    const handleRegisterButtonClicked = async () => {
-      try {
-        // selectedTime 값을 Timestamp로 변환 (Firestore에 저장할 수 있는 형식으로)
-        const selectedTimeTimestamp = Timestamp.fromDate(selectedTime);
-
-        // Firestore에 데이터를 추가하고, 반환된 문서의 ID를 받음
-        const docRef = await addDoc(collection(dbService, "schedules"), {
-          dueDate: selectedTimeTimestamp,
-          type: true,
-          place: inputAbout,
-          title: inputText,
-          part: "전체",
-        });
-
-        if(docRef){
-          const docRefid = doc(dbService, "schedules", docRef.id);
-          updateDoc(docRefid, { 
-            sid: docRef.id
-          });
-      }
-
-        alert("일정이 추가되었습니다.");
-        closeModalWidhtUppdate();
-        // onClose();
-        setTimeout(() => {
-          window.location.reload(); // 페이지 새로고침
-        }, 1000);
-      } catch (error) {
-        console.error("일정 추가 실패:", error);
-        alert("일정 추가 중 오류가 발생했습니다.");
+    const handleRegisterButtonClicked = () => {
+      const result = window.confirm("일정를 추가하시겠습니까?");
+      if (result) {
+        UpdateScedule();
       }
     };
 
-    // 과제 등록 
-    const handleRegisterTaskButtonClicked = async () => {
-      try {
-        // selectedTime 값을 Timestamp로 변환 (Firestore에 저장할 수 있는 형식으로)
-        const selectedTimeTimestamp = Timestamp.fromDate(selectedTime);
+    // 일정 등록 코드
+    const UpdateScedule = async () => {
+      if (inputAbout === "") {
+        window.confirm("빈칸을 확인해주세요");
+      } else if (inputText === "") {
+        window.confirm("빈칸을 확인해주세요");
+      } else {
+        try {
+          // selectedTime 값을 Timestamp로 변환 (Firestore에 저장할 수 있는 형식으로)
+          const selectedTimeTimestamp = Timestamp.fromDate(selectedTime);
 
-        // Firestore에 데이터를 추가하고, 반환된 문서의 ID를 받음
-        const docRef = await addDoc(collection(dbService, "schedules"), {
-          dueDate: selectedTimeTimestamp,
-          type: false,
-          place: inputAbout,
-          title: inputText,
-          part: selectedOption,
-        });
-
-        if(docRef){
-          const docRefid = doc(dbService, "schedules", docRef.id);
-          updateDoc(docRefid, { 
-            sid: docRef.id
+          // Firestore에 데이터를 추가하고, 반환된 문서의 ID를 받음
+          const docRef = await addDoc(collection(dbService, "schedules"), {
+            dueDate: selectedTimeTimestamp,
+            type: true,
+            place: inputAbout,
+            title: inputText,
+            part: "전체",
           });
-      }
 
-        alert("과제 일정이 추가되었습니다.");
-        // onClose();
-        closeModalWidhtUppdate();
-        setTimeout(() => {
-          window.location.reload(); // 페이지 새로고침
-        }, 1000);
-      } catch (error) {
-        console.error("일정 추가 실패:", error);
-        alert("일정 추가 중 오류가 발생했습니다.");
+          if (docRef) {
+            const docRefid = doc(dbService, "schedules", docRef.id);
+            updateDoc(docRefid, {
+              sid: docRef.id,
+            });
+          }
+
+          alert("일정이 추가되었습니다.");
+          closeModalWidhtUppdate();
+          // onClose();
+          setTimeout(() => {
+            window.location.reload(); // 페이지 새로고침
+          }, 1000);
+        } catch (error) {
+          console.error("일정 추가 실패:", error);
+          alert("일정 추가 중 오류가 발생했습니다.");
+        }
+      }
+    };
+
+    // 과제 등록
+
+    const handleRegisterTaskButtonClicked = () => {
+      const result = window.confirm("과제를 추가하시겠습니까?");
+      if (result) {
+        UpdateTask();
+      }
+    };
+
+    const UpdateTask = async () => {
+      if (inputAbout === "") {
+        window.confirm("빈칸을 확인해주세요");
+      } else if (inputText === "") {
+        window.confirm("빈칸을 확인해주세요");
+      } else if(selectedOption === null){
+        window.confirm("파트를 선택해주세요");
+      }
+      else {
+        try {
+          // selectedTime 값을 Timestamp로 변환 (Firestore에 저장할 수 있는 형식으로)
+          const selectedTimeTimestamp = Timestamp.fromDate(selectedTime);
+
+          // Firestore에 데이터를 추가하고, 반환된 문서의 ID를 받음
+          const docRef = await addDoc(collection(dbService, "schedules"), {
+            dueDate: selectedTimeTimestamp,
+            type: false,
+            place: inputAbout,
+            title: inputText,
+            part: selectedOption,
+          });
+
+          if (docRef) {
+            const docRefid = doc(dbService, "schedules", docRef.id);
+            updateDoc(docRefid, {
+              sid: docRef.id,
+            });
+          }
+
+          alert("과제 일정이 추가되었습니다.");
+          // onClose();
+          closeModalWidhtUppdate();
+          setTimeout(() => {
+            window.location.reload(); // 페이지 새로고침
+          }, 1000);
+        } catch (error) {
+          console.error("일정 추가 실패:", error);
+          alert("일정 추가 중 오류가 발생했습니다.");
+        }
       }
     };
 
@@ -813,7 +847,12 @@ const SchedulePage = () => {
                   예시
                   <SubMessage>* 앱 노출 화면</SubMessage>
                 </ModalContents>
-                <ModalContents color={"#A3A3A3"} right={0} weight={600} top={55}>
+                <ModalContents
+                  color={"#A3A3A3"}
+                  right={0}
+                  weight={600}
+                  top={55}
+                >
                   <PreView>
                     <PreviewFlexBox>
                       <FlexBox>
@@ -916,7 +955,9 @@ const SchedulePage = () => {
                   />
                 </ModalContents>
               </ModalSubTitle>
-              <RegisterButton onClick={handleRegisterTaskButtonClicked}>추가하기</RegisterButton>
+              <RegisterButton onClick={handleRegisterTaskButtonClicked}>
+                추가하기
+              </RegisterButton>
             </>
           )}
         </ModalContent>
@@ -1011,7 +1052,7 @@ const SchedulePage = () => {
         isOpen={isModalOpen}
         isRegisterModalOpen={isRegisterModalOpen}
         onClose={() => closeModal()}
-        closeModalWidhtUppdate = {()=>closeModalWidhtUppdate()}
+        closeModalWidhtUppdate={() => closeModalWidhtUppdate()}
       />
     </DDiv>
   );
