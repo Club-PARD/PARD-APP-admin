@@ -117,6 +117,7 @@ const TableHeaderCell = styled.th`
   }
 
   &:last-child {
+    border-radius: 0px 4px 0px 0px;
     border-right: 1px solid var(--Gray30, #a3a3a3);
   }
 `;
