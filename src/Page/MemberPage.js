@@ -850,6 +850,9 @@ const MemberPage = () => {
     border-radius: 2px 2px 0px 0px;
     border: 1px solid var(--primary-blue, #5262f5);
     background: var(--White, #fff);
+    margin-top: 5px;
+
+    
   `;
 
   const DropdownItemModal = styled.div`
@@ -861,6 +864,8 @@ const MemberPage = () => {
     font-style: normal;
     font-weight: 600;
     line-height: 18px;
+    border: 0.5px solid var(--primary-blue, #5262f5);
+    text-align: center;
     &:hover {
       background: var(--primary-blue-10, #eeeffe);
     }
