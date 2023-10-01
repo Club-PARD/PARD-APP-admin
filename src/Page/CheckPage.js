@@ -334,8 +334,8 @@ const CheckPage = () => {
       setUserAttendKey(keys);
       setUserAttendValue(values);
       console.log(newData);
-      console.log("key :", userAttendKey);
-      console.log("value :", userAttendValue);
+      // console.log("key :", userAttendKey);
+      // console.log("value :", userAttendValue);
     };
 
     fetchData();
@@ -510,14 +510,12 @@ const CheckPage = () => {
 
   const CustomTableCell = ({ value, idx, onUpdate }) => {
     const [showButtons, setShowButtons] = useState(false);
-    const [attendValue, setAttendValue] = useState(value[idx]);
 
     const toggleButtons = () => {
       setShowButtons(!showButtons);
     };
 
     const updateValue = (newValue) => {
-      setAttendValue(newValue);
       setShowButtons(false);
 
       // 업데이트된 값을 부모 컴포넌트로 전달
