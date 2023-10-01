@@ -104,7 +104,9 @@ const LoginPage = () => {
   
               if (isAdmin) {
                 alert("로그인 성공!");
-                localStorage.setItem("token", process.env.Adimin_Token);
+                localStorage.setItem("token", process.env.ADMIN_TOKEN_KEY);
+                localStorage.setItem("userName", user.displayName);
+                console.log(localStorage.getItem("token"));
               } else {
                 alert("로그인 실패: 권한 없음");
               }

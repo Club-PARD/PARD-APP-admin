@@ -967,7 +967,7 @@ const SchedulePage = () => {
 
   return (
     <DDiv>
-      <CommonLogSection username="김파드님" />
+      <CommonLogSection/>
       <TitleDiv>
         <HomeTitle>일정 관리</HomeTitle>
         <BarText />

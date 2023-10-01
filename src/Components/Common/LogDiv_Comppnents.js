@@ -1,5 +1,7 @@
-import React from "react";
 import styled from "styled-components";
+import { auth } from "../../fbase";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const LogDiv = styled.div`
   display: flex;
@@ -10,6 +12,15 @@ const LogDiv = styled.div`
   /* background-color: red; */
 `;
 
+const NameText = styled.div`
+  color: var(--black-background, #1A1A1A);
+  font-family: 'Pretendard';
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+`;
+
 const LogText = styled.div`
   color: var(--black-background, #1A1A1A);
   font-family: 'Pretendard';
@@ -17,6 +28,7 @@ const LogText = styled.div`
   font-style: normal;
   font-weight: 600;
   line-height: 24px;
+  cursor: pointer;
 `;
 
 const BarText = styled.div`
@@ -28,12 +40,31 @@ const BarText = styled.div`
   background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
 `;
 
-const CommonLogSection = ({ username }) => {
+
+const CommonLogSection = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await auth.signOut(); // Firebase 로그아웃 실행
+      alert("로그아웃되었습니다.");
+      localStorage.removeItem("token");
+      localStorage.removeItem("userName");
+      navigate("/Login");
+    } catch (error) {
+      console.error("로그아웃 중 오류 발생:", error);
+    }
+  };
+
   return (
     <LogDiv>
-      <LogText>{username}</LogText>
+      <NameText>{localStorage.getItem("userName")}</NameText>
       <BarText />
-      <LogText>로그아웃</LogText>
+      <LogText onClick={handleLogout}>로그아웃</LogText>
     </LogDiv>
   );
 };

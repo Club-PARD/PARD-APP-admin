@@ -324,7 +324,7 @@ const HomePage = () => {
 
   return (
     <DDiv>
-      <CommonLogSection username="김파드님" />
+      <CommonLogSection/>
       <TitleDiv>
         <HomeTitle>홈</HomeTitle>
         <BarText />

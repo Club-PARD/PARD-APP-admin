@@ -27,12 +27,19 @@ const MainContent = styled.div`
 `;
 
 function App() {
+
+  const token = localStorage.getItem("token");
   return (
     <Router>
       <AppContainer>
-        <NavBarContainer>
+        {
+          token !== "PARDXXXX" ? 
+          <NavBarContainer>
           <NavBar />
         </NavBarContainer>
+        :
+        <></>
+        }
         <MainContent>
           <Routes>
             <Route path="/" element={<HomePage />} />

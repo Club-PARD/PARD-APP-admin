@@ -1129,7 +1129,7 @@ const MemberPage = () => {
 
   return (
     <DDiv>
-      <CommonLogSection username="김파드님" />
+      <CommonLogSection/>
       <TitleDiv>
         <HomeTitle>회원관리 - 사용자 관리</HomeTitle>
         <BarText />

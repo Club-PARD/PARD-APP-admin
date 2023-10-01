@@ -608,7 +608,7 @@ const CheckPage = () => {
 
   return (
     <DDiv>
-      <CommonLogSection username="김파드님" />
+      <CommonLogSection/>
       <TitleDiv>
         <HomeTitle>출결 관리</HomeTitle>
         <BarText />

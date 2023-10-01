@@ -1129,7 +1129,7 @@ const ScorePage = () => {
 
   return (
     <DDiv>
-      <CommonLogSection username="김파드님" />
+      <CommonLogSection/>
       <TitleDiv>
         <HomeTitle>점수 관리</HomeTitle>
         <BarText />

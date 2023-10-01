@@ -50,7 +50,7 @@ const BarText = styled.div`
 const MasterPage = () => {
   return (
     <DDiv>
-      <CommonLogSection username="김파드님" />
+      <CommonLogSection/>
       <TitleDiv>
         <HomeTitle>회원관리 - 관리자 권한</HomeTitle>
         <BarText />
