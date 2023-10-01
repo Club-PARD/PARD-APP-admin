@@ -13,7 +13,7 @@ import {
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
-import { PacmanLoader } from "react-spinners";
+import { FadeLoader } from "react-spinners";
 
 const DDiv = styled.div`
   background: #fff;
@@ -988,7 +988,7 @@ const ScorePage = () => {
   const override = {
     display: "flex",
     margin: "0 auto",
-    marginTop: "210px",
+    marginTop: "300px",
     borderColor: "#5262F5",
     textAlign: "center",
   };
@@ -1154,7 +1154,7 @@ const ScorePage = () => {
           <TableBody>
             {loading ? (
               <>
-                <PacmanLoader
+                <FadeLoader
                   color="#5262F5"
                   loading={loading}
                   cssOverride={override}
@@ -1168,7 +1168,6 @@ const ScorePage = () => {
                     alignItems: "center",
                   }}
                 >
-                  <h1>로딩중..</h1>
                 </div>
               </>
             ) : (
