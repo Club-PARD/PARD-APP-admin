@@ -13,8 +13,8 @@ const LogDiv = styled.div`
 `;
 
 const NameText = styled.div`
-  color: var(--black-background, #1A1A1A);
-  font-family: 'Pretendard';
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
   font-size: 18px;
   font-style: normal;
   font-weight: 600;
@@ -22,8 +22,8 @@ const NameText = styled.div`
 `;
 
 const LogText = styled.div`
-  color: var(--black-background, #1A1A1A);
-  font-family: 'Pretendard';
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
   font-size: 18px;
   font-style: normal;
   font-weight: 600;
@@ -40,21 +40,26 @@ const BarText = styled.div`
   background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
 `;
 
-
 const CommonLogSection = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    
-  }, []);
+    const token = localStorage.getItem("token");
+    const userName = localStorage.getItem("userName");
 
+    if (!token || !userName) {
+      alert("로그인이 필요합니다.");
+      navigate("/Login");
+    }
+  }, []);
   const handleLogout = async () => {
     try {
-      await auth.signOut(); // Firebase 로그아웃 실행
+      await auth.signOut();
       alert("로그아웃되었습니다.");
       localStorage.removeItem("token");
       localStorage.removeItem("userName");
       navigate("/Login");
+      window.location.reload();
     } catch (error) {
       console.error("로그아웃 중 오류 발생:", error);
     }

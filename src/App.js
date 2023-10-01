@@ -33,7 +33,7 @@ function App() {
     <Router>
       <AppContainer>
         {
-          token !== "PARDXXXX" ? 
+          token === "pardo-admin-key" ? 
           <NavBarContainer>
           <NavBar />
         </NavBarContainer>

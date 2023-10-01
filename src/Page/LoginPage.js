@@ -7,6 +7,7 @@ import {
   where,
   query
 } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 const Div = styled.div`
   background: #fff;
@@ -84,6 +85,8 @@ const GoogleLoginButton = styled.button`
 `;
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+
   // 로그인 코드
   function handleGoogleLogin() {
     const provider = new GoogleAuthProvider();
@@ -104,9 +107,11 @@ const LoginPage = () => {
   
               if (isAdmin) {
                 alert("로그인 성공!");
-                localStorage.setItem("token", process.env.ADMIN_TOKEN_KEY);
+                localStorage.setItem("token", "pardo-admin-key");
                 localStorage.setItem("userName", user.displayName);
-                console.log(localStorage.getItem("token"));
+                // console.log(localStorage.getItem("token"));
+                navigate("/");
+                window.location.reload();
               } else {
                 alert("로그인 실패: 권한 없음");
               }
