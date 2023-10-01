@@ -276,7 +276,7 @@ function NavBar() {
           <DisplayDiv>
             <DisplayTextDiv
               onClick={() => {
-                window.open("https://pard-notice.oopy.io", "_blank");
+                window.open("https://www.notion.so/pardhgu/PARD-2-31f2b5a564924185969c3eee246eef43?pvs=4", "_blank");
               }}
               style={{ cursor: "pointer" }}
             >
