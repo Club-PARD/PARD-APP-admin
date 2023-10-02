@@ -324,7 +324,7 @@ const HomePage = () => {
 
   return (
     <DDiv>
-      <CommonLogSection/>
+      <CommonLogSection />
       <TitleDiv>
         <HomeTitle>홈</HomeTitle>
         <BarText />
