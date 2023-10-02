@@ -275,12 +275,17 @@ const HomePage = () => {
               0
             );
 
-            rankings.push({
-              uid: userDoc.id,
-              displayName: userData.name,
-              totalPoints: totalPoints,
-              part: userData.part,
-            });
+            if (
+              userData.member !== "운영진" &&
+              userData.member !== "잔잔파도"
+            ) {
+              rankings.push({
+                uid: userDoc.id,
+                displayName: userData.name,
+                totalPoints: totalPoints,
+                part: userData.part,
+              });
+            }
           }
         }
         setLoading(false);
@@ -317,26 +322,25 @@ const HomePage = () => {
   const override = {
     display: "flex",
     margin: "0 auto",
-    marginTop : "300px",
+    marginTop: "300px",
     borderColor: "#5262F5",
     textAlign: "center",
   };
 
-
   function getPartName(part) {
     switch (part) {
-      case '기획파트':
-        return '기획';
-      case 'iOS파트':
-        return 'iOS';
-      case '서버파트':
-        return '서버';
-      case '웹파트':
-        return '웹';
-      case '디자인파트':
-        return '디자인';
-        case '앱':
-          return '앱';
+      case "기획파트":
+        return "기획";
+      case "iOS파트":
+        return "iOS";
+      case "서버파트":
+        return "서버";
+      case "웹파트":
+        return "웹";
+      case "디자인파트":
+        return "디자인";
+      case "앱":
+        return "앱";
       default:
         return part;
     }
@@ -379,14 +383,14 @@ const HomePage = () => {
           <HomeTitle>점수 업데이트</HomeTitle>
           <RankDiv>
             {loading ? (
-             <>
-              <FadeLoader
-                color="#5262F5"
-                loading={loading}
-                cssOverride={override}
-                size={50}
-              />
-             </>
+              <>
+                <FadeLoader
+                  color="#5262F5"
+                  loading={loading}
+                  cssOverride={override}
+                  size={50}
+                />
+              </>
             ) : (
               <>
                 {userRankings.map((user, index) => (
