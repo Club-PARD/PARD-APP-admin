@@ -215,7 +215,7 @@ function NavBar() {
         </li>
         <li>
           <DisplayDiv>
-            <DisplayTextDiv bottom={-5} active={pathname.startsWith("/Score")}>
+            <DisplayTextDiv bottom={0} active={pathname.startsWith("/Score")}>
               {pathname.startsWith("/shopManager") ? (
                 <>
                   <Icon
@@ -276,7 +276,10 @@ function NavBar() {
           <DisplayDiv>
             <DisplayTextDiv
               onClick={() => {
-                window.open("https://www.notion.so/pardhgu/PARD-2-31f2b5a564924185969c3eee246eef43?pvs=4", "_blank");
+                window.open(
+                  "https://www.notion.so/pardhgu/PARD-2-31f2b5a564924185969c3eee246eef43?pvs=4",
+                  "_blank"
+                );
               }}
               style={{ cursor: "pointer" }}
             >
