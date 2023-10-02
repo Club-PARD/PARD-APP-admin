@@ -66,7 +66,20 @@ const BodyDiv = styled.div`
   margin-left: 80px;
   max-width: 1240px;
   width: 90%;
-  height: 744px;
+  /* height: 744px; */
+  height: 700px;
+  /* background-color: red; */
+`;
+
+const TableDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+  /* width: 100%; */
+  width: 1242px;
+  height: 700px;
+  /* overflow: auto; */
+  overflow-y: scroll;
+  /* overflow-x: hidden; */
   /* background-color: red; */
 `;
 
@@ -186,12 +199,22 @@ const Table = styled.table`
   border-collapse: collapse;
   border-spacing: 0;
   border-radius: 4px;
-  /* background-color: red; */
+  /* overflow: scroll; */
+
 `;
 
 const TableHead = styled.thead`
   background-color: #eee;
   border-bottom: 1px solid #a3a3a3;
+  position: sticky; /* 고정 위치로 설정 */
+  top: 0; /* 화면 상단에 고정 */
+  /* z-index: 1;  */
+`;
+
+const TableBody = styled.tbody`
+  display: block; /* 블록 레벨로 설정 */
+  max-height: calc(100% - 48px); /* 테이블 헤더 높이만큼 뺀 나머지 높이 설정 */
+  overflow-y: auto; /* 필요한 경우 스크롤 적용 */
 `;
 
 const TableRow = styled.tr`
@@ -1156,6 +1179,7 @@ const MemberPage = () => {
               사용자 추가
             </RegisterButton>
           </FirstDiv>
+          <TableDiv>
           <Table>
             <TableHead>
               <TableRow>
@@ -1243,7 +1267,7 @@ const MemberPage = () => {
                 </TableHeaderCell>
               </TableRow>
             </TableHead>
-            <tbody>
+            <TableBody>
               {filteredUserScores.map((userScore, index) => (
                 <TableRow key={index}>
                   <TableCell color={"#2A2A2A"} width={60}>
@@ -1292,8 +1316,9 @@ const MemberPage = () => {
                   />
                 </TableRow>
               ))}
-            </tbody>
+            </TableBody>
           </Table>
+          </TableDiv>
         </BodyDiv>
       ) : (
         <BodyAddDiv>
