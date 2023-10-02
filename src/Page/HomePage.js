@@ -322,6 +322,26 @@ const HomePage = () => {
     textAlign: "center",
   };
 
+
+  function getPartName(part) {
+    switch (part) {
+      case '기획파트':
+        return '기획';
+      case 'iOS파트':
+        return 'iOS';
+      case '서버파트':
+        return '서버';
+      case '웹파트':
+        return '웹';
+      case '디자인파트':
+        return '디자인';
+        case '앱':
+          return '앱';
+      default:
+        return part;
+    }
+  }
+
   return (
     <DDiv>
       <CommonLogSection />
@@ -338,7 +358,7 @@ const HomePage = () => {
               <ScheduleItem key={index}>
                 <ScheduleFirstDiv key={index}>
                   <FlextBoxDiv>
-                    <PartNameDiv>{schedule.part}</PartNameDiv>
+                    <PartNameDiv>{getPartName(schedule.part)}</PartNameDiv>
                     <DateDiv>{schedule.title}</DateDiv>
                   </FlextBoxDiv>
                 </ScheduleFirstDiv>
