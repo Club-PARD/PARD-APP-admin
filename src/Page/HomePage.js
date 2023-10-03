@@ -296,7 +296,7 @@ const HomePage = () => {
         rankings.sort((a, b) => b.totalPoints - a.totalPoints);
         // 순위를 상태에 설정
         setUserRankings(rankings);
-        console.log("user Ranking :", rankings);
+        // console.log("user Ranking :", rankings);
       } catch (error) {
         console.error("Error calculating rankings:", error);
       }
@@ -306,11 +306,11 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Updated schedules data:", schedules);
+    // console.log("Updated schedules data:", schedules);
   }, [schedules]);
 
   useEffect(() => {
-    console.log("Updated score data:", score);
+    // console.log("Updated score data:", score);
   }, [score]);
 
   const getRecentSchedules = () => {
