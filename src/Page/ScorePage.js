@@ -382,6 +382,8 @@ const ScorePage = () => {
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
+    margin-left: -3px;
   `;
 
   const RowContentDigit = styled.div`
@@ -396,7 +398,7 @@ const ScorePage = () => {
     font-style: normal;
     font-weight: 600;
     line-height: 18px;
-  `;
+    `;
 
   const RowContentDiv = styled.div`
     width: 540px;
@@ -889,16 +891,16 @@ const ScorePage = () => {
                   .map((point, index) => (
                     <div key={index}>
                       <RowContentDiv>
-                        <RowContentType right={40} width={60}>
+                        <RowContentType right={30} width={60}>
                           {point.type === "최고" ? "MVP" : point.type}
                         </RowContentType>
-                        <RowContentDigit right={25} width={45}>
+                        <RowContentDigit right={38} width={45}>
                           {" "}
                           {point.digit > 0
                             ? `+${point.digit}점`
                             : `${point.digit}점`}
                         </RowContentDigit>
-                        <RowContent right={100} width={190}>
+                        <RowContent right={33} width={250}>
                           {point.reason}
                         </RowContent>
                         <RowContent right={0} width={50}>
