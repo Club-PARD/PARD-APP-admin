@@ -707,7 +707,7 @@ const SchedulePage = () => {
     ];
 
     const handleRegisterButtonClicked = () => {
-      const result = window.confirm("일정를 추가하시겠습니까?");
+      const result = window.confirm("일정을 추가하시겠습니까?");
       if (result) {
         UpdateScedule();
       }
