@@ -676,7 +676,7 @@ const ScorePage = () => {
 
     useEffect(() => {
       fetchPoints();
-      console.log("read Data");
+      // console.log("read Data");
     }, []);
 
     const handleAddButtonClick = () => {
@@ -717,7 +717,7 @@ const ScorePage = () => {
               break;
           }
 
-          console.log("값은 :", selectedType);
+          // console.log("값은 :", selectedType);
           const currentDate = Timestamp.now();
 
           const newPoint = {
@@ -742,7 +742,7 @@ const ScorePage = () => {
 
               const pointsSnapshot = await getDocs(pointsQuery);
               const pointsData = pointsSnapshot.docs.map((doc) => doc.data());
-              console.log("읽어온 data :", pointsData[0].points);
+              // console.log("읽어온 data :", pointsData[0].points);
 
               // 새로운 데이터를 추가
               if (scoreDigit > 0) {
@@ -751,7 +751,7 @@ const ScorePage = () => {
                 pointsData[0].beePoints.push(newPoint);
               }
 
-              console.log("넣을 data :", pointsData[0].points);
+              // console.log("넣을 data :", pointsData[0].points); 
 
               const docRefPoint = doc(dbService, "points", pid);
               // 업데이트된 데이터로 업데이트
@@ -838,7 +838,7 @@ const ScorePage = () => {
       if (isOpen) {
         setSelectedScore(null);
         fetchPoints();
-        console.log("data : ", points);
+        // console.log("data : ", points);
       }
     }, [isOpen, pid]);
 
