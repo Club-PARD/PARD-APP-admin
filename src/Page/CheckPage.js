@@ -309,8 +309,6 @@ const ArrowTop1 = styled.img`
 
 const CheckPage = () => {
   const [userDatas, setUserDatas] = useState([]);
-  const [userAttendKey, setUserAttendKey] = useState([]);
-  const [userAttendValue, setUserAttendValue] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [addable, setAddable] = useState(true);
@@ -355,8 +353,6 @@ const CheckPage = () => {
       });
 
       setUserDatas(newData);
-      setUserAttendKey(keys);
-      setUserAttendValue(values);
       console.log(newData);
       // console.log("key :", userAttendKey);
       // console.log("value :", userAttendValue);
