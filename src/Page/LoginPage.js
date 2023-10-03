@@ -1,12 +1,7 @@
 import styled from "styled-components";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth, dbService} from "../fbase";
-import {
-  collection,
-  getDocs,
-  where,
-  query
-} from "firebase/firestore";
+import { auth, dbService } from "../fbase";
+import { collection, getDocs, where, query } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 const Div = styled.div`
@@ -94,7 +89,7 @@ const LoginPage = () => {
       .then((data) => {
         const user = data.user;
         const userEmail = user.email;
-  
+
         const pointsQuery = query(
           collection(dbService, "users"),
           where("email", "==", userEmail)
@@ -104,7 +99,7 @@ const LoginPage = () => {
             if (!querySnapshot.empty) {
               const doc = querySnapshot.docs[0].data();
               const isAdmin = doc.isAdmin;
-  
+
               if (isAdmin) {
                 alert("로그인 되었습니다.");
                 localStorage.setItem("token", "pardo-admin-key");
@@ -127,10 +122,7 @@ const LoginPage = () => {
         console.log(err);
       });
   }
-  
-  
-  
-  
+
   return (
     <Div>
       <FlexDiv>
