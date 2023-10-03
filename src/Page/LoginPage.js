@@ -134,7 +134,7 @@ const LoginPage = () => {
         * 본 사이트는 관리자 권한이 있는 사용자만 접근 가능한 사이트 입니다.
       </Body3>
       <GoogleLoginButton onClick={handleGoogleLogin}>
-        <img src={require("../Assets/img/Login/GoogleLogo.png")} />
+        <img src={require("../Assets/img/Login/GoogleLogo.png")} alt="GOOGLE LOGO"/>
         구글로 로그인 하기
       </GoogleLoginButton>
     </Div>
