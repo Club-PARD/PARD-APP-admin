@@ -979,7 +979,7 @@ const ScorePage = () => {
                 )}
                 <UnitText>점</UnitText>
                 <UnitSubText>
-                  {!editScore ? "  * 파드너십에서 점수 분야를 고르면 자동으로 점수가 입력돼요." : "* 벌점을 직접 입력할 때 -와 함께 점수를 정확히 입력해주세요."}
+                  {!editScore ? "* 파드너십에서 점수 분야를 고르면 자동으로 점수가 입력돼요." : "* 벌점을 직접 입력할 때 -와 함께 점수를 정확히 입력해주세요."}
                 </UnitSubText>
               </ModalSubTitle>
               <ModalSubTitle top={32}>
@@ -989,7 +989,7 @@ const ScorePage = () => {
                 <ReasonInput
                   value={inputText}
                   onChange={handleInputChange}
-                  placeholder="파트 포인트나 벌점 추가하는 사유 (20자 이내)"
+                  placeholder="파드 포인트나 벌점 추가하는 사유 (20자 이내)"
                 />
               </ModalSubTitle>
               <InputNumNum>{inputText.length}/20</InputNumNum>
