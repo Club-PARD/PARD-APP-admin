@@ -657,7 +657,7 @@ const SchedulePage = () => {
       const daysDifference = differenceInDays(selectedDate, today);
 
       const formattedDifference =
-        daysDifference === 0 ? "D-day" : `D-${Math.abs(daysDifference)}`;
+        daysDifference === 0 ? "D-day" : `D-${Math.abs(daysDifference)+1}`;
 
       return formattedDifference;
     }
