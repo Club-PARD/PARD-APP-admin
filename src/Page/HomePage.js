@@ -407,7 +407,7 @@ const HomePage = () => {
                           {index + 1}
                         </RankingNum>
                         <RankingName>{user.displayName}</RankingName>
-                        <RankingPart>{user.part}</RankingPart>
+                        <RankingPart>{getPartName(user.part)}</RankingPart>
                       </RankingFirstDiv>
                       <ScoreText>{user.totalPoints}점</ScoreText>
                     </RankingNumDiv>

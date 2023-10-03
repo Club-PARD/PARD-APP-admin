@@ -109,7 +109,7 @@ const TableHeaderCell = styled.th`
   border-top: 1px solid var(--Gray30, #a3a3a3);
   border-left: 0.5px solid var(--Gray30, #a3a3a3);
   border-right: 0.5px solid var(--Gray30, #a3a3a3);
-  background: #F0F9F5;
+  background: #f0f9f5;
 
   &:first-child {
     border-left: 1px solid var(--Gray30, #a3a3a3);
@@ -204,7 +204,7 @@ const DropdownItem = styled.div`
   font-style: normal;
   font-weight: 600;
   line-height: 18px;
-   &:hover {
+  &:hover {
     background-color: #eeeffe;
   }
 `;
@@ -377,8 +377,8 @@ const CheckPage = () => {
       });
 
       await Promise.all(batch).then(() => {
-        console.log("Firestore 문서 업데이트 성공!");
-        alert("Firestore 문서 업데이트 성공!"); // 성공 시 알림 추가
+        // console.log("Firestore 문서 업데이트 성공!");
+        alert("변경 사항이 저장되었습니다."); // 성공 시 알림 추가
         setTimeout(() => {
           window.location.reload(); // Refresh the page
         }, 1000); // Delay for 1 second (1000 milliseconds)
@@ -433,11 +433,17 @@ const CheckPage = () => {
     .filter((user) => user.name) // name 속성이 정의된 요소만 필터링
     .sort((a, b) => a.name.localeCompare(b.name));
 
-    const filteredUserScores = selectedOption
-    ? sortedUserScores.filter((userScore) => userScore.part === selectedOption && userScore.member !== '운영진' && userScore.member !== '잔잔파도')
-    : sortedUserScores.filter((userScore) => userScore.member !== '운영진' && userScore.member !== '잔잔파도');
-  
-  
+  const filteredUserScores = selectedOption
+    ? sortedUserScores.filter(
+        (userScore) =>
+          userScore.part === selectedOption &&
+          userScore.member !== "운영진" &&
+          userScore.member !== "잔잔파도"
+      )
+    : sortedUserScores.filter(
+        (userScore) =>
+          userScore.member !== "운영진" && userScore.member !== "잔잔파도"
+      );
 
   // 업데이트 관련 코드
 
@@ -643,7 +649,7 @@ const CheckPage = () => {
 
   return (
     <DDiv>
-      <CommonLogSection/>
+      <CommonLogSection />
       <TitleDiv>
         <HomeTitle>출결 관리</HomeTitle>
         <BarText />
@@ -677,8 +683,8 @@ const CheckPage = () => {
           </EditButton>
         ) : (
           <FlexDiv>
-          <CancelButton onClick={handleCancelClick}>취소하기</CancelButton>
-          <SaveButton onClick={handleEditButtonClick}>저장하기</SaveButton>
+            <CancelButton onClick={handleCancelClick}>취소하기</CancelButton>
+            <SaveButton onClick={handleEditButtonClick}>저장하기</SaveButton>
           </FlexDiv>
         )}
       </FirstDiv>
