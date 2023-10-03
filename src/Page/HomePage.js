@@ -102,6 +102,7 @@ const ScheduleFirstDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 6px;
 `;
 
 const PartNameDiv = styled.div`
@@ -145,7 +146,7 @@ const ContentText = styled.div`
   font-weight: 500;
   line-height: 12px;
   margin-left: 24px;
-  margin-top: 8px;
+  margin-top: 10px;
 `;
 
 const LeftDiv = styled.div`
