@@ -106,7 +106,7 @@ const LoginPage = () => {
               const isAdmin = doc.isAdmin;
   
               if (isAdmin) {
-                alert("로그인 성공!");
+                alert("로그인 되었습니다.");
                 localStorage.setItem("token", "pardo-admin-key");
                 localStorage.setItem("userName", user.displayName);
                 // console.log(localStorage.getItem("token"));
