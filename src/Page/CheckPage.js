@@ -332,7 +332,7 @@ const CheckPage = () => {
         scheduleIds.sort((a, b) => a.dueDate - b.dueDate);
 
         setScheduleKeys(scheduleIds); // 여기서 scheduleKeys 상태를 설정합니다.
-        console.log("sid : ", scheduleIds);
+        // console.log("sid : ", scheduleIds);
       } catch (error) {
         console.error("Error fetching schedules:", error);
       }
@@ -353,7 +353,7 @@ const CheckPage = () => {
       });
 
       setUserDatas(newData);
-      console.log(newData);
+      // console.log(newData);
       // console.log("key :", userAttendKey);
       // console.log("value :", userAttendValue);
     };
