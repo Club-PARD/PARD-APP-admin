@@ -554,7 +554,7 @@ const ScorePage = () => {
   const UnitSubText = styled.div`
     color: var(--Gray30, #a3a3a3);
     font-family: "Pretendard";
-    font-size: 10px;
+    font-size: 12px;
     font-style: normal;
     font-weight: 500;
     line-height: 14px;
@@ -979,7 +979,7 @@ const ScorePage = () => {
                 )}
                 <UnitText>점</UnitText>
                 <UnitSubText>
-                  * 파드너십에서 점수 분야를 고르면 자동으로 점수가 입력돼요.
+                  {!editScore ? "  * 파드너십에서 점수 분야를 고르면 자동으로 점수가 입력돼요." : "* 벌점을 직접 입력할 때 -와 함께 점수를 정확히 입력해주세요."}
                 </UnitSubText>
               </ModalSubTitle>
               <ModalSubTitle top={32}>
