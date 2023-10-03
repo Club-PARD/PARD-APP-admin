@@ -706,6 +706,9 @@ const ScorePage = () => {
             case "스터디 개최 및 수료 (+5점)":
               selectedType = "스터디";
               break;
+              case "스터디 참여및 수료 (+3점)":
+                selectedType = "스터디";
+                break;
             case "파드 소통 인증 (+1점)":
               selectedType = "소통";
               break;
@@ -782,6 +785,7 @@ const ScorePage = () => {
       "주요 행사 MVP (+5점)",
       "세미나 파트별 MVP (+3점)",
       "스터디 개최 및 수료 (+5점)",
+      "스터디 참여및 수료 (+3점)",
       "파드 소통 인증 (+1점)",
       "디스콰이엇 회고 (+3점)",
       "세미나 지각 벌점 (-1점)",
