@@ -544,7 +544,7 @@ const MemberPage = () => {
 
   useEffect(() => {
     fetchUsers();
-    console.log("user 정보 :", userScores);
+    // console.log("user 정보 :", userScores);
   }, []);
 
   // 구분 필터
@@ -671,7 +671,7 @@ const MemberPage = () => {
         try {
           // Firestore에 데이터 추가
           const docRef = await addDoc(userCollectionRef, userData);
-          console.log("Document written with ID: ", docRef.id);
+          // console.log("Document written with ID: ", docRef.id);
 
           // Firestore 문서 업데이트
           const pointsData = {
@@ -725,7 +725,7 @@ const MemberPage = () => {
     const newModals = [...modals];
     newModals[index] = true;
     setModals(newModals);
-    console.log("버튼 누름..");
+    // console.log("버튼 누름..");
   };
 
   const closeModal = (index) => {

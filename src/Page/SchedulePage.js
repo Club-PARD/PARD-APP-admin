@@ -244,7 +244,7 @@ const SchedulePage = () => {
         const data = await getDocs(collection(dbService, "schedules"));
         const newData = data.docs.map((doc) => ({ ...doc.data() }));
         setSchedule(newData);
-        console.log(newData);
+        // console.log(newData);
       } catch (error) {
         console.error("Error fetching schedules:", error);
       }
@@ -640,7 +640,7 @@ const SchedulePage = () => {
     const handleDateChange = (date) => {
       setSelectedDate(date);
       setSelectedTime(date);
-      console.log("선택 날짜 :", date);
+      // console.log("선택 날짜 :", date);
     };
 
     // d-day 구하기
