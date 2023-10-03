@@ -89,7 +89,7 @@ const ScheduleItem = styled.div`
   background-color: #ffffff;
   border: 1px solid #e0e0e0;
   margin-bottom: 22px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08);
+  /* box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08); */
   border-radius: 4px;
   display: flex;
   flex-direction: column;

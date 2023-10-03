@@ -545,6 +545,12 @@ const CheckPage = () => {
     padding: 4px 12px;
     border-radius: 4px;
     cursor: pointer;
+    font-family: "Pretendard";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px;
+    border-radius: 4px;
   `;
 
   const CustomTableCell = ({ value, idx, onUpdate }) => {
