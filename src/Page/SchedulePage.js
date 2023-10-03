@@ -636,15 +636,10 @@ const SchedulePage = () => {
     // 닐짜 코드
     const [selectedDate, setSelectedDate] = useState();
     const [selectedTime, setSelectedTime] = useState(new Date());
-    const [calendarOpen, setCalendarOpen] = useState(false);
 
     const handleDateChange = (date) => {
       setSelectedDate(date);
       setSelectedTime(date);
-      if (selectedDate) {
-        // 날짜와 시간이 모두 선택되었을 때 실행되는 로직
-        setCalendarOpen(false);
-      }
       console.log("선택 날짜 :", date);
     };
 
