@@ -503,9 +503,6 @@ const ScorePage = () => {
     &:hover {
       background-color: #eeeffe;
     }
-    &:hover {
-      background-color: #ddd;
-    }
   `;
 
   const ScoreDiv = styled.div`
