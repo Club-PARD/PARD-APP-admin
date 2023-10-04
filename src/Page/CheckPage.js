@@ -63,7 +63,7 @@ const BodyDiv = styled.div`
   margin-left: 80px;
   max-width: 1300px;
   width: 90%;
-  height: 744px;
+  height: 700px;
   overflow: scroll;
 `;
 
@@ -84,6 +84,9 @@ const TableHead = styled.thead`
   border-bottom: 1px solid #a3a3a3;
   /* overflow-x : scroll; */
   border-radius: 4px 0px 0px 0px;
+  position: sticky;
+  top: 0; 
+  z-index: 300;
 `;
 
 const TableRow = styled.tr`
@@ -91,6 +94,18 @@ const TableRow = styled.tr`
   display: flex;
   border-radius: 4px 0px 0px 0px;
 `;
+
+const TableBody = styled.tbody`
+  display: block; /* 블록 레벨로 설정 */
+  max-height: calc(100% - 48px); /* 테이블 헤더 높이만큼 뺀 나머지 높이 설정 */
+  overflow-y: auto; /* 필요한 경우 스크롤 적용 */
+  border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
+  &:first-child {
+    border-left: 1px solid var(--Gray30, #a3a3a3);
+    /* border-radius: 0px 0px 0px 4px; */
+    }
+`;
+
 
 const TableHeaderCell = styled.th`
   color: var(--black-background, #1a1a1a);
@@ -714,7 +729,7 @@ const CheckPage = () => {
                 <TableHeaderCell width={152}>종강총회</TableHeaderCell>
               </TableRow>
             </TableHead>
-            <tbody>
+            <TableBody>
               {filteredUserScores.map((userData, index) => (
                 <TableRow key={index}>
                   <TableCell color={"#2A2A2A"} width={140}>
@@ -727,7 +742,7 @@ const CheckPage = () => {
                   ))}
                 </TableRow>
               ))}
-            </tbody>
+            </TableBody>
           </Table>
         </BodyDiv>
       ) : (
