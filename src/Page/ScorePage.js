@@ -715,7 +715,7 @@ const ScorePage = () => {
               selectedType = "회고";
               break;
             default:
-              selectedType = selectedScore; // 기본적으로는 그대로 설정
+              selectedType = selectedScore; 
               break;
           }
 

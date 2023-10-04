@@ -215,6 +215,16 @@ const TableBody = styled.tbody`
   display: block; /* 블록 레벨로 설정 */
   max-height: calc(100% - 48px); /* 테이블 헤더 높이만큼 뺀 나머지 높이 설정 */
   overflow-y: auto; /* 필요한 경우 스크롤 적용 */
+  border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
+  &:first-child {
+    border-left: 1px solid var(--Gray30, #a3a3a3);
+    /* border-radius: 0px 0px 0px 4px; */
+    }
+
+  &:last-child {
+    /* border-radius: 0px 0px 6px 0px; */
+    border-right: 1px solid var(--Gray30, #a3a3a3);
+  }
 `;
 
 const TableRow = styled.tr`
@@ -1005,7 +1015,6 @@ const MemberPage = () => {
 
       if (confirmUpdate) {
         try {
-          const userDocRef = doc(dbService, "users", uid);
           const updates = {
             name: inputName,
             phone: inputPhoneNum,
