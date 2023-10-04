@@ -3,6 +3,7 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth, dbService } from "../fbase";
 import { collection, getDocs, where, query } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
 
 const Div = styled.div`
   background: #fff;
@@ -81,6 +82,16 @@ const GoogleLoginButton = styled.button`
 
 const LoginPage = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const userName = localStorage.getItem("userName");
+
+    if (token && userName) {
+      alert("이미 로그인한 유저입니다.");
+      navigate("/");
+    }
+  }, []);
 
   // 로그인 코드
   function handleGoogleLogin() {
