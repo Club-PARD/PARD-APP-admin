@@ -198,7 +198,7 @@ const DropdownContent = styled.div`
   display: ${(props) => (props.isOpen ? "block" : "none")};
   position: absolute;
   background-color: #f1f1f1;
-  z-index: 1;
+  z-index: 999;
   width: 125px;
   top: 100%;
   left: 0;
@@ -530,7 +530,7 @@ const CheckPage = () => {
     left: -80px; // 원하는 위치로 조정
     width: 200px;
     height: 60px;
-    z-index: 1; // 다른 요소 위에 렌더링되도록 zIndex 설정
+    z-index: 999; // 다른 요소 위에 렌더링되도록 zIndex 설정
     /* 추가적인 스타일 설정 가능 */
   `;
 
