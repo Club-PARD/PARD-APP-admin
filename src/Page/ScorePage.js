@@ -86,6 +86,8 @@ const TableBody = styled.tbody`
   display: block; /* 블록 레벨로 설정 */
   max-height: calc(100% - 48px); /* 테이블 헤더 높이만큼 뺀 나머지 높이 설정 */
   overflow-y: auto; /* 필요한 경우 스크롤 적용 */
+  border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
+
 `;
 
 const TableRow = styled.tr`
