@@ -684,29 +684,33 @@ const MemberPage = () => {
           // console.log("Document written with ID: ", docRef.id);
 
           // Firestore 문서 업데이트
-          const pointsData = {
-            beePoints: [],
-            points: [],
-          };
 
-          const docRefPoint = await addDoc(pointsCollectionRef, pointsData);
+          if(docRef){
+            
+            const pointsData = {
+              beePoints: [],
+              points: [],
+            };
 
-          const updatedUserData = {
-            uid: docRef.id,
-            pid: `${docRefPoint.id}`,
-          };
+            const docRefPoint = await addDoc(pointsCollectionRef, pointsData);
 
-          // Firestore 문서 업데이트
-          await updateDoc(doc(userCollectionRef, docRef.id), updatedUserData);
-          await updateDoc(
-            doc(pointsCollectionRef, docRefPoint.id),
-            updatedUserData
-          );
-
-          // 데이터 추가 완료 후 처리
-          setAddable(true);
-          window.location.reload();
-          alert("등록 성공!");
+            const updatedUserData = {
+              uid: docRef.id,
+              pid: `${docRefPoint.id}`,
+            };
+  
+            // Firestore 문서 업데이트
+            await updateDoc(doc(userCollectionRef, docRef.id), updatedUserData);
+            await updateDoc(
+              doc(pointsCollectionRef, docRefPoint.id),
+              updatedUserData
+            );
+  
+            // 데이터 추가 완료 후 처리
+            setAddable(true);
+            window.location.reload();
+            alert("등록 성공!");
+          }
         } catch (error) {
           console.error("Error adding document: ", error);
         }
