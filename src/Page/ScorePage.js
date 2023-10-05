@@ -14,6 +14,7 @@ import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
 import { FadeLoader } from "react-spinners";
+import { DateTime } from "luxon";
 
 const DDiv = styled.div`
   background: #fff;
@@ -723,11 +724,12 @@ const ScorePage = () => {
 
           // console.log("값은 :", selectedType);
           const currentDate = Timestamp.now();
+          const currentDateTime = DateTime.fromMillis(currentDate.toMillis(), { zone: "Asia/Seoul" });
 
           const newPoint = {
             digit: scoreDigit,
             reason: inputText,
-            timestamp: currentDate,
+            timestamp: currentDateTime,
             type: selectedType,
           };
 
