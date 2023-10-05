@@ -724,12 +724,12 @@ const ScorePage = () => {
 
           // console.log("값은 :", selectedType);
           const currentDate = Timestamp.now();
-          const currentDateTime = DateTime.fromMillis(currentDate.toMillis(), { zone: "Asia/Seoul" });
+          // const currentDateTime = DateTime.fromMillis(currentDate.toMillis(), { zone: "Asia/Seoul" });
 
           const newPoint = {
             digit: scoreDigit,
             reason: inputText,
-            timestamp: currentDateTime,
+            timestamp: currentDate,
             type: selectedType,
           };
 
