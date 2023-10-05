@@ -340,14 +340,16 @@ const CheckPage = () => {
 
         const scheduleIds = [];
         querySnapshot.forEach((doc) => {
-          scheduleIds.push(doc.id);
+          const data = doc.data();
+          scheduleIds.push({ ...data, dueDate: data.dueDate.toDate() }); // Convert dueDate to JavaScript Date
         });
-
-        // dueDate 필드를 기준으로 데이터를 정렬 (과거 날짜가 먼저 오도록)
+    
+        // Sort the array based on dueDate
         scheduleIds.sort((a, b) => a.dueDate - b.dueDate);
-
+    
         setScheduleKeys(scheduleIds); // 여기서 scheduleKeys 상태를 설정합니다.
         // console.log("sid : ", scheduleIds);
+        
       } catch (error) {
         console.error("Error fetching schedules:", error);
       }
@@ -468,15 +470,16 @@ const CheckPage = () => {
 
     // attend 맵 업데이트
     const updatedAttend = { ...updatedUserDatas[index].attend };
-    updatedAttend[scheduleKeys[idx]] = newData; // scheduleKeys를 사용하여 업데이트
+    updatedAttend[scheduleKeys[idx].sid] = newData; // scheduleKeys를 사용하여 업데이트
     updatedUserDatas[index].attend = updatedAttend;
+    console.log("읽어온 sid :", scheduleKeys);
 
     // Firestore에 업데이트
-    // const userDocRef = doc(dbService, "users", updatedUserDatas[index].uid);
-    // await updateDoc(userDocRef, {
-    //   attendInfo: updatedUserDatas[index].attendInfo,
-    //   attend: updatedAttend, // attend 맵 업데이트
-    // });
+    const userDocRef = doc(dbService, "users", updatedUserDatas[index].uid);
+    await updateDoc(userDocRef, {
+      attendInfo: updatedUserDatas[index].attendInfo,
+      attend: updatedAttend, // attend 맵 업데이트
+    });
 
     // console.log("Firestore 문서 업데이트 성공!");
   };
