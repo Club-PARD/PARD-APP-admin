@@ -257,6 +257,7 @@ const ScorePage = () => {
       const newModals = [...modals];
       newModals[index] = false;
       setModals(newModals);
+      // window.location.reload();
     }
   };
 
@@ -768,8 +769,8 @@ const ScorePage = () => {
 
               // Points 데이터를 다시 불러옴
               // fetchPoints();
-              window.location.reload();
               // onClose();
+              alert("점수 등록이 성공되었습니다.");
               closeModalWidhtUppdate();
             } catch (error) {
               console.error("Error updating Points data:", error);
