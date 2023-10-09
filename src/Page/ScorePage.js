@@ -14,7 +14,6 @@ import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
 import { FadeLoader } from "react-spinners";
-import { DateTime } from "luxon";
 
 const DDiv = styled.div`
   background: #fff;
@@ -905,11 +904,11 @@ const ScorePage = () => {
                             ? `+${point.digit}점`
                             : `${point.digit}점`}
                         </RowContentDigit>
-                        <RowContent right={33} width={250}>
+                        <RowContent right={40} width={250}>
                           {point.reason}
                         </RowContent>
                         <RowContent right={0} width={50}>
-                          {format(fromUnixTime(point.timestamp), "MM.dd(EEE)", {
+                          {format(fromUnixTime(point.timestamp), "MM.dd", {
                             locale: koLocale,
                           })}
                         </RowContent>
