@@ -27,7 +27,13 @@ const MainContent = styled.div`
 `;
 
 function App() {
-
+  if (1+1 === 2) {
+    window.console = {
+      log: function () {},
+      warn: function () {},
+      error: function () {},
+    };
+  }
   const token = localStorage.getItem("token");
   return (
     <Router>
