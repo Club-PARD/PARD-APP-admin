@@ -87,7 +87,6 @@ const TableBody = styled.tbody`
   max-height: calc(100% - 48px); /* 테이블 헤더 높이만큼 뺀 나머지 높이 설정 */
   overflow-y: auto; /* 필요한 경우 스크롤 적용 */
   border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
-
 `;
 
 const TableRow = styled.tr`
@@ -401,7 +400,7 @@ const ScorePage = () => {
     font-style: normal;
     font-weight: 600;
     line-height: 18px;
-    `;
+  `;
 
   const RowContentDiv = styled.div`
     width: 540px;
@@ -700,25 +699,38 @@ const ScorePage = () => {
           let selectedType;
           switch (selectedScore) {
             case "주요 행사 MVP (+5점)":
-              selectedType = "최고";
+              selectedType = "MVP";
               break;
             case "세미나 파트별 MVP (+3점)":
-              selectedType = "최고";
+              selectedType = "MVP";
               break;
             case "스터디 개최 및 수료 (+5점)":
               selectedType = "스터디";
               break;
-              case "스터디 참여및 수료 (+3점)":
-                selectedType = "스터디";
-                break;
+            case "스터디 참여및 수료 (+3점)":
+              selectedType = "스터디";
+              break;
             case "파드 소통 인증 (+1점)":
               selectedType = "소통";
               break;
             case "디스콰이엇 회고 (+3점)":
               selectedType = "회고";
               break;
+            case "세미나 지각 벌점 (-1점)":
+              selectedType = "세미나 지각";
+              break;
+            case "세미나 결석 벌점 (-2점)":
+              selectedType = "세미나 결석";
+              break;
+            case "과제 지각 벌점 (-0.5점)":
+              selectedType = "과제제출 지각";
+              break;
+            case "과제 미제출 (-1점)":
+              selectedType = "과제 미제출";
+              break;
+
             default:
-              selectedType = selectedScore; 
+              selectedType = selectedScore;
               break;
           }
 
@@ -757,7 +769,7 @@ const ScorePage = () => {
                 pointsData[0].beePoints.push(newPoint);
               }
 
-              // console.log("넣을 data :", pointsData[0].points); 
+              // console.log("넣을 data :", pointsData[0].points);
 
               const docRefPoint = doc(dbService, "points", pid);
               // 업데이트된 데이터로 업데이트
@@ -896,7 +908,7 @@ const ScorePage = () => {
                     <div key={index}>
                       <RowContentDiv>
                         <RowContentType right={30} width={60}>
-                          {point.type === "최고" ? "MVP" : point.type}
+                          {point.type === "MVP" ? "MVP" : point.type}
                         </RowContentType>
                         <RowContentDigit right={38} width={45}>
                           {" "}
@@ -985,7 +997,9 @@ const ScorePage = () => {
                 )}
                 <UnitText>점</UnitText>
                 <UnitSubText>
-                  {!editScore ? "* 파드너십에서 점수 분야를 고르면 자동으로 점수가 입력돼요." : "* 벌점을 직접 입력할 때 -와 함께 점수를 정확히 입력해주세요."}
+                  {!editScore
+                    ? "* 파드너십에서 점수 분야를 고르면 자동으로 점수가 입력돼요."
+                    : "* 벌점을 직접 입력할 때 -와 함께 점수를 정확히 입력해주세요."}
                 </UnitSubText>
               </ModalSubTitle>
               <ModalSubTitle top={32}>
@@ -1075,7 +1089,7 @@ const ScorePage = () => {
             pointData.points.forEach((point) => {
               // 포인트 유형(type)에 따라 각각의 포인트를 계산
               switch (point.type) {
-                case "최고":
+                case "MVP":
                   mvpPoints += point.digit;
                   break;
                 case "스터디":
@@ -1136,7 +1150,7 @@ const ScorePage = () => {
 
   return (
     <DDiv>
-      <CommonLogSection/>
+      <CommonLogSection />
       <TitleDiv>
         <HomeTitle>점수 관리</HomeTitle>
         <BarText />
