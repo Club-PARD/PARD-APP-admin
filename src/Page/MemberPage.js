@@ -523,9 +523,9 @@ const MemberPage = () => {
   const [isdropdownPart, setIsdropdownPart] = useState(false);
   // User 정보 읽기
 
-  const sortedUserScores = userScores.sort((a, b) => {
-    return a.name.localeCompare(b.name);
-  });
+  const sortedUserScores = userScores
+  .filter((userScore) => userScore.name) 
+  .sort((a, b) => a.name.localeCompare(b.name));
 
   // 필터
   const filteredUserScores = sortedUserScores.filter((userScore) => {
