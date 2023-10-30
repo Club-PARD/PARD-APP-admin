@@ -1,4 +1,4 @@
-# PARD 앱 관리자 웹사이트 README
+# PARD APP 관리자 웹사이트 README
 
 ## 프로젝트 개요
 
@@ -12,7 +12,6 @@ PARD app 관리자 웹사이트는 React와 firebase 프레임워크를 사용�
 ## 사용 스택
 <div style={display:flex}>
 <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"/>
-      <img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=Spring&logoColor=white">
      <img src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white"/>
     <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"/>
       <img src="https://img.shields.io/badge/firebase-ffca28?style=for-the-badge&logo=firebase&logoColor=black"/>
@@ -35,7 +34,7 @@ npm start
 
 * 0.1.0
     * `첫 배포`
-    * 수정: `점수 입력 로딩 과정 수정`
+    * 수정: `점수 입력 후 로딩 error 수정`
  <br>
 
 [![NPM Version][npm-image]][npm-url]
