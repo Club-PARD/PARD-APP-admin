@@ -36,8 +36,6 @@ npm start
 * 0.1.0
     * `첫 배포`
     * 수정: `점수 입력 로딩 과정 수정`
-* 0.1.1
-   * 추가: `파도 승격시 db 교체 수정`
  <br>
 
 [![NPM Version][npm-image]][npm-url]
