@@ -370,9 +370,6 @@ const CheckPage = () => {
       });
 
       setUserDatas(newData);
-      // console.log(newData);
-      // console.log("key :", userAttendKey);
-      // console.log("value :", userAttendValue);
     };
 
     fetchData();
