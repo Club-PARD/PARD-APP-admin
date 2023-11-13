@@ -976,7 +976,7 @@ const ScorePage = () => {
                       value={score}
                       onChange={(e) => {
                         const value = parseFloat(e.target.value);
-                        setSelectedScore(`벌점 조정 (${value}점)`);
+                        setSelectedScore(`벌점 조정`);
                       }}
                     />
                   </>
