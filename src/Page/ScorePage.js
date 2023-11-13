@@ -723,10 +723,10 @@ const ScorePage = () => {
               selectedType = "세미나 결석";
               break;
             case "과제 지각 벌점 (-0.5점)":
-              selectedType = "과제제출 지각";
+              selectedType = "과제 지각";
               break;
             case "과제 미제출 (-1점)":
-              selectedType = "과제 미제출";
+              selectedType = "과제 결석";
               break;
 
             default:
