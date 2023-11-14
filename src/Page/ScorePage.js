@@ -730,7 +730,7 @@ const ScorePage = () => {
               break;
 
             default:
-              selectedType = selectedScore;
+              selectedType = "벌점 조정";
               break;
           }
 
@@ -976,7 +976,7 @@ const ScorePage = () => {
                       value={score}
                       onChange={(e) => {
                         const value = parseFloat(e.target.value);
-                        setSelectedScore(`벌점 조정`);
+                        setSelectedScore(`벌점 조정 (${value}점)`);
                       }}
                     />
                   </>
