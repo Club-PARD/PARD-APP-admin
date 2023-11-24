@@ -456,31 +456,7 @@ const CheckPage = () => {
       );
 
   // 업데이트 관련 코드
-
-  // const updateUser = async (index, idx, newData) => {
-  //   const updatedUserDatas = [...userDatas];
-  //   updatedUserDatas[index] = {
-  //     ...updatedUserDatas[index],
-  //     attendInfo: [ ...updatedUserDatas[index].attendInfo ],
-  //   };
-  //   setUserDatas(updatedUserDatas);
-
-  //   // attend 맵 업데이트
-  //   const updatedAttend = { ...updatedUserDatas[index].attend };
-  //   updatedAttend[scheduleKeys[idx].sid] = newData; // scheduleKeys를 사용하여 업데이트
-  //   updatedUserDatas[index].attend = updatedAttend;
-  //   console.log("읽어온 sid :", scheduleKeys);
-
-  //   // Firestore에 업데이트
-  //   const userDocRef = doc(dbService, "users", updatedUserDatas[index].uid);
-  //   await updateDoc(userDocRef, {
-  //     attendInfo: updatedUserDatas[index].attendInfo,
-  //     attend: updatedAttend, // attend 맵 업데이트
-  //   });
-
-  //   // console.log("Firestore 문서 업데이트 성공!");
-  // };
-
+  
   const updateUser = async (index, idx, newData) => {
     const updatedUserDatas = [...userDatas];
     
