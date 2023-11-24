@@ -1293,7 +1293,7 @@ const MemberPage = () => {
                     {userScore.email}
                   </TableMinText>
                   <TableCell color={"#2A2A2A"} width={180}>
-                    {userScore.phone}
+                    {userScore.uid}
                   </TableCell>
                   <TableMinText color={"#2A2A2A"} width={180}>
                     {userScore.lastLogin &&
