@@ -271,8 +271,6 @@ const CheckPage = () => {
 
     const updateValue = (newValue) => {
       setShowButtons(false);
-
-      // 업데이트된 값을 부모 컴포넌트로 전달
       onUpdate(newValue);
     };
 
@@ -497,9 +495,7 @@ const DDiv = styled.div`
   background: #fff;
   margin: 0 auto;
   height: 100%;
-  /* background-color: red; */
   overflow-x: hidden;
-  /* overflow-y: hidden; */
 `;
 
 const TitleDiv = styled.div`
@@ -511,7 +507,6 @@ const TitleDiv = styled.div`
 
 const HomeTitle = styled.div`
   color: var(--black-background, #1a1a1a);
-  /* Admin/A2-B-24 */
   font-family: "Pretendard";
   font-size: 24px;
   font-style: normal;
@@ -521,7 +516,6 @@ const HomeTitle = styled.div`
 
 const SubTitle = styled.div`
   color: var(--black-background, #1a1a1a);
-  /* Admin/A1-M-18 */
   font-family: "Pretendard";
   font-size: 18px;
   font-style: normal;

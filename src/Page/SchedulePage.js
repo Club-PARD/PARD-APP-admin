@@ -17,234 +17,32 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import style from "../Styles/calendar.module.scss";
 
-const DDiv = styled.div`
-  background: #fff;
-  margin: 0 auto;
-  height: 100%;
-  /* background-color: red; */
-  overflow-y: hidden;
-`;
-
-const TitleDiv = styled.div`
-  display: flex;
-  margin-top: 25px;
-  margin-left: 80px;
-  align-items: center;
-`;
-
-const HomeTitle = styled.div`
-  color: var(--black-background, #1a1a1a);
-  /* Admin/A2-B-24 */
-  font-family: "Pretendard";
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 32px;
-`;
-
-const SubTitle = styled.div`
-  color: var(--black-background, #1a1a1a);
-  /* Admin/A1-M-18 */
-  font-family: "Pretendard";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 24px;
-  margin-top: 1px;
-`;
-
-const BarText = styled.div`
-  width: 2px;
-  height: 24px;
-  margin-top: 1px;
-  margin-left: 12px;
-  margin-right: 14px;
-  background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
-`;
-
-const AlertText = styled.div`
-  color: var(--Gray30, #a3a3a3);
-  /* Body/B5-M-14 */
-  font-family: "Pretendard";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 18px;
-  margin-left: 8px;
-`;
-
-const BodyDiv = styled.div`
-  display: flex;
-  margin-top: 83px;
-  margin-left: 80px;
-  /* width: 960px; */
-  height: 744px;
-  /* background-color: red; */
-`;
-
-const RightDiv = styled.div`
-  width: 602px;
-  height: 744px;
-  margin-right: 40px;
-  /* background-color: gray; */
-`;
-
-const LeftDiv = styled.div`
-  height: 744px;
-  width: 602px;
-  /* background-color: blue; */
-`;
-
-const ScheduleDiv = styled.div`
-  margin-top: 16px;
-  height: 696px;
-  overflow: scroll;
-`;
-
-const ScheduleItem = styled.div`
-  width: 600px;
-  height: 115px;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  margin-bottom: 22px;
-  /* box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08); */
-  border-radius: 4px;
-  display: flex;
-  flex-direction: column;
-`;
-
-const ScheduleFirstDiv = styled.div`
-  margin-top: 24px;
-  width: 100%;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const PartNameDiv = styled.div`
-  border-radius: 4px;
-  border: 1px solid var(--black-background, #1a1a1a);
-  background: var(--Gray10, #e4e4e4);
-  width: 60px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
-  margin-left: 24px;
-`;
-
-const DateDiv = styled.div`
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  margin-left: 12px;
-`;
-
-const FlextBoxDiv = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 8px;
-`;
-
-const DelteButton = styled.button`
-  width: 55px;
-  height: 28px;
-  border-radius: 4px;
-  border: 1px solid var(--Gray30, #a3a3a3);
-  background: var(--Gray-5, #f8f8f8);
-  color: var(--Gray30, #a3a3a3);
-  font-family: "Pretendard";
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 24px;
-  margin-bottom: 3px;
-  cursor: pointer;
-`;
-
-const DeleteIcon = styled.img`
-  width: 16px;
-  height: 16px;
-  margin-right: 2px;
-`;
-
-const ContentText = styled.div`
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 12px;
-  margin-left: 24px;
-  margin-top: 8px;
-`;
-
-const EditButton = styled.button`
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  border-radius: 8px;
-  border: 1px solid var(--primary-blue, #5262f5);
-  background: rgba(82, 98, 245, 0.1);
-  color: var(--primary-blue, #5262f5);
-  font-family: "Pretendard";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  padding: 12px 16px;
-  cursor: pointer;
-
-  &:hover {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-  }
-  &:active {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-  }
-`;
-
-const EditIcon = styled.img`
-  width: 24px;
-  height: 24px;
-  margin-right: 8px;
-`;
-
-const FirstDiv = styled.div`
-  display: flex;
-  height: 48px;
-  width: 100%;
-  margin-bottom: 16px;
-  justify-content: space-between;
-  align-items: flex-end;
-`;
+/* 
+- Firebase fireStore 스케쥴 데이터 조회
+  - 조회된 데이터 중에 스케쥴 구분 및 sort
+  - 조회된 데이터 중에 과제  구분 및 sort
+  - 문서 삭제 기능
+- Modal 창 관련 코드
+  - 파트 선택 토글
+  - 모달 관련 Style 코드
+- 닐짜 관련 Hook
+  - d-day 구하기
+- 과제 등록
+- 일정 등록
+*/
 
 const SchedulePage = () => {
   const [schedules, setSchedule] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(true);
 
+  // Firebase fireStore 스케쥴 조회
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
         const data = await getDocs(collection(dbService, "schedules"));
         const newData = data.docs.map((doc) => ({ ...doc.data() }));
         setSchedule(newData);
-        // console.log(newData);
       } catch (error) {
         console.error("Error fetching schedules:", error);
       }
@@ -253,6 +51,7 @@ const SchedulePage = () => {
     fetchSchedules();
   }, []);
 
+  // 조회된 데이터 중에 스케쥴 구분 및 sort
   const getRecentSchedules = () => {
     const sortedSchedules = [...schedules].sort(
       (a, b) => b.dueDate - a.dueDate
@@ -263,6 +62,7 @@ const SchedulePage = () => {
     return filteredSchedules;
   };
 
+  // 조회된 데이터 중에 과제  구분 및 sort
   const getRecenTask = () => {
     const sortedSchedules = [...schedules].sort(
       (a, b) => b.dueDate - a.dueDate
@@ -273,15 +73,13 @@ const SchedulePage = () => {
     return filteredSchedules;
   };
 
-  // 삭제 기능
+  // 문서 삭제 기능
   const handleDeleteSchedule = async (documentId) => {
     const userConfirmed = window.confirm("일정을 삭제하시겠습니까?");
 
     if (userConfirmed) {
       try {
         const scheduleRef = doc(dbService, "schedules", documentId);
-
-        // 문서 삭제
         await deleteDoc(scheduleRef);
 
         // 삭제가 성공하면 화면을 새로고침
@@ -293,8 +91,7 @@ const SchedulePage = () => {
     }
   };
 
-  // Modal
-
+  // Modal 창 관련 코드
   const openModal = () => {
     setIsModalOpen(true);
     setIsRegisterModalOpen(true);
@@ -316,35 +113,33 @@ const SchedulePage = () => {
     setIsModalOpen(false);
   };
 
-
   function getPartName(part) {
     switch (part) {
-      case '기획파트':
-        return '기획';
-      case 'iOS파트':
-        return 'iOS';
-      case '서버파트':
-        return '서버';
-      case '웹파트':
-        return '웹';
-      case '디자인파트':
-        return '디자인';
-        case '앱':
-          return '앱';
+      case "기획파트":
+        return "기획";
+      case "iOS파트":
+        return "iOS";
+      case "서버파트":
+        return "서버";
+      case "웹파트":
+        return "웹";
+      case "디자인파트":
+        return "디자인";
+      case "앱":
+        return "앱";
       default:
         return part;
     }
   }
 
-
-  // 모달 관련 코드
+  // 모달 관련 Style 코드
   const ModalWrapper = styled.div`
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* 배경을 어둡게 표시 */
+    background: rgba(0, 0, 0, 0.5);
     display: ${(props) => (props.isOpen ? "block" : "none")};
   `;
 
@@ -356,7 +151,6 @@ const SchedulePage = () => {
     width: 620px;
     height: 552px;
     background-color: white;
-    /* background-color: red; */
   `;
 
   const ModalTitleDiv = styled.div`
@@ -403,7 +197,6 @@ const SchedulePage = () => {
     line-height: 24px;
     margin-right: ${(props) => props.right}px;
     margin-top: ${(props) => props.top}px;
-    /* background-color: red; */
   `;
 
   const DropdownWrapper = styled.div`
@@ -415,7 +208,6 @@ const SchedulePage = () => {
     width: 130px;
     justify-content: center;
     align-items: center;
-    /* gap: 24px; */
     border-radius: 2px;
     border: 1px solid var(--primary-blue, #5262f5);
     background: var(--White, #fff);
@@ -493,7 +285,6 @@ const SchedulePage = () => {
     padding-left: 20px;
     margin-top: 25px;
     color: var(--black-background, #1a1a1a);
-    /* background-color: blue; */
 
     &::placeholder {
       color: var(--Gray30, #a3a3a3);
@@ -526,7 +317,6 @@ const SchedulePage = () => {
     align-items: center;
     gap: 8px;
     color: var(--primary-blue, white);
-    /* Head/H1-SB-18 */
     font-family: "Pretendard";
     font-size: 18px;
     font-style: normal;
@@ -547,9 +337,6 @@ const SchedulePage = () => {
     padding: 15px 18px;
     display: flex;
     flex-direction: column;
-    /* justify-content: center; */
-    /* align-items: center; */
-    /* gap: 12px; */
     width: 245px;
     height: 70px;
     border-radius: 6px;
@@ -561,7 +348,6 @@ const SchedulePage = () => {
     align-items: center;
     justify-content: space-between;
     height: auto;
-    /* background-color: red; */
     margin-bottom: 13px;
   `;
 
@@ -633,31 +419,8 @@ const SchedulePage = () => {
     const [selectedOption, setSelectedOption] = useState(null);
     const [inputText, setInputText] = useState("");
     const [inputAbout, setInputAbout] = useState("");
-    // 닐짜 코드
-    const [selectedDate, setSelectedDate] = useState();
-    const [selectedTime, setSelectedTime] = useState(new Date());
 
-    const handleDateChange = (date) => {
-      setSelectedDate(date);
-      setSelectedTime(date);
-      // console.log("선택 날짜 :", date);
-    };
-
-    // d-day 구하기
-    function calculateDateDifference(selectedDateStr) {
-      const today = new Date();
-
-      const selectedDate = new Date(selectedDateStr);
-
-      const daysDifference = differenceInDays(selectedDate, today);
-
-      const formattedDifference =
-        daysDifference === 0 ? "D-day" : `D-${Math.abs(daysDifference)+1}`;
-
-      return formattedDifference;
-    }
-
-    // 파트 선택 코드
+    // 파트 선택 토글
     const toggleDropdown = () => {
       setIsToggle(!isToggle);
     };
@@ -701,6 +464,30 @@ const SchedulePage = () => {
       "기획파트",
     ];
 
+    // 닐짜 관련 Hook
+    const [selectedDate, setSelectedDate] = useState();
+    const [selectedTime, setSelectedTime] = useState(new Date());
+
+    const handleDateChange = (date) => {
+      setSelectedDate(date);
+      setSelectedTime(date);
+    };
+
+    // d-day 구하기
+    function calculateDateDifference(selectedDateStr) {
+      const today = new Date();
+
+      const selectedDate = new Date(selectedDateStr);
+
+      const daysDifference = differenceInDays(selectedDate, today);
+
+      const formattedDifference =
+        daysDifference === 0 ? "D-day" : `D-${Math.abs(daysDifference) + 1}`;
+
+      return formattedDifference;
+    }
+
+    // 일정 등록
     const handleRegisterButtonClicked = () => {
       const result = window.confirm("일정을 추가하시겠습니까?");
       if (result) {
@@ -708,7 +495,6 @@ const SchedulePage = () => {
       }
     };
 
-    // 일정 등록 코드
     const UpdateScedule = async () => {
       if (inputAbout === "") {
         window.confirm("빈칸을 확인해주세요");
@@ -737,9 +523,8 @@ const SchedulePage = () => {
 
           alert("일정이 추가되었습니다.");
           closeModalWidhtUppdate();
-          // onClose();
           setTimeout(() => {
-            window.location.reload(); // 페이지 새로고침
+            window.location.reload();
           }, 1000);
         } catch (error) {
           console.error("일정 추가 실패:", error);
@@ -749,7 +534,6 @@ const SchedulePage = () => {
     };
 
     // 과제 등록
-
     const handleRegisterTaskButtonClicked = () => {
       const result = window.confirm("과제를 추가하시겠습니까?");
       if (result) {
@@ -762,10 +546,9 @@ const SchedulePage = () => {
         window.confirm("빈칸을 확인해주세요");
       } else if (inputText === "") {
         window.confirm("빈칸을 확인해주세요");
-      } else if(selectedOption === null){
+      } else if (selectedOption === null) {
         window.confirm("파트를 선택해주세요");
-      }
-      else {
+      } else {
         try {
           // selectedTime 값을 Timestamp로 변환 (Firestore에 저장할 수 있는 형식으로)
           const selectedTimeTimestamp = Timestamp.fromDate(selectedTime);
@@ -787,10 +570,9 @@ const SchedulePage = () => {
           }
 
           alert("과제 일정이 추가되었습니다.");
-          // onClose();
           closeModalWidhtUppdate();
           setTimeout(() => {
-            window.location.reload(); // 페이지 새로고침
+            window.location.reload();
           }, 1000);
         } catch (error) {
           console.error("일정 추가 실패:", error);
@@ -983,7 +765,7 @@ const SchedulePage = () => {
 
   return (
     <DDiv>
-      <CommonLogSection/>
+      <CommonLogSection />
       <TitleDiv>
         <HomeTitle>일정 관리</HomeTitle>
         <BarText />
@@ -1075,3 +857,210 @@ const SchedulePage = () => {
 };
 
 export default SchedulePage;
+
+const DDiv = styled.div`
+  background: #fff;
+  margin: 0 auto;
+  height: 100%;
+  overflow-y: hidden;
+`;
+
+const TitleDiv = styled.div`
+  display: flex;
+  margin-top: 25px;
+  margin-left: 80px;
+  align-items: center;
+`;
+
+const HomeTitle = styled.div`
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 32px;
+`;
+
+const SubTitle = styled.div`
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  margin-top: 1px;
+`;
+
+const BarText = styled.div`
+  width: 2px;
+  height: 24px;
+  margin-top: 1px;
+  margin-left: 12px;
+  margin-right: 14px;
+  background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
+`;
+
+const AlertText = styled.div`
+  color: var(--Gray30, #a3a3a3);
+  font-family: "Pretendard";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 18px;
+  margin-left: 8px;
+`;
+
+const BodyDiv = styled.div`
+  display: flex;
+  margin-top: 83px;
+  margin-left: 80px;
+  height: 744px;
+`;
+
+const RightDiv = styled.div`
+  width: 602px;
+  height: 744px;
+  margin-right: 40px;
+`;
+
+const LeftDiv = styled.div`
+  height: 744px;
+  width: 602px;
+`;
+
+const ScheduleDiv = styled.div`
+  margin-top: 16px;
+  height: 696px;
+  overflow: scroll;
+`;
+
+const ScheduleItem = styled.div`
+  width: 600px;
+  height: 115px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 22px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ScheduleFirstDiv = styled.div`
+  margin-top: 24px;
+  width: 100%;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const PartNameDiv = styled.div`
+  border-radius: 4px;
+  border: 1px solid var(--black-background, #1a1a1a);
+  background: var(--Gray10, #e4e4e4);
+  width: 60px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  margin-left: 24px;
+`;
+
+const DateDiv = styled.div`
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  margin-left: 12px;
+`;
+
+const FlextBoxDiv = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+`;
+
+const DelteButton = styled.button`
+  width: 55px;
+  height: 28px;
+  border-radius: 4px;
+  border: 1px solid var(--Gray30, #a3a3a3);
+  background: var(--Gray-5, #f8f8f8);
+  color: var(--Gray30, #a3a3a3);
+  font-family: "Pretendard";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24px;
+  margin-bottom: 3px;
+  cursor: pointer;
+`;
+
+const DeleteIcon = styled.img`
+  width: 16px;
+  height: 16px;
+  margin-right: 2px;
+`;
+
+const ContentText = styled.div`
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 12px;
+  margin-left: 24px;
+  margin-top: 8px;
+`;
+
+const EditButton = styled.button`
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  border-radius: 8px;
+  border: 1px solid var(--primary-blue, #5262f5);
+  background: rgba(82, 98, 245, 0.1);
+  color: var(--primary-blue, #5262f5);
+  font-family: "Pretendard";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  padding: 12px 16px;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
+  }
+  &:active {
+    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
+  }
+`;
+
+const EditIcon = styled.img`
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+`;
+
+const FirstDiv = styled.div`
+  display: flex;
+  height: 48px;
+  width: 100%;
+  margin-bottom: 16px;
+  justify-content: space-between;
+  align-items: flex-end;
+`;

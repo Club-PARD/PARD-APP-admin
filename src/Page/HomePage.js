@@ -80,7 +80,6 @@ const HomePage = () => {
     calculateUserRankings();
   }, []);
 
-
   const getRecentSchedules = () => {
     const sortedSchedules = [...schedules].sort(
       (a, b) => b.dueDate - a.dueDate

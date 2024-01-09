@@ -14,7 +14,7 @@ const LoginPage = () => {
       alert("이미 로그인한 유저입니다.");
       navigate("/");
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);  // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Div>

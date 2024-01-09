@@ -4,7 +4,6 @@ import NavBar from "./Components/NavBar/Navbar";
 import CheckPage from "./Page/CheckPage";
 import HomePage from "./Page/HomePage";
 import LoginPage from "./Page/LoginPage";
-import MasterPage from "./Page/MasterPage";
 import MemberPage from "./Page/MemberPage";
 import SchedulePage from "./Page/SchedulePage";
 import ScorePage from "./Page/ScorePage";
@@ -53,7 +52,6 @@ function App() {
             <Route path="/Check" element={<CheckPage />} />
             <Route path="/Schedule" element={<SchedulePage />} />
             <Route path="/Member" element={<MemberPage />} />
-            <Route path="/Master" element={<MasterPage />} />
             <Route path="/Login" element={<LoginPage />} />
           </Routes>
         </MainContent>
