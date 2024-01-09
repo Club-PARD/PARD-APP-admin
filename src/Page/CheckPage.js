@@ -18,7 +18,8 @@ import React, { useEffect, useState } from "react";
 - 출석 정보 업데이트
 - 과제 등록
 - 필터 옵션
-- 업데이트 관련 코드
+- 즉시 업데이트 관련 코드
+- 출석 결석 지각 버튼
 - Main 화면 코드
 */
 
@@ -155,7 +156,7 @@ const CheckPage = () => {
           userScore.member !== "운영진" && userScore.member !== "잔잔파도"
       );
 
-  // 업데이트 관련 코드
+  // 즉시 업데이트 관련 코드
   const updateUser = async (index, idx, newData) => {
     const updatedUserDatas = [...userDatas];
 
@@ -183,7 +184,6 @@ const CheckPage = () => {
       attend: updatedAttend, // attend 맵 업데이트
     });
 
-    // console.log("Firestore 문서 업데이트 성공!");
   };
 
   // 출석 결석 지각 버튼
@@ -203,7 +203,6 @@ const CheckPage = () => {
 
   const AttendButton = styled.button`
     display: flex;
-    /* padding: 4px 12px; */
     width: 45px;
     height: 24px;
     justify-content: center;
@@ -231,18 +230,17 @@ const CheckPage = () => {
 
   const ImageContainer = styled.div`
     position: absolute;
-    top: -60px; // 원하는 위치로 조정
-    left: -80px; // 원하는 위치로 조정
+    top: -60px; 
+    left: -80px; 
     width: 200px;
     height: 60px;
-    z-index: 999; // 다른 요소 위에 렌더링되도록 zIndex 설정
-    /* 추가적인 스타일 설정 가능 */
+    z-index: 999; 
   `;
 
   const Image = styled.img`
     width: 200px;
     height: 60px;
-    object-fit: cover; // 이미지 크기 조정 방식 설정
+    object-fit: cover; 
   `;
 
   const ButtonFlexDiv = styled.div`
@@ -367,6 +365,7 @@ const CheckPage = () => {
     );
   };
 
+  // Main 화면 코드
   return (
     <DDiv>
       <CommonLogSection />
