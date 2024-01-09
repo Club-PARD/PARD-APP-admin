@@ -9,7 +9,7 @@ import {
   doc,
   query,
   where,
-  addDoc,
+  setDoc,
 } from "firebase/firestore";
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
@@ -148,9 +148,6 @@ const MemberPage = () => {
   };
 
   // 사용자 추가 코드
-  const userCollectionRef = collection(dbService, "users");
-  const pointsCollectionRef = collection(dbService, "points");
-
   const handleEditButtonClick = () => {
     const confirmSave = window.confirm("새로운 멤버를 추가하시겠습니까?");
     if (confirmSave) {
@@ -173,16 +170,21 @@ const MemberPage = () => {
 
   // 사용자 Firebass firestore에 등록
   const handleAddButtonClick = async () => {
-    // 15회 반복하여 각 인덱스에 대한 데이터를 확인하는 루프
+    const promises = []; // 여러 비동기 작업을 동시에 처리하기 위한 프로미스 배열
+
+    // 최대 처리할 횟수 : 15회
     for (let index = 0; index < 15; index++) {
-      // 선택한 인덱스에 해당하는 모든 데이터가 존재하는 경우에만 Firestore에 추가
+      // 선택된 사용자 정보가 모두 유효한 경우만 처리
       if (
         selectedMembers[index] !== null &&
         selectedPart[index] !== null &&
         nameInputs[index] !== "" &&
         phoneInputs[index] !== ""
       ) {
-        // 사용자 데이터 객체 생성
+        // 고유한 문서 ID 생성
+        const newId = nameInputs[index] + Math.random().toString(36).substr(2, 5);
+        
+        // 사용자 데이터를 준비
         const userData = {
           member: selectedMembers[index],
           part: selectedPart[index],
@@ -193,48 +195,40 @@ const MemberPage = () => {
           generation: 2,
           attend: {},
           attendInfo: [],
+          uid: newId,
+          pid: newId,
         };
 
-        try {
-          // Firestore에 사용자 데이터를 추가하고 문서 참조를 반환
-          const docRef = await addDoc(userCollectionRef, userData);
+        // 'users' 컬렉션 +  'points' 컬렉션에 추가할 문서 참조 생성
+        const userDocRef = doc(dbService, "users", newId);
+        const pointsDocRef = doc(dbService, "points", newId);
 
-          // 문서 참조가 존재하는 경우
-          if (docRef) {
-            // 포인트 데이터 객체 생성
-            const pointsData = {
-              beePoints: [],
-              points: [],
-            };
+        // 사용자 문서를 'users' 컬렉션에 추가하고, 그 후 'points' 컬렉션에 포인트 문서를 추가하는 프로미스를 생성.
+        const promise = setDoc(userDocRef, userData).then(() => {
+          // 포인트 데이터를 준비합니다.
+          const pointsData = {
+            beePoints: [],
+            points: [],
+            pid: newId,
+            uid: newId,
+          };
 
-            // Firestore에 포인트 데이터를 추가하고 문서 참조를 반환
-            const docRefPoint = await addDoc(pointsCollectionRef, pointsData);
+          // 포인트 문서 'points' 컬렉션에 추가
+          return setDoc(pointsDocRef, pointsData);
+        });
 
-            // 사용자 이름과 uid의 첫 3글자를 결합하여 pid 생성
-            const pid = userData.name + docRef.id.substring(0, 3);
-
-            // 업데이트할 사용자 데이터 객체 생성
-            const updatedUserData = {
-              uid: docRef.id,
-              pid: pid,
-            };
-
-            // Firestore의 사용자 문서와 포인트 문서를 업데이트
-            await updateDoc(doc(userCollectionRef, docRef.id), updatedUserData);
-            await updateDoc(
-              doc(pointsCollectionRef, docRefPoint.id),
-              updatedUserData
-            );
-
-            // 데이터 추가가 완료된 후 알림 설정
-            setAddable(true);
-            window.location.reload();
-            alert("등록 성공!");
-          }
-        } catch (error) {
-          console.error("Error adding document: ", error);
-        }
+        // 프로미스 배열 추가
+        promises.push(promise);
       }
+    }
+
+    try {
+      await Promise.all(promises);
+      setAddable(true); // 버튼 활성화
+      window.location.reload(); // 페이지 새로고침
+      alert("등록 성공!"); // 사용자에게 성공 메시지 표시
+    } catch (error) {
+      console.error("Error adding document: ", error);
     }
   };
 
@@ -842,7 +836,7 @@ const MemberPage = () => {
                       {userScore.email}
                     </TableMinText>
                     <TableCell color={"#2A2A2A"} width={180}>
-                      {userScore.phone}
+                      {userScore.uid}
                     </TableCell>
                     <TableMinText color={"#2A2A2A"} width={180}>
                       {userScore.lastLogin &&
