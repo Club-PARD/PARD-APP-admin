@@ -29,6 +29,7 @@ import style from "../Styles/calendar.module.scss";
   - d-day 구하기
 - 과제 등록
 - 일정 등록
+- Main 화면 코드
 */
 
 const SchedulePage = () => {
@@ -763,6 +764,7 @@ const SchedulePage = () => {
     );
   };
 
+  // Main 화면 코드
   return (
     <DDiv>
       <CommonLogSection />
