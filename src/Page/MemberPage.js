@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+
 import styled from "styled-components";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import {
@@ -13,6 +14,7 @@ import {
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
+import { fetchUsers } from "../Api/FireStore";
 
 /* 
 - Firebase fireStore User 데이터 조회
@@ -63,20 +65,12 @@ const MemberPage = () => {
   });
 
   // Firebase fireStore User 데이터 조회
-  const fetchUsers = async () => {
-    const usersRef = collection(dbService, "users");
-    const querySnapshot = await getDocs(usersRef);
-    const usersData = [];
-
-    querySnapshot.forEach((doc) => {
-      usersData.push(doc.data());
-    });
-
-    setUserScores(usersData);
-  };
-
   useEffect(() => {
-    fetchUsers();
+    const getUsers = async () => {
+      const users = await fetchUsers();
+      setUserScores(users);
+    };
+    getUsers();
   }, []);
 
   // 토글 코드
