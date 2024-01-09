@@ -11,6 +11,17 @@ import { dbService } from "../fbase";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import React, { useEffect, useState } from "react";
 
+/* 
+- Firebase fireStore 스케쥴 데이터 조회
+  - 조회된 데이터 중 날짜로 sort 및 sid 저장
+- Firebase fireStore 유저 데이터 조회
+- 출석 정보 업데이트
+- 과제 등록
+- 필터 옵션
+- 업데이트 관련 코드
+- Main 화면 코드
+*/
+
 const CheckPage = () => {
   const [userDatas, setUserDatas] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +30,7 @@ const CheckPage = () => {
   const [scheduleKeys, setScheduleKeys] = useState([]); // schedules의 sid 값들을 저장할 상태
 
   useEffect(() => {
-    // Firestore에서 데이터 읽어오기
+    // Firebase fireStore 스케쥴 데이터 조회
     const fetchSchedules = async () => {
       try {
         const schedulesRef = collection(dbService, "schedules");
@@ -27,30 +38,31 @@ const CheckPage = () => {
           query(schedulesRef, where("type", "==", true))
         );
 
+        // 조회된 데이터 중 날짜로 sort 및 sid 저장
         const scheduleIds = [];
         querySnapshot.forEach((doc) => {
           const data = doc.data();
-          scheduleIds.push({ ...data, dueDate: data.dueDate.toDate() }); // Convert dueDate to JavaScript Date
+          scheduleIds.push({ ...data, dueDate: data.dueDate.toDate() }); 
         });
 
-        // Sort the array based on dueDate
         scheduleIds.sort((a, b) => a.dueDate - b.dueDate);
 
-        setScheduleKeys(scheduleIds); // 여기서 scheduleKeys 상태를 설정합니다.
+        setScheduleKeys(scheduleIds); 
         console.log("sid : ", scheduleIds);
       } catch (error) {
         console.error("Error fetching schedules:", error);
       }
     };
 
+    // Firebase fireStore 유저 데이터 조회
     const fetchData = async () => {
-      const data = await getDocs(collection(dbService, "users")); // create라는 collection 안에 모든 document를 읽어올 때 사용한다.
+      const data = await getDocs(collection(dbService, "users")); 
       const newData = data.docs.map((doc) => ({ ...doc.data() }));
 
       const keys = [];
       const values = [];
       newData.forEach((item) => {
-        const attend = item.attend || {}; // "attend"가 없을 경우 빈 객체로 초기화
+        const attend = item.attend || {}; 
         const itemKeys = Object.keys(attend);
         const itemValues = Object.values(attend);
         keys.push(itemKeys);
@@ -64,7 +76,8 @@ const CheckPage = () => {
     fetchSchedules();
   }, []);
 
-  // 정보 업데이트
+
+  // 출석 정보 업데이트
   const updateFirestore = async () => {
     try {
       const batch = [];
@@ -75,11 +88,10 @@ const CheckPage = () => {
       });
 
       await Promise.all(batch).then(() => {
-        // console.log("Firestore 문서 업데이트 성공!");
         alert("변경 사항이 저장되었습니다."); // 성공 시 알림 추가
         setTimeout(() => {
-          window.location.reload(); // Refresh the page
-        }, 1000); // Delay for 1 second (1000 milliseconds)
+          window.location.reload(); 
+        }, 1000); 
       });
     } catch (error) {
       console.error("Firestore 문서 업데이트 오류:", error);
@@ -99,12 +111,12 @@ const CheckPage = () => {
     );
     if (confirmSave) {
       setTimeout(() => {
-        window.location.reload(); // Refresh the page
+        window.location.reload(); 
       }, 1000);
     }
   };
 
-  // 필터 관련 코드
+  // 필터 옵션
   const options = [
     "전체",
     "서버파트",
@@ -144,7 +156,6 @@ const CheckPage = () => {
       );
 
   // 업데이트 관련 코드
-
   const updateUser = async (index, idx, newData) => {
     const updatedUserDatas = [...userDatas];
 

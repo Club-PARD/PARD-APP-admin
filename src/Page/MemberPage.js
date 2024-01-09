@@ -836,7 +836,7 @@ const MemberPage = () => {
                       {userScore.email}
                     </TableMinText>
                     <TableCell color={"#2A2A2A"} width={180}>
-                      {userScore.uid}
+                      {userScore.phone}
                     </TableCell>
                     <TableMinText color={"#2A2A2A"} width={180}>
                       {userScore.lastLogin &&
