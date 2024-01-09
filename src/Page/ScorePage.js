@@ -15,228 +15,6 @@ import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
 import { FadeLoader } from "react-spinners";
 
-const DDiv = styled.div`
-  background: #fff;
-  height: 100%;
-  overflow-y: hidden;
-  margin: 0 auto;
-`;
-
-const TitleDiv = styled.div`
-  display: flex;
-  margin-top: 25px;
-  margin-left: 80px;
-  align-items: center;
-`;
-
-const HomeTitle = styled.div`
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 32px;
-`;
-
-const SubTitle = styled.div`
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 24px;
-  margin-top: 1px;
-`;
-
-const BarText = styled.div`
-  width: 2px;
-  height: 24px;
-  margin-top: 1px;
-  margin-left: 12px;
-  margin-right: 14px;
-  background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
-`;
-
-const BodyDiv = styled.div`
-  display: flex;
-  margin-top: 16px;
-  margin-left: 80px;
-  max-width: 1300px;
-  width: 90%;
-  height: 700px;
-  margin-bottom: 10px;
-  overflow-y: scroll;
-`;
-
-const Table = styled.table`
-  width: 1200px;
-  border-collapse: collapse;
-  border-spacing: 0;
-  border-radius: 4px;
-`;
-
-const TableHead = styled.thead`
-  background-color: #eee;
-  border-bottom: 1px solid #a3a3a3;
-  position: sticky; /* 고정 위치로 설정 */
-  top: 0; /* 화면 상단에 고정 */
-  /* z-index: 1;  */
-`;
-const TableBody = styled.tbody`
-  display: block; /* 블록 레벨로 설정 */
-  max-height: calc(100% - 48px); /* 테이블 헤더 높이만큼 뺀 나머지 높이 설정 */
-  overflow-y: auto; /* 필요한 경우 스크롤 적용 */
-  border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
-`;
-
-const TableRow = styled.tr`
-  border-bottom: 1px solid #ddd;
-  display: flex;
-`;
-
-const TableHeaderCell = styled.th`
-  color: var(--black-background, #1a1a1a);
-  /* Body/B6-SB-16 */
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
-  display: flex;
-  width: ${(props) => props.width}px;
-  height: 48px;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-  border-top: 1px solid var(--Gray30, #a3a3a3);
-  border-left: 0.5px solid var(--Gray30, #a3a3a3);
-  border-right: 0.5px solid var(--Gray30, #a3a3a3);
-  background: #f0f9f5;
-
-  &:first-child {
-    border-radius: 4px 0px 0px 0px;
-    border-left: 1px solid var(--Gray30, #a3a3a3);
-  }
-
-  &:last-child {
-    border-radius: 0px 4px 0px 0px;
-    border-right: 1px solid var(--Gray30, #a3a3a3);
-  }
-`;
-
-const TableCell = styled.td`
-  color: ${(props) => props.color};
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
-  width: ${(props) => props.width}px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 40px;
-  border-right: 0.5px solid var(--Gray30, #a3a3a3);
-  border-left: 0.5px solid var(--Gray30, #a3a3a3);
-
-  &:first-child {
-    border-left: 1px solid var(--Gray30, #a3a3a3);
-  }
-
-  &:last-child {
-    border-right: 1px solid var(--Gray30, #a3a3a3);
-  }
-`;
-
-const DropdownWrapper = styled.div`
-  position: relative;
-  display: inline-block;
-  margin-top: 89px;
-  margin-left: 83px;
-  display: flex;
-  width: 125px;
-  justify-content: center;
-  align-items: center;
-  gap: 24px;
-  border-radius: 2px;
-  border: 1px solid var(--primary-blue, #5262f5);
-  background: var(--White, #fff);
-`;
-
-const DropdownButton = styled.button`
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-  background-color: white;
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
-  border: none;
-  padding: 8px 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const DropdownContent = styled.div`
-  display: ${(props) => (props.isOpen ? "block" : "none")};
-  position: absolute;
-  background-color: #f1f1f1;
-  width: 125px;
-  z-index: 1;
-  top: 100%;
-  left: 0;
-  margin-top: 5px;
-  border: 1px solid var(--primary-blue, #5262f5);
-`;
-
-const DropdownItem = styled.div`
-  padding: 10px;
-  cursor: pointer;
-  background: var(--White, #fff);
-  border: 0.5px solid var(--primary-blue, #5262f5);
-  text-align: center;
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 18px;
-  &:hover {
-    background-color: #eeeffe;
-  }
-`;
-
-const CheckScoreButton = styled.button`
-  display: flex;
-  width: 140px;
-  padding: 6px 16px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  color: var(--primary-blue, #5262f5);
-  font-family: "Pretendard";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 18px;
-  border-radius: 4px;
-  border: 1px solid var(--primary-blue, #5262f5);
-  background: var(--primary-blue-10, #eeeffe);
-  cursor: pointer;
-
-  &:hover {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-  }
-  &:active {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-  }
-`;
-
 const ScorePage = () => {
   const [userScores, setUserScores] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -1259,3 +1037,223 @@ const ScorePage = () => {
 };
 
 export default ScorePage;
+
+const DDiv = styled.div`
+  background: #fff;
+  height: 100%;
+  overflow-y: hidden;
+  margin: 0 auto;
+`;
+
+const TitleDiv = styled.div`
+  display: flex;
+  margin-top: 25px;
+  margin-left: 80px;
+  align-items: center;
+`;
+
+const HomeTitle = styled.div`
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 32px;
+`;
+
+const SubTitle = styled.div`
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  margin-top: 1px;
+`;
+
+const BarText = styled.div`
+  width: 2px;
+  height: 24px;
+  margin-top: 1px;
+  margin-left: 12px;
+  margin-right: 14px;
+  background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
+`;
+
+const BodyDiv = styled.div`
+  display: flex;
+  margin-top: 16px;
+  margin-left: 80px;
+  max-width: 1300px;
+  width: 90%;
+  height: 700px;
+  margin-bottom: 10px;
+  overflow-y: scroll;
+`;
+
+const Table = styled.table`
+  width: 1200px;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border-radius: 4px;
+`;
+
+const TableHead = styled.thead`
+  background-color: #eee;
+  border-bottom: 1px solid #a3a3a3;
+  position: sticky; 
+  top: 0; 
+`;
+const TableBody = styled.tbody`
+  display: block; 
+  max-height: calc(100% - 48px);
+  overflow-y: auto; 
+  border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
+`;
+
+const TableRow = styled.tr`
+  border-bottom: 1px solid #ddd;
+  display: flex;
+`;
+
+const TableHeaderCell = styled.th`
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  display: flex;
+  width: ${(props) => props.width}px;
+  height: 48px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  border-top: 1px solid var(--Gray30, #a3a3a3);
+  border-left: 0.5px solid var(--Gray30, #a3a3a3);
+  border-right: 0.5px solid var(--Gray30, #a3a3a3);
+  background: #f0f9f5;
+
+  &:first-child {
+    border-radius: 4px 0px 0px 0px;
+    border-left: 1px solid var(--Gray30, #a3a3a3);
+  }
+
+  &:last-child {
+    border-radius: 0px 4px 0px 0px;
+    border-right: 1px solid var(--Gray30, #a3a3a3);
+  }
+`;
+
+const TableCell = styled.td`
+  color: ${(props) => props.color};
+  font-family: "Pretendard";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  width: ${(props) => props.width}px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  border-right: 0.5px solid var(--Gray30, #a3a3a3);
+  border-left: 0.5px solid var(--Gray30, #a3a3a3);
+
+  &:first-child {
+    border-left: 1px solid var(--Gray30, #a3a3a3);
+  }
+
+  &:last-child {
+    border-right: 1px solid var(--Gray30, #a3a3a3);
+  }
+`;
+
+const DropdownWrapper = styled.div`
+  position: relative;
+  display: inline-block;
+  margin-top: 89px;
+  margin-left: 83px;
+  display: flex;
+  width: 125px;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  border-radius: 2px;
+  border: 1px solid var(--primary-blue, #5262f5);
+  background: var(--White, #fff);
+`;
+
+const DropdownButton = styled.button`
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  border: none;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const DropdownContent = styled.div`
+  display: ${(props) => (props.isOpen ? "block" : "none")};
+  position: absolute;
+  background-color: #f1f1f1;
+  width: 125px;
+  z-index: 1;
+  top: 100%;
+  left: 0;
+  margin-top: 5px;
+  border: 1px solid var(--primary-blue, #5262f5);
+`;
+
+const DropdownItem = styled.div`
+  padding: 10px;
+  cursor: pointer;
+  background: var(--White, #fff);
+  border: 0.5px solid var(--primary-blue, #5262f5);
+  text-align: center;
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
+  &:hover {
+    background-color: #eeeffe;
+  }
+`;
+
+const CheckScoreButton = styled.button`
+  display: flex;
+  width: 140px;
+  padding: 6px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  color: var(--primary-blue, #5262f5);
+  font-family: "Pretendard";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
+  border-radius: 4px;
+  border: 1px solid var(--primary-blue, #5262f5);
+  background: var(--primary-blue-10, #eeeffe);
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
+  }
+  &:active {
+    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
+  }
+`;
