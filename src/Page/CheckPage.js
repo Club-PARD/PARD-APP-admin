@@ -11,6 +11,488 @@ import { dbService } from "../fbase";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import React, { useEffect, useState } from "react";
 
+const CheckPage = () => {
+  const [userDatas, setUserDatas] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [addable, setAddable] = useState(true);
+  const [scheduleKeys, setScheduleKeys] = useState([]); // schedules의 sid 값들을 저장할 상태
+
+  useEffect(() => {
+    // Firestore에서 데이터 읽어오기
+    const fetchSchedules = async () => {
+      try {
+        const schedulesRef = collection(dbService, "schedules");
+        const querySnapshot = await getDocs(
+          query(schedulesRef, where("type", "==", true))
+        );
+
+        const scheduleIds = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          scheduleIds.push({ ...data, dueDate: data.dueDate.toDate() }); // Convert dueDate to JavaScript Date
+        });
+
+        // Sort the array based on dueDate
+        scheduleIds.sort((a, b) => a.dueDate - b.dueDate);
+
+        setScheduleKeys(scheduleIds); // 여기서 scheduleKeys 상태를 설정합니다.
+        console.log("sid : ", scheduleIds);
+      } catch (error) {
+        console.error("Error fetching schedules:", error);
+      }
+    };
+
+    const fetchData = async () => {
+      const data = await getDocs(collection(dbService, "users")); // create라는 collection 안에 모든 document를 읽어올 때 사용한다.
+      const newData = data.docs.map((doc) => ({ ...doc.data() }));
+
+      const keys = [];
+      const values = [];
+      newData.forEach((item) => {
+        const attend = item.attend || {}; // "attend"가 없을 경우 빈 객체로 초기화
+        const itemKeys = Object.keys(attend);
+        const itemValues = Object.values(attend);
+        keys.push(itemKeys);
+        values.push(itemValues);
+      });
+
+      setUserDatas(newData);
+    };
+
+    fetchData();
+    fetchSchedules();
+  }, []);
+
+  // 정보 업데이트
+  const updateFirestore = async () => {
+    try {
+      const batch = [];
+      userDatas.forEach((userData) => {
+        const userDocRef = doc(dbService, "users", userData.uid); // userId 필드가 있다고 가정
+        const updatedAttendInfo = userData.attendInfo;
+        batch.push(updateDoc(userDocRef, { attendInfo: updatedAttendInfo }));
+      });
+
+      await Promise.all(batch).then(() => {
+        // console.log("Firestore 문서 업데이트 성공!");
+        alert("변경 사항이 저장되었습니다."); // 성공 시 알림 추가
+        setTimeout(() => {
+          window.location.reload(); // Refresh the page
+        }, 1000); // Delay for 1 second (1000 milliseconds)
+      });
+    } catch (error) {
+      console.error("Firestore 문서 업데이트 오류:", error);
+    }
+  };
+
+  const handleEditButtonClick = () => {
+    const confirmSave = window.confirm("변경 사항을 저장하시겠습니까?");
+    if (confirmSave) {
+      updateFirestore();
+    }
+  };
+
+  const handleCancelClick = () => {
+    const confirmSave = window.confirm(
+      "변경사항이 저장되지 않습니다.\n취소 하시겠습니까?"
+    );
+    if (confirmSave) {
+      setTimeout(() => {
+        window.location.reload(); // Refresh the page
+      }, 1000);
+    }
+  };
+
+  // 필터 관련 코드
+  const options = [
+    "전체",
+    "서버파트",
+    "웹파트",
+    "iOS파트",
+    "디자인파트",
+    "기획파트",
+  ];
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleOptionClick = (option) => {
+    if (option === "전체") {
+      setSelectedOption(null);
+    } else {
+      setSelectedOption(option);
+    }
+    setIsOpen(false);
+  };
+
+  const sortedUserScores = userDatas
+    .filter((user) => user.name) // name 속성이 정의된 요소만 필터링
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  const filteredUserScores = selectedOption
+    ? sortedUserScores.filter(
+        (userScore) =>
+          userScore.part === selectedOption &&
+          userScore.member !== "운영진" &&
+          userScore.member !== "잔잔파도"
+      )
+    : sortedUserScores.filter(
+        (userScore) =>
+          userScore.member !== "운영진" && userScore.member !== "잔잔파도"
+      );
+
+  // 업데이트 관련 코드
+
+  const updateUser = async (index, idx, newData) => {
+    const updatedUserDatas = [...userDatas];
+
+    // attendInfo를 List로 변경
+    updatedUserDatas[index] = {
+      ...updatedUserDatas[index],
+      attendInfo: [...(updatedUserDatas[index].attendInfo || [])],
+    };
+
+    // attendInfo 내 해당 인덱스에 새로운 데이터 할당
+    updatedUserDatas[index].attendInfo[idx] = newData;
+
+    setUserDatas(updatedUserDatas);
+
+    // attend 맵 업데이트
+    const updatedAttend = { ...updatedUserDatas[index].attend };
+    updatedAttend[scheduleKeys[idx].sid] = newData; // scheduleKeys를 사용하여 업데이트
+    updatedUserDatas[index].attend = updatedAttend;
+    console.log("읽어온 sid :", scheduleKeys);
+
+    // Firestore에 업데이트
+    const userDocRef = doc(dbService, "users", updatedUserDatas[index].uid);
+    await updateDoc(userDocRef, {
+      attendInfo: updatedUserDatas[index].attendInfo,
+      attend: updatedAttend, // attend 맵 업데이트
+    });
+
+    // console.log("Firestore 문서 업데이트 성공!");
+  };
+
+  // 출석 결석 지각 버튼
+  const AttendBox = styled.div`
+    display: flex;
+    padding: 4px 12px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-family: "Pretendard";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px;
+    border-radius: 4px;
+  `;
+
+  const AttendButton = styled.button`
+    display: flex;
+    /* padding: 4px 12px; */
+    width: 45px;
+    height: 24px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-family: "Pretendard";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    &:hover {
+      box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25);
+    }
+    &:active {
+      box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25) inset;
+    }
+  `;
+
+  const CustomTableCellContainer = styled.div`
+    position: relative;
+  `;
+
+  const ImageContainer = styled.div`
+    position: absolute;
+    top: -60px; // 원하는 위치로 조정
+    left: -80px; // 원하는 위치로 조정
+    width: 200px;
+    height: 60px;
+    z-index: 999; // 다른 요소 위에 렌더링되도록 zIndex 설정
+    /* 추가적인 스타일 설정 가능 */
+  `;
+
+  const Image = styled.img`
+    width: 200px;
+    height: 60px;
+    object-fit: cover; // 이미지 크기 조정 방식 설정
+  `;
+
+  const ButtonFlexDiv = styled.div`
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: -6%;
+  `;
+
+  const Button = styled.button`
+    border: none;
+    margin-right: ${(props) => props.right}px;
+    margin-left: ${(props) => props.left}px;
+    color: ${(props) => props.color};
+    background-color: ${(props) => props.background};
+    display: flex;
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: "Pretendard";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px;
+    border-radius: 4px;
+  `;
+
+  const CustomTableCell = ({ value, idx, onUpdate }) => {
+    const [showButtons, setShowButtons] = useState(false);
+
+    const toggleButtons = () => {
+      setShowButtons(!showButtons);
+    };
+
+    const updateValue = (newValue) => {
+      setShowButtons(false);
+
+      // 업데이트된 값을 부모 컴포넌트로 전달
+      onUpdate(newValue);
+    };
+
+    let backgroundColor = "";
+    let color = "";
+    let displayValue = "";
+
+    const sidValue = value[idx];
+
+    switch (sidValue) {
+      case "지":
+        backgroundColor = "#FFE7D9";
+        color = "var(--primary-orange, #FF5C00)";
+        displayValue = "지각";
+        break;
+      case "출":
+        backgroundColor = "#E8F6F0";
+        color = "var(--primary-green, var(--primary-green, #64C59A))";
+        displayValue = "출석";
+        break;
+      case "결":
+        color = "var(--error-red, #FF5A5A)";
+        backgroundColor = "#FFE6E6";
+        displayValue = "결석";
+        break;
+      default:
+        backgroundColor = "";
+        color = "";
+        displayValue = "  ";
+    }
+
+    return (
+      <CustomTableCellContainer>
+        {addable ? (
+          <AttendBox style={{ backgroundColor, color }}>
+            {displayValue}
+          </AttendBox>
+        ) : (
+          <>
+            <AttendButton
+              onClick={toggleButtons}
+              style={{ backgroundColor, color }}
+            >
+              {displayValue}
+            </AttendButton>
+
+            {showButtons && (
+              <ImageContainer>
+                <Image
+                  src={require("../Assets/img/CheckEditBox.png")}
+                  alt="Image Alt Text"
+                />
+                <ButtonFlexDiv>
+                  <Button
+                    color={"#64C59A"}
+                    background={"#E8F6F0"}
+                    onClick={() => updateValue("출")}
+                  >
+                    출석
+                  </Button>
+                  <Button
+                    color={"#FF5C00"}
+                    background={"#FFE7D9"}
+                    left={8}
+                    right={8}
+                    onClick={() => updateValue("지")}
+                  >
+                    지각
+                  </Button>
+                  <Button
+                    color={"#FF5A5A"}
+                    background={"#FFE6E6"}
+                    onClick={() => updateValue("결")}
+                  >
+                    결석
+                  </Button>
+                </ButtonFlexDiv>
+              </ImageContainer>
+            )}
+          </>
+        )}
+      </CustomTableCellContainer>
+    );
+  };
+
+  return (
+    <DDiv>
+      <CommonLogSection />
+      <TitleDiv>
+        <HomeTitle>출결 관리</HomeTitle>
+        <BarText />
+        <SubTitle>파트별로 출결을 관리해보세요.</SubTitle>
+      </TitleDiv>
+      <FirstDiv>
+        <DropdownWrapper>
+          <DropdownButton onClick={toggleDropdown}>
+            {selectedOption || "전체"}
+            {!isOpen ? (
+              <ArrowTop src={require("../Assets/img/Polygon.png")} />
+            ) : (
+              <ArrowTop src={require("../Assets/img/PolygonDown.png")} />
+            )}
+          </DropdownButton>
+          <DropdownContent isOpen={isOpen}>
+            {options.map((option, index) => (
+              <DropdownItem
+                key={index}
+                onClick={() => handleOptionClick(option)}
+              >
+                {option}
+              </DropdownItem>
+            ))}
+          </DropdownContent>
+        </DropdownWrapper>
+        {addable ? (
+          <EditButton onClick={() => setAddable(false)}>
+            <EditIcon src={require("../Assets/img/EditIcon.png")} />
+            수정하기
+          </EditButton>
+        ) : (
+          <FlexDiv>
+            <CancelButton onClick={handleCancelClick}>취소하기</CancelButton>
+            <SaveButton onClick={handleEditButtonClick}>저장하기</SaveButton>
+          </FlexDiv>
+        )}
+      </FirstDiv>
+      {addable ? (
+        <BodyDiv>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeaderCell width={140} style={{ background: "#F8F8F8" }}>
+                  이름
+                </TableHeaderCell>
+                <TableHeaderCell width={152}>OT</TableHeaderCell>
+                <TableHeaderCell width={152}>1차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>2차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>3차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>연합 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>4차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>5차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>6차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>
+                  기디개 연합 세미나
+                </TableHeaderCell>
+                <TableHeaderCell width={152}>숏커톤</TableHeaderCell>
+                <TableHeaderCell width={152}>아이디어 피칭</TableHeaderCell>
+                <TableHeaderCell width={152}>종강총회</TableHeaderCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredUserScores.map((userData, index) => (
+                <TableRow key={index}>
+                  <TableCell color={"#2A2A2A"} width={140}>
+                    {userData.name}
+                  </TableCell>
+                  {Array.from({ length: 12 }, (_, idx) => (
+                    <TableCell key={idx} width={152}>
+                      <CustomTableCell value={userData.attendInfo} idx={idx} />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </BodyDiv>
+      ) : (
+        <BodyDiv>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeaderCell width={140} style={{ background: "#F8F8F8" }}>
+                  이름
+                </TableHeaderCell>
+                <TableHeaderCell width={152}>OT</TableHeaderCell>
+                <TableHeaderCell width={152}>1차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>2차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>3차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>연합 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>4차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>5차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>6차 세미나</TableHeaderCell>
+                <TableHeaderCell width={152}>
+                  기디개 연합 세미나
+                </TableHeaderCell>
+                <TableHeaderCell width={152}>숏커톤</TableHeaderCell>
+                <TableHeaderCell width={152}>아이디어 피칭</TableHeaderCell>
+                <TableHeaderCell width={152}>종강총회</TableHeaderCell>
+              </TableRow>
+            </TableHead>
+            <tbody>
+              {filteredUserScores.map((userData, index) => (
+                <TableRow key={index}>
+                  <TableCell color={"#2A2A2A"} width={140}>
+                    {userData.name}
+                  </TableCell>
+                  {Array.from({ length: 12 }, (_, idx) => (
+                    <TableCell key={idx} width={152}>
+                      <CustomTableCell
+                        value={userData.attendInfo}
+                        idx={idx}
+                        addable={addable}
+                        onUpdate={(newData) =>
+                          updateUser(userDatas.indexOf(userData), idx, newData)
+                        }
+                      />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </tbody>
+          </Table>
+        </BodyDiv>
+      )}
+    </DDiv>
+  );
+};
+
+export default CheckPage;
+
 const DDiv = styled.div`
   background: #fff;
   margin: 0 auto;
@@ -81,7 +563,7 @@ const TableHead = styled.thead`
   border-bottom: 1px solid #a3a3a3;
   border-radius: 4px 0px 0px 0px;
   position: sticky;
-  top: 0; 
+  top: 0;
   z-index: 300;
 `;
 
@@ -92,15 +574,14 @@ const TableRow = styled.tr`
 `;
 
 const TableBody = styled.tbody`
-  display: block; 
-  max-height: calc(100% - 48px); 
+  display: block;
+  max-height: calc(100% - 48px);
   overflow-y: auto;
   border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
   &:first-child {
     border-left: 1px solid var(--Gray30, #a3a3a3);
-    }
+  }
 `;
-
 
 const TableHeaderCell = styled.th`
   color: var(--black-background, #1a1a1a);
@@ -309,493 +790,8 @@ const EditIcon = styled.img`
   height: 24px;
   margin-right: 8px;
 `;
-const ArrowTop1 = styled.img`
+const ArrowTop = styled.img`
   width: 14px;
   height: 14px;
-  /* margin-right: 8px; */
   cursor: pointer;
 `;
-
-const CheckPage = () => {
-  const [userDatas, setUserDatas] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [addable, setAddable] = useState(true);
-  const [scheduleKeys, setScheduleKeys] = useState([]); // schedules의 sid 값들을 저장할 상태
-
-  useEffect(() => {
-    // Firestore에서 데이터 읽어오기
-    const fetchSchedules = async () => {
-      try {
-        const schedulesRef = collection(dbService, "schedules");
-        const querySnapshot = await getDocs(
-          query(schedulesRef, where("type", "==", true))
-        );
-
-        const scheduleIds = [];
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          scheduleIds.push({ ...data, dueDate: data.dueDate.toDate() }); // Convert dueDate to JavaScript Date
-        });
-    
-        // Sort the array based on dueDate
-        scheduleIds.sort((a, b) => a.dueDate - b.dueDate);
-    
-        setScheduleKeys(scheduleIds); // 여기서 scheduleKeys 상태를 설정합니다.
-        console.log("sid : ", scheduleIds);
-        
-      } catch (error) {
-        console.error("Error fetching schedules:", error);
-      }
-    };
-
-    const fetchData = async () => {
-      const data = await getDocs(collection(dbService, "users")); // create라는 collection 안에 모든 document를 읽어올 때 사용한다.
-      const newData = data.docs.map((doc) => ({ ...doc.data() }));
-
-      const keys = [];
-      const values = [];
-      newData.forEach((item) => {
-        const attend = item.attend || {}; // "attend"가 없을 경우 빈 객체로 초기화
-        const itemKeys = Object.keys(attend);
-        const itemValues = Object.values(attend);
-        keys.push(itemKeys);
-        values.push(itemValues);
-      });
-
-      setUserDatas(newData);
-    };
-
-    fetchData();
-    fetchSchedules();
-  }, []);
-
-  // 정보 업데이트
-  const updateFirestore = async () => {
-    try {
-      const batch = [];
-      userDatas.forEach((userData) => {
-        const userDocRef = doc(dbService, "users", userData.uid); // userId 필드가 있다고 가정
-        const updatedAttendInfo = userData.attendInfo;
-        batch.push(updateDoc(userDocRef, { attendInfo: updatedAttendInfo }));
-      });
-
-      await Promise.all(batch).then(() => {
-        // console.log("Firestore 문서 업데이트 성공!");
-        alert("변경 사항이 저장되었습니다."); // 성공 시 알림 추가
-        setTimeout(() => {
-          window.location.reload(); // Refresh the page
-        }, 1000); // Delay for 1 second (1000 milliseconds)
-      });
-    } catch (error) {
-      console.error("Firestore 문서 업데이트 오류:", error);
-    }
-  };
-
-  const handleEditButtonClick = () => {
-    const confirmSave = window.confirm("변경 사항을 저장하시겠습니까?");
-    if (confirmSave) {
-      updateFirestore();
-    }
-  };
-
-  const handleCancelClick = () => {
-    const confirmSave = window.confirm(
-      "변경사항이 저장되지 않습니다.\n취소 하시겠습니까?"
-    );
-    if (confirmSave) {
-      setTimeout(() => {
-        window.location.reload(); // Refresh the page
-      }, 1000);
-    }
-  };
-
-  // 필터 관련 코드
-  const options = [
-    "전체",
-    "서버파트",
-    "웹파트",
-    "iOS파트",
-    "디자인파트",
-    "기획파트",
-  ];
-
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const handleOptionClick = (option) => {
-    if (option === "전체") {
-      setSelectedOption(null);
-    } else {
-      setSelectedOption(option);
-    }
-    setIsOpen(false);
-  };
-
-  const sortedUserScores = userDatas
-    .filter((user) => user.name) // name 속성이 정의된 요소만 필터링
-    .sort((a, b) => a.name.localeCompare(b.name));
-
-  const filteredUserScores = selectedOption
-    ? sortedUserScores.filter(
-        (userScore) =>
-          userScore.part === selectedOption &&
-          userScore.member !== "운영진" &&
-          userScore.member !== "잔잔파도"
-      )
-    : sortedUserScores.filter(
-        (userScore) =>
-          userScore.member !== "운영진" && userScore.member !== "잔잔파도"
-      );
-
-  // 업데이트 관련 코드
-  
-  const updateUser = async (index, idx, newData) => {
-    const updatedUserDatas = [...userDatas];
-    
-    // attendInfo를 List로 변경
-    updatedUserDatas[index] = {
-      ...updatedUserDatas[index],
-      attendInfo: [...(updatedUserDatas[index].attendInfo || [])],
-    };
-    
-    // attendInfo 내 해당 인덱스에 새로운 데이터 할당
-    updatedUserDatas[index].attendInfo[idx] = newData;
-  
-    setUserDatas(updatedUserDatas);
-  
-    // attend 맵 업데이트
-    const updatedAttend = { ...updatedUserDatas[index].attend };
-    updatedAttend[scheduleKeys[idx].sid] = newData; // scheduleKeys를 사용하여 업데이트
-    updatedUserDatas[index].attend = updatedAttend;
-    console.log("읽어온 sid :", scheduleKeys);
-  
-    // Firestore에 업데이트
-    const userDocRef = doc(dbService, "users", updatedUserDatas[index].uid);
-    await updateDoc(userDocRef, {
-      attendInfo: updatedUserDatas[index].attendInfo,
-      attend: updatedAttend, // attend 맵 업데이트
-    });
-  
-    // console.log("Firestore 문서 업데이트 성공!");
-  };
-  
-
-  // 출석 결석 지각 버튼
-  const AttendBox = styled.div`
-    display: flex;
-    padding: 4px 12px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    font-family: "Pretendard";
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 16px;
-    border-radius: 4px;
-  `;
-
-  const AttendButton = styled.button`
-    display: flex;
-    /* padding: 4px 12px; */
-    width: 45px;
-    height: 24px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    font-family: "Pretendard";
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 16px;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    &:hover {
-      box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25);
-    }
-    &:active {
-      box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25) inset;
-    }
-  `;
-
-  const CustomTableCellContainer = styled.div`
-    position: relative;
-  `;
-
-  const ImageContainer = styled.div`
-    position: absolute;
-    top: -60px; // 원하는 위치로 조정
-    left: -80px; // 원하는 위치로 조정
-    width: 200px;
-    height: 60px;
-    z-index: 999; // 다른 요소 위에 렌더링되도록 zIndex 설정
-    /* 추가적인 스타일 설정 가능 */
-  `;
-
-  const Image = styled.img`
-    width: 200px;
-    height: 60px;
-    object-fit: cover; // 이미지 크기 조정 방식 설정
-  `;
-
-  const ButtonFlexDiv = styled.div`
-    display: flex;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    top: -6%;
-  `;
-
-  const Button = styled.button`
-    border: none;
-    margin-right: ${(props) => props.right}px;
-    margin-left: ${(props) => props.left}px;
-    color: ${(props) => props.color};
-    background-color: ${(props) => props.background};
-    display: flex;
-    padding: 4px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: "Pretendard";
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 16px;
-    border-radius: 4px;
-  `;
-
-  const CustomTableCell = ({ value, idx, onUpdate }) => {
-    const [showButtons, setShowButtons] = useState(false);
-
-    const toggleButtons = () => {
-      setShowButtons(!showButtons);
-    };
-
-    const updateValue = (newValue) => {
-      setShowButtons(false);
-
-      // 업데이트된 값을 부모 컴포넌트로 전달
-      onUpdate(newValue);
-    };
-
-    let backgroundColor = "";
-    let color = "";
-    let displayValue = "";
-
-    const sidValue = value[idx];
-
-    switch (sidValue) {
-      case "지":
-        backgroundColor = "#FFE7D9";
-        color = "var(--primary-orange, #FF5C00)";
-        displayValue = "지각";
-        break;
-      case "출":
-        backgroundColor = "#E8F6F0";
-        color = "var(--primary-green, var(--primary-green, #64C59A))";
-        displayValue = "출석";
-        break;
-      case "결":
-        color = "var(--error-red, #FF5A5A)";
-        backgroundColor = "#FFE6E6";
-        displayValue = "결석";
-        break;
-      default:
-        backgroundColor = "";
-        color = "";
-        displayValue = "  ";
-    }
-
-    return (
-      <CustomTableCellContainer>
-        {addable ? (
-          <AttendBox style={{ backgroundColor, color }}>
-            {displayValue}
-          </AttendBox>
-        ) : (
-          <>
-            <AttendButton
-              onClick={toggleButtons}
-              style={{ backgroundColor, color }}
-            >
-              {displayValue}
-            </AttendButton>
-
-            {showButtons && (
-              <ImageContainer>
-                <Image
-                  src={require("../Assets/img/CheckEditBox.png")}
-                  alt="Image Alt Text"
-                />
-                <ButtonFlexDiv>
-                  <Button
-                    color={"#64C59A"}
-                    background={"#E8F6F0"}
-                    onClick={() => updateValue("출")}
-                  >
-                    출석
-                  </Button>
-                  <Button
-                    color={"#FF5C00"}
-                    background={"#FFE7D9"}
-                    left={8}
-                    right={8}
-                    onClick={() => updateValue("지")}
-                  >
-                    지각
-                  </Button>
-                  <Button
-                    color={"#FF5A5A"}
-                    background={"#FFE6E6"}
-                    onClick={() => updateValue("결")}
-                  >
-                    결석
-                  </Button>
-                </ButtonFlexDiv>
-              </ImageContainer>
-            )}
-          </>
-        )}
-      </CustomTableCellContainer>
-    );
-  };
-
-  return (
-    <DDiv>
-      <CommonLogSection />
-      <TitleDiv>
-        <HomeTitle>출결 관리</HomeTitle>
-        <BarText />
-        <SubTitle>파트별로 출결을 관리해보세요.</SubTitle>
-      </TitleDiv>
-      <FirstDiv>
-        <DropdownWrapper>
-          <DropdownButton onClick={toggleDropdown}>
-            {selectedOption || "전체"}
-            {!isOpen ? (
-              <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
-            ) : (
-              <ArrowTop1 src={require("../Assets/img/PolygonDown.png")} />
-            )}
-          </DropdownButton>
-          <DropdownContent isOpen={isOpen}>
-            {options.map((option, index) => (
-              <DropdownItem
-                key={index}
-                onClick={() => handleOptionClick(option)}
-              >
-                {option}
-              </DropdownItem>
-            ))}
-          </DropdownContent>
-        </DropdownWrapper>
-        {addable ? (
-          <EditButton onClick={() => setAddable(false)}>
-            <EditIcon src={require("../Assets/img/EditIcon.png")} />
-            수정하기
-          </EditButton>
-        ) : (
-          <FlexDiv>
-            <CancelButton onClick={handleCancelClick}>취소하기</CancelButton>
-            <SaveButton onClick={handleEditButtonClick}>저장하기</SaveButton>
-          </FlexDiv>
-        )}
-      </FirstDiv>
-      {addable ? (
-        <BodyDiv>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableHeaderCell width={140} style={{ background: "#F8F8F8" }}>
-                  이름
-                </TableHeaderCell>
-                <TableHeaderCell width={152}>OT</TableHeaderCell>
-                <TableHeaderCell width={152}>1차 세미나</TableHeaderCell>
-                <TableHeaderCell width={152}>2차 세미나</TableHeaderCell>
-                <TableHeaderCell width={152}>3차 세미나</TableHeaderCell>
-                <TableHeaderCell width={152}>연합 세미나</TableHeaderCell>
-                <TableHeaderCell width={152}>4차 세미나</TableHeaderCell>
-                <TableHeaderCell width={152}>5차 세미나</TableHeaderCell>
-                <TableHeaderCell width={152}>6차 세미나</TableHeaderCell>
-                <TableHeaderCell width={152}>
-                  기디개 연합 세미나
-                </TableHeaderCell>
-                <TableHeaderCell width={152}>숏커톤</TableHeaderCell>
-                <TableHeaderCell width={152}>아이디어 피칭</TableHeaderCell>
-                <TableHeaderCell width={152}>종강총회</TableHeaderCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredUserScores.map((userData, index) => (
-                <TableRow key={index}>
-                  <TableCell color={"#2A2A2A"} width={140}>
-                    {userData.name}
-                  </TableCell>
-                  {Array.from({ length: 12 }, (_, idx) => (
-                    <TableCell key={idx} width={152}>
-                      <CustomTableCell value={userData.attendInfo} idx={idx} />
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </BodyDiv>
-      ) : (
-        <BodyDiv>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableHeaderCell width={140} style={{ background: "#F8F8F8" }}>
-                  이름
-                </TableHeaderCell>
-                <TableHeaderCell width={152}>OT</TableHeaderCell>
-                <TableHeaderCell width={152}>1차 세미나</TableHeaderCell>
-                <TableHeaderCell width={152}>2차 세미나</TableHeaderCell>
-                <TableHeaderCell width={152}>3차 세미나</TableHeaderCell>
-                <TableHeaderCell width={152}>연합 세미나</TableHeaderCell>
-                <TableHeaderCell width={152}>4차 세미나</TableHeaderCell>
-                <TableHeaderCell width={152}>5차 세미나</TableHeaderCell>
-                <TableHeaderCell width={152}>6차 세미나</TableHeaderCell>
-                <TableHeaderCell width={152}>
-                  기디개 연합 세미나
-                </TableHeaderCell>
-                <TableHeaderCell width={152}>숏커톤</TableHeaderCell>
-                <TableHeaderCell width={152}>아이디어 피칭</TableHeaderCell>
-                <TableHeaderCell width={152}>종강총회</TableHeaderCell>
-              </TableRow>
-            </TableHead>
-            <tbody>
-              {filteredUserScores.map((userData, index) => (
-                <TableRow key={index}>
-                  <TableCell color={"#2A2A2A"} width={140}>
-                    {userData.name}
-                  </TableCell>
-                  {Array.from({ length: 12 }, (_, idx) => (
-                    <TableCell key={idx} width={152}>
-                      <CustomTableCell
-                        value={userData.attendInfo}
-                        idx={idx}
-                        addable={addable}
-                        onUpdate={(newData) =>
-                          updateUser(userDatas.indexOf(userData), idx, newData)
-                        }
-                      />
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </tbody>
-          </Table>
-        </BodyDiv>
-      )}
-    </DDiv>
-  );
-};
-
-export default CheckPage;
