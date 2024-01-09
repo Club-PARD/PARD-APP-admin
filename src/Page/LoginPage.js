@@ -1,9 +1,42 @@
 import styled from "styled-components";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth, dbService } from "../fbase";
-import { collection, getDocs, where, query } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import React, { useEffect } from "react";
+import { handleGoogleLogin } from "../Api/LoginService";
+
+const LoginPage = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const userName = localStorage.getItem("userName");
+
+    if (token && userName) {
+      alert("이미 로그인한 유저입니다.");
+      navigate("/");
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return (
+    <Div>
+      <FlexDiv>
+        <PardLogo src={require("../Assets/img/Login/Original.png")} />
+        <TitleText>관리자 페이지</TitleText>
+      </FlexDiv>
+      <LogoImg src={require("../Assets/img/Login/ImgLogo.png")} />
+      <Body3>
+        * 본 사이트는 관리자 권한이 있는 사용자만 접근 가능한 사이트 입니다.
+      </Body3>
+      <GoogleLoginButton onClick={() => handleGoogleLogin(navigate)}>
+        <img
+          src={require("../Assets/img/Login/GoogleLogo.png")}
+          alt="GOOGLE LOGO"
+        />
+        구글로 로그인 하기
+      </GoogleLoginButton>
+    </Div>
+  );
+};
+export default LoginPage;
 
 const Div = styled.div`
   background: #fff;
@@ -79,76 +112,3 @@ const GoogleLoginButton = styled.button`
     height: 22px;
   }
 `;
-
-const LoginPage = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userName = localStorage.getItem("userName");
-
-    if (token && userName) {
-      alert("이미 로그인한 유저입니다.");
-      navigate("/");
-    }
-  }, []);
-
-  // 로그인 코드
-  function handleGoogleLogin() {
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((data) => {
-        const user = data.user;
-        const userEmail = user.email;
-
-        const pointsQuery = query(
-          collection(dbService, "users"),
-          where("email", "==", userEmail)
-        );
-        getDocs(pointsQuery)
-          .then((querySnapshot) => {
-            if (!querySnapshot.empty) {
-              const doc = querySnapshot.docs[0].data();
-              const isAdmin = doc.isAdmin;
-
-              if (isAdmin) {
-                alert("로그인 되었습니다.");
-                localStorage.setItem("token", "pardo-admin-key");
-                localStorage.setItem("userName", user.displayName);
-                // console.log(localStorage.getItem("token"));
-                navigate("/");
-                window.location.reload();
-              } else {
-                alert("로그인 실패: 권한 없음");
-              }
-            } else {
-              alert("로그인 실패: 해당 사용자 정보 없음");
-            }
-          })
-          .catch((error) => {
-            console.error("Firestore에서 문서 가져오기 오류:", error);
-          });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-
-  return (
-    <Div>
-      <FlexDiv>
-        <PardLogo src={require("../Assets/img/Login/Original.png")} />
-        <TitleText>관리자 페이지</TitleText>
-      </FlexDiv>
-      <LogoImg src={require("../Assets/img/Login/ImgLogo.png")} />
-      <Body3>
-        * 본 사이트는 관리자 권한이 있는 사용자만 접근 가능한 사이트 입니다.
-      </Body3>
-      <GoogleLoginButton onClick={handleGoogleLogin}>
-        <img src={require("../Assets/img/Login/GoogleLogo.png")} alt="GOOGLE LOGO"/>
-        구글로 로그인 하기
-      </GoogleLoginButton>
-    </Div>
-  );
-};
-export default LoginPage;

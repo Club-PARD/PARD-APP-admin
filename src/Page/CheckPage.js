@@ -59,7 +59,6 @@ const BarText = styled.div`
 
 const BodyDiv = styled.div`
   display: flex;
-  /* margin-top: 16px; */
   margin-left: 80px;
   max-width: 1300px;
   width: 90%;
@@ -75,14 +74,11 @@ const Table = styled.table`
   overflow-x: scroll;
   overflow-y: scroll;
   border-radius: 4px 0px 0px 0px;
-
-  /* background-color: red; */
 `;
 
 const TableHead = styled.thead`
   background-color: #eee;
   border-bottom: 1px solid #a3a3a3;
-  /* overflow-x : scroll; */
   border-radius: 4px 0px 0px 0px;
   position: sticky;
   top: 0; 
@@ -96,20 +92,18 @@ const TableRow = styled.tr`
 `;
 
 const TableBody = styled.tbody`
-  display: block; /* 블록 레벨로 설정 */
-  max-height: calc(100% - 48px); /* 테이블 헤더 높이만큼 뺀 나머지 높이 설정 */
-  overflow-y: auto; /* 필요한 경우 스크롤 적용 */
+  display: block; 
+  max-height: calc(100% - 48px); 
+  overflow-y: auto;
   border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
   &:first-child {
     border-left: 1px solid var(--Gray30, #a3a3a3);
-    /* border-radius: 0px 0px 0px 4px; */
     }
 `;
 
 
 const TableHeaderCell = styled.th`
   color: var(--black-background, #1a1a1a);
-  /* Body/B6-SB-16 */
   font-family: "Pretendard";
   font-size: 16px;
   font-style: normal;
