@@ -7,11 +7,23 @@ import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
 import { FadeLoader } from "react-spinners";
 
+/* 
+- Firebase fireStore 스케쥴 데이터 조회
+- Firebase fireStore 유저 데이터 조회
+  - Firebase에서 사용자 데이터 가져오기 
+  - 각 사용자에 대한 순위 계산
+  - 사용자를 totalPoints로 정렬하여 순위 설정 
+- 로딩 css
+- Main 화면 코드
+*/
+
+
 const HomePage = () => {
   const [schedules, setSchedule] = useState([]);
   const [userRankings, setUserRankings] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Firebase fireStore 스케쥴 데이터 조회
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
@@ -27,6 +39,8 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
+
+    // Firebase fireStore 유저 데이터 조회
     const calculateUserRankings = async () => {
       try {
         // 1. Firebase에서 사용자 데이터 가져오기
@@ -87,7 +101,7 @@ const HomePage = () => {
     return sortedSchedules.slice(0, 5);
   };
 
-  // 주
+  // 로딩 css
   const override = {
     display: "flex",
     margin: "0 auto",
@@ -115,6 +129,7 @@ const HomePage = () => {
     }
   }
 
+  // Main 화면 코드
   return (
     <DDiv>
       <CommonLogSection />
