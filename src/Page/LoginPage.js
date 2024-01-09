@@ -3,9 +3,16 @@ import { useNavigate } from "react-router-dom";
 import React, { useEffect } from "react";
 import { handleGoogleLogin } from "../Api/LoginService";
 
+/* 
+- 로그인 기능
+- Main 화면 코드
+*/
+
+
 const LoginPage = () => {
   const navigate = useNavigate();
 
+  // 로그인 기능
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userName = localStorage.getItem("userName");
@@ -16,6 +23,7 @@ const LoginPage = () => {
     }
   }, []);  // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Main 화면 코드
   return (
     <Div>
       <FlexDiv>
