@@ -1,3 +1,4 @@
+// 일정 등록 페이지의 datapicker css
 .datePicker {
     display: inline-flex;
     justify-content: center;
@@ -16,7 +17,7 @@
     cursor: pointer;
     text-align: center;
 
-    &::placeholder { /* 플레이스홀더 스타일 설정 */
+    &::placeholder { 
         font-family: "Pretendard";
     font-size: 18px;
     font-style: normal;
