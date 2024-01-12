@@ -2,116 +2,14 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 
-const Nav = styled.nav`
-  flex: 1;
-  background: var(--black-card, #2a2a2a);
-  color: white;
-  display: flex;
-  flex-direction: column;
-  padding-top: 20px;
-  justify-content: flex-start;
-  min-width: 200px;
-`;
-
-const TitleDiv = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Logo = styled.img`
-  display: flex;
-  width: 115px;
-  height: 24px;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-  margin-right: 8px;
-`;
-
-const TitleText = styled.div`
-  color: var(--White, #fff);
-  font-family: "Pretendard";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 24px;
-  margin-top: 3px;
-`;
-
-const HRLight = styled.hr`
-  width: 91%;
-  margin-top: 27px;
-  border: 0.5px dotted #d9d9d9;
-  background-color: #d9d9d9;
-  margin-bottom: 10px;
-  margin-left: 10px;
-`;
-
-const Ul = styled.ul`
-  list-style-type: none;
-  padding: 0;
-  margin-top: 3px;
-`;
-
-const DisplayDiv = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 3px;
-  width: 100%;
-  justify-content: space-between;
-  cursor: pointer;
-`;
-
-const DisplayTextDiv = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: ${(props) => props.bottom}px;
-  /* background-color: red; */
-  width: 100%;
-  height: 58px;
-  padding-left: 23px;
-
-  &:hover {
-    background: #323553;
-  }
-  background: ${(props) =>
-    props.active
-      ? "var(--grabp, linear-gradient(92deg, #5262F5 0%, #7B3FEF 100%))"
-      : "transparent"};
-`;
-
-const Icon = styled.img`
-  width: ${(props) => props.width}px;
-  height: ${(props) => props.height}px;
-  margin-right: ${(props) => props.right}px;
-`;
-
-const MenuLink = styled(Link)`
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  /* gap: 8px; */
-  height: 48px;
-  margin-top: 5px;
-  color: var(--White, #fff);
-  font-family: "Pretendard";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
-  &:hover {
-    background: #323553;
-  }
-  background: ${(props) =>
-    props.active
-      ? "var(--grabp, linear-gradient(92deg, #5262F5 0%, #7B3FEF 100%))"
-      : "transparent"};
-`;
+/*
+- 현재 페이지의 URL 조회
+- Main 화면 코드
+*/
 
 function NavBar() {
-  const { pathname } = useLocation(); // 현재 페이지의 URL을 가져옴
+  // 현재 페이지의 URL 조회
+  const { pathname } = useLocation();
 
   return (
     <Nav>
@@ -312,3 +210,109 @@ function NavBar() {
 }
 
 export default NavBar;
+
+const Nav = styled.nav`
+  flex: 1;
+  background: var(--black-card, #2a2a2a);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+  justify-content: flex-start;
+  min-width: 200px;
+`;
+
+const TitleDiv = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Logo = styled.img`
+  display: flex;
+  width: 115px;
+  height: 24px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  margin-right: 8px;
+`;
+
+const TitleText = styled.div`
+  color: var(--White, #fff);
+  font-family: "Pretendard";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  margin-top: 3px;
+`;
+
+const HRLight = styled.hr`
+  width: 91%;
+  margin-top: 27px;
+  border: 0.5px dotted #d9d9d9;
+  background-color: #d9d9d9;
+  margin-bottom: 10px;
+  margin-left: 10px;
+`;
+
+const Ul = styled.ul`
+  list-style-type: none;
+  padding: 0;
+  margin-top: 3px;
+`;
+
+const DisplayDiv = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 3px;
+  width: 100%;
+  justify-content: space-between;
+  cursor: pointer;
+`;
+
+const DisplayTextDiv = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: ${(props) => props.bottom}px;
+  width: 100%;
+  height: 58px;
+  padding-left: 23px;
+
+  &:hover {
+    background: #323553;
+  }
+  background: ${(props) =>
+    props.active
+      ? "var(--grabp, linear-gradient(92deg, #5262F5 0%, #7B3FEF 100%))"
+      : "transparent"};
+`;
+
+const Icon = styled.img`
+  width: ${(props) => props.width}px;
+  height: ${(props) => props.height}px;
+  margin-right: ${(props) => props.right}px;
+`;
+
+const MenuLink = styled(Link)`
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 48px;
+  margin-top: 5px;
+  color: var(--White, #fff);
+  font-family: "Pretendard";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  &:hover {
+    background: #323553;
+  }
+  background: ${(props) =>
+    props.active
+      ? "var(--grabp, linear-gradient(92deg, #5262F5 0%, #7B3FEF 100%))"
+      : "transparent"};
+`;
