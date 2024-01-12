@@ -14,10 +14,9 @@ import ScorePage from "./Page/ScorePage";
 - Route 코드
 */
 
-
 // 개발자 도구 Console 메세지 강제 제거
 function App() {
-  if (1+1 === 2) {
+  if (1 + 1 === 2) {
     window.console = {
       log: function () {},
       warn: function () {},
@@ -32,14 +31,13 @@ function App() {
   return (
     <Router>
       <AppContainer>
-        {
-          token === "pardo-admin-key" ? 
+        {token === "pardo-admin-key" ? (
           <NavBarContainer>
-          <NavBar />
-        </NavBarContainer>
-        :
-        <></>
-        }
+            <NavBar />
+          </NavBarContainer>
+        ) : (
+          <></>
+        )}
         <MainContent>
           <Routes>
             <Route path="/" element={<HomePage />} />
@@ -57,7 +55,6 @@ function App() {
 
 export default App;
 
-
 const AppContainer = styled.div`
   display: flex;
   min-height: 100vh;
@@ -66,10 +63,10 @@ const AppContainer = styled.div`
 const NavBarContainer = styled.div`
   width: 15vw;
   min-width: 250px;
-  background: var(--black-card, #2A2A2A);
+  background: var(--black-card, #2a2a2a);
 `;
 
 const MainContent = styled.div`
   flex: 1;
-  background-color: #FFF;
+  background-color: #fff;
 `;
