@@ -1,8 +1,18 @@
-// loginService.js
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth, dbService } from "../fbase";
 import { collection, getDocs, where, query } from "firebase/firestore";
 
+
+
+/* 
+- Google 로그인 코드
+  - Google login을 통한 사용자 정보 조회
+  - Firebase Firestore 조회
+  - 운영진 유무 확인
+*/
+
+
+// Google 로그인 코드
 export const handleGoogleLogin = (navigate) => {
   const provider = new GoogleAuthProvider();
 
@@ -23,7 +33,7 @@ export const handleGoogleLogin = (navigate) => {
           if (!querySnapshot.empty) {
             const doc = querySnapshot.docs[0].data();
             const isAdmin = doc.isAdmin;
-
+            // 운영진 유무 확인
             if (isAdmin) {
               alert("로그인 되었습니다.");
               localStorage.setItem("token", "pardo-admin-key");

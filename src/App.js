@@ -8,23 +8,14 @@ import MemberPage from "./Page/MemberPage";
 import SchedulePage from "./Page/SchedulePage";
 import ScorePage from "./Page/ScorePage";
 
-const AppContainer = styled.div`
-  display: flex;
-  min-height: 100vh;
-`;
+/* 
+- 개발자 도구 Console 메세지 강제 제거
+- 토큰 조회
+- Route 코드
+*/
 
-const NavBarContainer = styled.div`
-  width: 15vw;
-  min-width: 250px;
-  background: var(--black-card, #2A2A2A);
-`;
 
-const MainContent = styled.div`
-  flex: 1;
-  background-color: #FFF;
-  /* padding: 20px; */
-`;
-
+// 개발자 도구 Console 메세지 강제 제거
 function App() {
   if (1+1 === 2) {
     window.console = {
@@ -33,7 +24,11 @@ function App() {
       error: function () {},
     };
   }
+
+  // 토큰 조회
   const token = localStorage.getItem("token");
+
+  // Route 코드
   return (
     <Router>
       <AppContainer>
@@ -61,3 +56,20 @@ function App() {
 }
 
 export default App;
+
+
+const AppContainer = styled.div`
+  display: flex;
+  min-height: 100vh;
+`;
+
+const NavBarContainer = styled.div`
+  width: 15vw;
+  min-width: 250px;
+  background: var(--black-card, #2A2A2A);
+`;
+
+const MainContent = styled.div`
+  flex: 1;
+  background-color: #FFF;
+`;
