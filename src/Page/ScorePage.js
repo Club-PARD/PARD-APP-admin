@@ -15,25 +15,63 @@ import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
 import { FadeLoader } from "react-spinners";
 
+/* 
+- 모달 관련 코드
+  - 모달 열기
+  - 모달 닫기
+  - 모달 관련 Style 코드
+  - 모달 컴포넌트
+  - Firebase fireStore Point 데이터 조회
+    - 해당 사용자의 pid와 일치하는 Points 데이터 조회
+    - "points" 필드 값을 가져옴
+    - 배열로 합쳐서 저장
+    - "beePoints" 필드 값을 가져옴
+    - 배열로 합쳐서 저장
+  - 첫 화면 Firebase 렌더링
+  - 점수 업데이트 실행 버튼
+    - 점수 업데이트 코드
+      - 현재 시각 Timestamp 형식으로 변환하여 저장
+      - data값 생성
+      - Points 데이터를 업데이트할 때는 기존 데이터를 가져온 후 새로운 데이터를 추가하고 다시 업데이트
+      - 새로운 데이터를 추가
+      - 업데이트된 데이터로 업데이트
+      - 창 닫기
+    - 토글 점수 리스트
+    - 점수용 토글 열기
+    - 토글 list 중 점수 선택
+      - 만약 벌점 조정일 경우 Input으로 점수 입력할 수 있도록 환경 설졍
+  - 로딩 관련 코드
+  - 파트 filter 토글 열기
+  - 파트 filter 토글 선택
+  - Firebase fireStore 전체 Point 데이터 조회
+    - 포인트 유형(type)에 따라 각각의 포인트를 계산
+    - 포인트 유형(type)에 따라 각각의 포인트를 계산
+    - 전체 포인트 합계 계산
+  - Main 화면 코드
+*/
+
 const ScorePage = () => {
   const [userScores, setUserScores] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [modals, setModals] = useState([]);
 
+  // 모달 관련 코드
+
+  // 모달 열기
   const openModal = (index) => {
     const newModals = [...modals];
     newModals[index] = true;
     setModals(newModals);
   };
 
+  // 모달 닫기
   const closeModal = (index) => {
     const result = window.confirm("변경사항을 저장하지 않고 나가시겠습니까?");
     if (result) {
       const newModals = [...modals];
       newModals[index] = false;
       setModals(newModals);
-      // window.location.reload();
     }
   };
 
@@ -43,6 +81,7 @@ const ScorePage = () => {
     setModals(newModals);
   };
 
+  // 모달 관련 Style 코드
   const ModalWrapper = styled.div`
     position: fixed;
     top: 0;
@@ -426,9 +465,7 @@ const ScorePage = () => {
   const ArrowTop1 = styled.img`
     width: 14px;
     height: 14px;
-    /* margin-right: 8px; */
     cursor: pointer;
-    /* margin-top: 3px; */
   `;
 
   // 모달 컴포넌트
@@ -445,7 +482,7 @@ const ScorePage = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedScoreReason, setSelectedScoreReason] = useState(null);
     const [selectedScore, setSelectedScore] = useState(0);
-    const [score, setScore] = useState();
+    const score = 0;
     const [inputText, setInputText] = useState("");
     const [editScore, setEditScore] = useState(false);
 
@@ -456,11 +493,42 @@ const ScorePage = () => {
       }
     };
 
+    // Firebase fireStore Point 데이터 조회
+    const fetchPoints = async () => {
+      try {
+        // 해당 사용자의 pid와 일치하는 Points 데이터 조회
+        const pointsQuery = query(
+          collection(dbService, "points"),
+          where("pid", "==", pid)
+        );
+        const pointsSnapshot = await getDocs(pointsQuery);
+        const pointsData = [];
+
+        pointsSnapshot.forEach((pointDoc) => {
+          // "points" 필드 값을 가져옴
+          const pointData = pointDoc.data().points;
+          // 배열로 합쳐서 저장
+          pointsData.push(...pointData);
+        });
+        pointsSnapshot.forEach((beePointDoc) => {
+          // "beePoints" 필드 값을 가져옴
+          const beePointData = beePointDoc.data().beePoints;
+          // 배열로 합쳐서 저장
+          pointsData.push(...beePointData);
+        });
+
+        setPoints(pointsData);
+      } catch (error) {
+        console.error("Error fetching Points data:", error);
+      }
+    };
+
+    // 첫 화면 Firebase 렌더링
     useEffect(() => {
       fetchPoints();
-      // console.log("read Data");
-    }, []);
+    }, [fetchPoints]);
 
+    // 점수 업데이트 실행 버튼
     const handleAddButtonClick = () => {
       const result = window.confirm("점수를 추가하시겠습니까?");
       if (result) {
@@ -468,6 +536,7 @@ const ScorePage = () => {
       }
     };
 
+    // 점수 업데이트 코드
     const UpdateScore = async () => {
       if (selectedScore && inputText) {
         const scoreMatch = selectedScore.match(/(-?\d+(\.\d+)?)점/);
@@ -512,10 +581,10 @@ const ScorePage = () => {
               break;
           }
 
-          // console.log("값은 :", selectedType);
+          // 현재 시각 Timestamp 형식으로 변환하여 저장
           const currentDate = Timestamp.now();
-          // const currentDateTime = DateTime.fromMillis(currentDate.toMillis(), { zone: "Asia/Seoul" });
 
+          // data값 생성
           const newPoint = {
             digit: scoreDigit,
             reason: inputText,
@@ -530,7 +599,7 @@ const ScorePage = () => {
           ) {
           } else {
             try {
-              // Points 데이터를 업데이트할 때는 기존 데이터를 가져온 후 새로운 데이터를 추가하고 다시 업데이트합니다.
+              // Points 데이터를 업데이트할 때는 기존 데이터를 가져온 후 새로운 데이터를 추가하고 다시 업데이트
               const pointsQuery = query(
                 collection(dbService, "points"),
                 where("pid", "==", pid)
@@ -538,7 +607,6 @@ const ScorePage = () => {
 
               const pointsSnapshot = await getDocs(pointsQuery);
               const pointsData = pointsSnapshot.docs.map((doc) => doc.data());
-              // console.log("읽어온 data :", pointsData[0].points);
 
               // 새로운 데이터를 추가
               if (scoreDigit > 0) {
@@ -547,8 +615,6 @@ const ScorePage = () => {
                 pointsData[0].beePoints.push(newPoint);
               }
 
-              // console.log("넣을 data :", pointsData[0].points);
-
               const docRefPoint = doc(dbService, "points", pid);
               // 업데이트된 데이터로 업데이트
               await updateDoc(docRefPoint, {
@@ -556,9 +622,8 @@ const ScorePage = () => {
                 beePoints: pointsData[0].beePoints,
               });
 
-              // Points 데이터를 다시 불러옴
-              // fetchPoints();
-              // onClose();
+              // 창 닫기
+              // onClose(); // 점수 로딩이 늦어서 일단 닫았습니다.
               alert("점수 등록이 성공되었습니다.");
               closeModalWidhtUppdate();
             } catch (error) {
@@ -574,6 +639,7 @@ const ScorePage = () => {
       }
     };
 
+    // 토글 점수 리스트
     const ScoreList = [
       "주요 행사 MVP (+5점)",
       "세미나 파트별 MVP (+3점)",
@@ -588,13 +654,16 @@ const ScorePage = () => {
       "벌점 조정",
     ];
 
+    // 점수용 토글 열기
     const ScoreoggleDropdown = () => {
       setIsDropdownOpen(!isDropdownOpen);
     };
 
+    // 토글 list 중 점수 선택
     const handleScoreClick = (option) => {
       setSelectedScoreReason(option);
 
+      // 만약 벌점 조정일 경우 Input으로 점수 입력할 수 있도록 환경 설졍
       if (option === "벌점 조정") {
         setEditScore(true);
       } else {
@@ -604,37 +673,11 @@ const ScorePage = () => {
       setIsDropdownOpen(false);
     };
 
-    // Points 데이터를 가져오는 함수
-    const fetchPoints = async () => {
-      try {
-        const pointsQuery = query(
-          collection(dbService, "points"),
-          where("pid", "==", pid) // 해당 사용자의 pid와 일치하는 Points 문서를 가져옴
-        );
-        const pointsSnapshot = await getDocs(pointsQuery);
-        const pointsData = [];
-
-        pointsSnapshot.forEach((pointDoc) => {
-          const pointData = pointDoc.data().points; // "points" 필드 값을 가져옴
-          pointsData.push(...pointData); // 배열로 합쳐서 저장
-        });
-        pointsSnapshot.forEach((beePointDoc) => {
-          const beePointData = beePointDoc.data().beePoints; // "beePoints" 필드 값을 가져옴
-          pointsData.push(...beePointData); // 배열로 합쳐서 저장
-        });
-
-        setPoints(pointsData);
-      } catch (error) {
-        console.error("Error fetching Points data:", error);
-      }
-    };
-
     useEffect(() => {
       fetchPoints();
       if (isOpen) {
         setSelectedScore(null);
         fetchPoints();
-        // console.log("data : ", points);
       }
     }, [isOpen, pid]);
 
@@ -804,6 +847,7 @@ const ScorePage = () => {
       </ModalWrapper>
     );
   };
+
   // 로딩 관련 코드
   const override = {
     display: "flex",
@@ -814,7 +858,7 @@ const ScorePage = () => {
   };
   const [loading, setLoading] = useState(true);
 
-  // 토글 버튼
+  // 파트별 토글 버튼
   const options = [
     "전체",
     "서버파트",
@@ -824,10 +868,12 @@ const ScorePage = () => {
     "기획파트",
   ];
 
+  // 파트 filter 토글 열기
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
 
+  // 파트 filter 토글 선택
   const handleOptionClick = (option) => {
     if (option === "전체") {
       setSelectedOption(null);
@@ -837,6 +883,7 @@ const ScorePage = () => {
     setIsOpen(false);
   };
 
+  // Firebase fireStore 전체 Point 데이터 조회
   useEffect(() => {
     const fetchUserScores = async () => {
       try {
@@ -926,6 +973,7 @@ const ScorePage = () => {
     ? sortedUserScores.filter((userScore) => userScore.part === selectedOption)
     : sortedUserScores;
 
+  // Main 화면 코드
   return (
     <DDiv>
       <CommonLogSection />
@@ -1101,13 +1149,13 @@ const Table = styled.table`
 const TableHead = styled.thead`
   background-color: #eee;
   border-bottom: 1px solid #a3a3a3;
-  position: sticky; 
-  top: 0; 
+  position: sticky;
+  top: 0;
 `;
 const TableBody = styled.tbody`
-  display: block; 
+  display: block;
   max-height: calc(100% - 48px);
-  overflow-y: auto; 
+  overflow-y: auto;
   border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
 `;
 
