@@ -182,8 +182,9 @@ const MemberPage = () => {
         phoneInputs[index] !== ""
       ) {
         // 고유한 문서 ID 생성
-        const newId = nameInputs[index] + Math.random().toString(36).substr(2, 5);
-        
+        const newId =
+          nameInputs[index] + Math.random().toString(36).substr(2, 5);
+
         // 사용자 데이터를 준비
         const userData = {
           member: selectedMembers[index],
