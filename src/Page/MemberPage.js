@@ -45,6 +45,7 @@ const MemberPage = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedPartFilter, setSelectedPartFilter] = useState("파트");
   const [isdropdownPart, setIsdropdownPart] = useState(false);
+  const [isContentChanged, setContentChanged] = useState(false); // 컨텐츠 변경 확인 state
 
   // User 정보 조회 후 sort
   const sortedUserScores = userScores
@@ -257,6 +258,12 @@ const MemberPage = () => {
   };
 
   const closeModal = (index) => {
+    if (!isContentChanged) {  // 내용이 변경되지 않았을 때의 처리
+      const newModals = [...modals];
+      newModals[index] = false;
+      setModals(newModals);
+      return;
+    }
     const result = window.confirm("변경사항을 저장하지 않고 나가시겠습니까?");
     if (result) {
       const newModals = [...modals];
@@ -473,12 +480,12 @@ const MemberPage = () => {
     const [toggleToPart, setToggleToPart] = useState(false);
     const [toggleToLevel, setToggleToLever] = useState(false);
     const [isEditm, setIsEdit] = useState(false);
-
     const handleNameChange = (e) => {
       const text = e.target.value;
       setIsEdit(true);
       if (text.length <= 10) {
         setInputName(text);
+        setContentChanged(true); // 정보 수정이 되었으므로 true로 설정
       }
     };
 
@@ -487,6 +494,7 @@ const MemberPage = () => {
       const text = e.target.value;
       if (text.length <= 20) {
         setInputPhoneNum(text);
+        setContentChanged(true);  // 정보 수정이 되었으므로 true로 설정
       }
     };
 
@@ -579,6 +587,7 @@ const MemberPage = () => {
 
           alert("사용자 정보가 업데이트되었습니다.");
           closeModalUpdate();
+          setContentChanged(false); // 정보 수정이 되었으므로 false로 초기화
           window.location.reload();
         } catch (error) {
           console.error("사용자 정보 업데이트 실패:", error);
