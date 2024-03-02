@@ -55,6 +55,7 @@ const ScorePage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [modals, setModals] = useState([]);
+  const [isContentChanged, setContentChanged] = useState(false); // 컨텐츠 변경 확인 state
 
   // 모달 관련 코드
 
@@ -67,11 +68,19 @@ const ScorePage = () => {
 
   // 모달 닫기
   const closeModal = (index) => {
+    if (!isContentChanged) {  // 내용이 변경되지 않았을 때의 처리
+      const newModals = [...modals];
+      newModals[index] = false;
+      setModals(newModals);
+      return;
+    }
+
     const result = window.confirm("변경사항을 저장하지 않고 나가시겠습니까?");
     if (result) {
       const newModals = [...modals];
       newModals[index] = false;
       setModals(newModals);
+      setContentChanged(false);
     }
   };
 
@@ -491,6 +500,7 @@ const ScorePage = () => {
       if (text.length <= 20) {
         setInputText(text);
       }
+      setContentChanged(true); // 수정사항이 생겼으므로 true로 설정
     };
 
     // Firebase fireStore Point 데이터 조회
@@ -715,11 +725,13 @@ const ScorePage = () => {
             <>
               <HR top={24} />
               <RowTitleDiv>
-                <RowTitle right={57}>파드너십</RowTitle>
+                <RowTitle right={40}>파드너십</RowTitle>
                 <RowTitle right={113}>점수</RowTitle>
-                <RowTitle right={193}>내용</RowTitle>
-                <RowTitle right={0}>날짜</RowTitle>
+                <RowTitle right={165}>내용</RowTitle>
+                <RowTitle right={20}>날짜</RowTitle>
+                <RowTitle right={0}>삭제</RowTitle>
               </RowTitleDiv>
+              
               <HR top={8} />
               <ContentDiv>
                 {points
@@ -737,7 +749,7 @@ const ScorePage = () => {
                             ? `+${point.digit}점`
                             : `${point.digit}점`}
                         </RowContentDigit>
-                        <RowContent right={40} width={250}>
+                        <RowContent right={40} width={230}>
                           {point.reason}
                         </RowContent>
                         <RowContent right={0} width={50}>
@@ -745,6 +757,7 @@ const ScorePage = () => {
                             locale: koLocale,
                           })}
                         </RowContent>
+                        <RowContent>삭제</RowContent>
                       </RowContentDiv>
                     </div>
                   ))}
@@ -763,10 +776,10 @@ const ScorePage = () => {
                   <DropdownButton1 onClick={ScoreoggleDropdown}>
                     {selectedScoreReason || "선택"}
                     {isDropdownOpen ? (
-                      <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
+                      <ArrowTop1 src={require("../Assets/img/PolygonDown.png")} />
                     ) : (
                       <ArrowTop1
-                        src={require("../Assets/img/PolygonDown.png")}
+                        src={require("../Assets/img/Polygon.png")}
                       />
                     )}
                   </DropdownButton1>
@@ -777,6 +790,7 @@ const ScorePage = () => {
                         onClick={() => {
                           handleScoreClick(option);
                           setSelectedScore(option);
+                          setContentChanged(true); // 수정사항이 생겼으므로 true로 설정
                         }}
                       >
                         {option}
@@ -884,85 +898,85 @@ const ScorePage = () => {
   };
 
   // Firebase fireStore 전체 Point 데이터 조회
-  useEffect(() => {
-    const fetchUserScores = async () => {
-      try {
-        const userQuery = query(collection(dbService, "users"));
-        const userSnapshot = await getDocs(userQuery);
+  // useEffect(() => {
+  //   const fetchUserScores = async () => {
+  //     try {
+  //       const userQuery = query(collection(dbService, "users"));
+  //       const userSnapshot = await getDocs(userQuery);
 
-        const scores = [];
+  //       const scores = [];
 
-        for (const userDoc of userSnapshot.docs) {
-          const userData = userDoc.data();
-          const userId = userDoc.id;
+  //       for (const userDoc of userSnapshot.docs) {
+  //         const userData = userDoc.data();
+  //         const userId = userDoc.id;
 
-          // 사용자의 포인트 데이터 가져오기
-          const pointQuery = query(
-            collection(dbService, "points"),
-            where("uid", "==", userId)
-          );
-          const pointSnapshot = await getDocs(pointQuery);
+  //         // 사용자의 포인트 데이터 가져오기
+  //         const pointQuery = query(
+  //           collection(dbService, "points"),
+  //           where("uid", "==", userId)
+  //         );
+  //         const pointSnapshot = await getDocs(pointQuery);
 
-          let mvpPoints = 0;
-          let studyPoints = 0;
-          let communicationPoints = 0;
-          let retrospectionPoints = 0;
-          let penaltyPoints = 0; // 벌점 포인트
+  //         let mvpPoints = 0;
+  //         let studyPoints = 0;
+  //         let communicationPoints = 0;
+  //         let retrospectionPoints = 0;
+  //         let penaltyPoints = 0; // 벌점 포인트
 
-          pointSnapshot.forEach((pointDoc) => {
-            const pointData = pointDoc.data();
-            pointData.points.forEach((point) => {
-              // 포인트 유형(type)에 따라 각각의 포인트를 계산
-              switch (point.type) {
-                case "MVP":
-                  mvpPoints += point.digit;
-                  break;
-                case "스터디":
-                  studyPoints += point.digit;
-                  break;
-                case "소통":
-                  communicationPoints += point.digit;
-                  break;
-                case "회고":
-                  retrospectionPoints += point.digit;
-                  break;
-                // 다른 포인트 유형에 대한 계산도 추가할 수 있음
-              }
-            });
-            pointData.beePoints.forEach((beePoints) => {
-              // 포인트 유형(type)에 따라 각각의 포인트를 계산
-              penaltyPoints += beePoints.digit;
-            });
-          });
+  //         pointSnapshot.forEach((pointDoc) => {
+  //           const pointData = pointDoc.data();
+  //           pointData.points.forEach((point) => {
+  //             // 포인트 유형(type)에 따라 각각의 포인트를 계산
+  //             switch (point.type) {
+  //               case "MVP":
+  //                 mvpPoints += point.digit;
+  //                 break;
+  //               case "스터디":
+  //                 studyPoints += point.digit;
+  //                 break;
+  //               case "소통":
+  //                 communicationPoints += point.digit;
+  //                 break;
+  //               case "회고":
+  //                 retrospectionPoints += point.digit;
+  //                 break;
+  //               // 다른 포인트 유형에 대한 계산도 추가할 수 있음
+  //             }
+  //           });
+  //           pointData.beePoints.forEach((beePoints) => {
+  //             // 포인트 유형(type)에 따라 각각의 포인트를 계산
+  //             penaltyPoints += beePoints.digit;
+  //           });
+  //         });
 
-          // 전체 포인트 합계 계산
-          const totalPoints =
-            mvpPoints + studyPoints + communicationPoints + retrospectionPoints;
+  //         // 전체 포인트 합계 계산
+  //         const totalPoints =
+  //           mvpPoints + studyPoints + communicationPoints + retrospectionPoints;
 
-          if (userData.member !== "운영진" && userData.member !== "잔잔파도") {
-            scores.push({
-              name: userData.name,
-              pid: userData.pid,
-              mvp: mvpPoints,
-              study: studyPoints,
-              communication: communicationPoints,
-              retrospection: retrospectionPoints,
-              penalty: penaltyPoints, // 벌점 포인트
-              total: totalPoints, // 전체 포인트 합계
-              part: userData.part,
-            });
-          }
-        }
+  //         if (userData.member !== "운영진" && userData.member !== "잔잔파도") {
+  //           scores.push({
+  //             name: userData.name,
+  //             pid: userData.pid,
+  //             mvp: mvpPoints,
+  //             study: studyPoints,
+  //             communication: communicationPoints,
+  //             retrospection: retrospectionPoints,
+  //             penalty: penaltyPoints, // 벌점 포인트
+  //             total: totalPoints, // 전체 포인트 합계
+  //             part: userData.part,
+  //           });
+  //         }
+  //       }
 
-        setUserScores(scores);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching user scores:", error);
-      }
-    };
+  //       setUserScores(scores);
+  //       setLoading(false);
+  //     } catch (error) {
+  //       console.error("Error fetching user scores:", error);
+  //     }
+  //   };
 
-    fetchUserScores();
-  }, []);
+  //   fetchUserScores();
+  // }, []);
 
   const sortedUserScores = userScores.sort((a, b) => {
     // 이름을 가나다 순으로 비교하여 정렬
@@ -986,9 +1000,9 @@ const ScorePage = () => {
         <DropdownButton onClick={toggleDropdown}>
           {selectedOption || "전체"}
           {!isOpen ? (
-            <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
-          ) : (
             <ArrowTop1 src={require("../Assets/img/PolygonDown.png")} />
+          ) : (
+            <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
           )}
         </DropdownButton>
         <DropdownContent isOpen={isOpen}>

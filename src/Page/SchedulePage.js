@@ -690,10 +690,10 @@ const SchedulePage = () => {
                     >
                       {selectedOption || "전체"}
                       {!isToggle ? (
-                        <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
+                        <ArrowTop1 src={require("../Assets/img/PolygonDown.png")} />
                       ) : (
                         <ArrowTop1
-                          src={require("../Assets/img/PolygonDown.png")}
+                          src={require("../Assets/img/Polygon.png")}
                         />
                       )}
                     </DropdownButton>

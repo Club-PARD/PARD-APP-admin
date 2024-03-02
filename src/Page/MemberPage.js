@@ -295,7 +295,7 @@ const MemberPage = () => {
     left: 50%;
     transform: translate(-50%, -50%);
     width: 620px;
-    height: 552px;
+    height: 580px;
     background-color: white;
   `;
 
@@ -480,6 +480,19 @@ const MemberPage = () => {
     const [toggleToPart, setToggleToPart] = useState(false);
     const [toggleToLevel, setToggleToLever] = useState(false);
     const [isEditm, setIsEdit] = useState(false);
+
+    const [isDeleteUser, setIsDeleteUser] = useState(false);
+    const [isDeleteUserModal, setIsDeleteUserModal] = useState(false)
+
+    const handleDeleteUserCancle = () => {
+      setIsDeleteUser(false);
+    };
+
+    const handleDeleteUserConfirm = () => {
+      // 여기서 사용자 정보를 삭제하는 작업을 수행합니다.
+      setIsDeleteUser(false);
+    };
+
     const handleNameChange = (e) => {
       const text = e.target.value;
       setIsEdit(true);
@@ -639,9 +652,9 @@ const MemberPage = () => {
                 <DropdownButtonModal onClick={toggleDropdownLevel}>
                   {selectedLevelOption || level}
                   {!toggleToLevel ? (
-                    <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
-                  ) : (
                     <ArrowTop1 src={require("../Assets/img/PolygonDown.png")} />
+                  ) : (
+                    <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
                   )}
                 </DropdownButtonModal>
                 <DropdownContentModal isOpen={toggleToLevel}>
@@ -666,9 +679,9 @@ const MemberPage = () => {
                 <DropdownButtonModal onClick={toggleDropdownPart}>
                   {selectedOption || part}
                   {!toggleToPart ? (
-                    <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
-                  ) : (
                     <ArrowTop1 src={require("../Assets/img/PolygonDown.png")} />
+                  ) : (
+                    <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
                   )}
                 </DropdownButtonModal>
                 <DropdownContentModal isOpen={toggleToPart}>
@@ -684,10 +697,29 @@ const MemberPage = () => {
               </DropdownWrapperModal>
             </ModalContents>
           </ModalSubTitle>
+          <ModalSubTitle>
+            <ModalContents color={"#111"} right={41} weight={500}>
+              전화번호
+            </ModalContents>
+            <ModalContents>
+              <DeleteUserButton>
+                <Img src={require("../Assets/img/DeleteIconBlue.png")} style={{ width: "20px" }} />
+                <Span>삭제하기</Span>
+              </DeleteUserButton>
+            </ModalContents>
+            {/* <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+              <Input
+                value={inputPhoneNum}
+                onChange={handlePhoneNumChange}
+                placeholder="이름을 10자 이내로 작성해주세요."
+              />
+            </ModalContents> */}
+          </ModalSubTitle>
           <UpdateButton disabled={!isEditm} onClick={handleUpdateButtonClick}>
             저장하기
           </UpdateButton>
         </ModalContent>
+        
       </ModalWrapper>
     );
   };
@@ -764,11 +796,11 @@ const MemberPage = () => {
                         {selectedMemberFilter || "구분"}
                         {!isDropdownOpen ? (
                           <ArrowTop1
-                            src={require("../Assets/img/Polygon.png")}
+                            src={require("../Assets/img/PolygonDown.png")}
                           />
                         ) : (
                           <ArrowTop1
-                            src={require("../Assets/img/PolygonDown.png")}
+                            src={require("../Assets/img/Polygon.png")}
                           />
                         )}
                       </DropdownButton>
@@ -801,11 +833,11 @@ const MemberPage = () => {
                         {selectedPartFilter || "파트"}
                         {!isdropdownPart ? (
                           <ArrowTop1
-                            src={require("../Assets/img/Polygon.png")}
+                            src={require("../Assets/img/PolygonDown.png")}
                           />
                         ) : (
                           <ArrowTop1
-                            src={require("../Assets/img/PolygonDown.png")}
+                            src={require("../Assets/img/Polygon.png")}
                           />
                         )}
                       </DropdownButton>
@@ -1493,3 +1525,36 @@ const DropdownItem1 = styled.div`
     background-color: #eeeffe;
   }
 `;
+
+const DeleteUserButton = styled.div`
+  width: 124px;
+  height : 40px;
+
+  border-radius: 8px;
+  border : 1px solid #5262F5;
+
+  background-color: #5262F510;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover{
+    background-color: #5262F550;
+  }
+`
+
+const Img = styled.img`
+  width: ${props => props.width};
+  height : ${props => props.height};
+`
+
+const Span = styled.span`
+  margin-top: 3px;
+  margin-left: 5px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 20px; 
+
+  color : #5262F5;
+`

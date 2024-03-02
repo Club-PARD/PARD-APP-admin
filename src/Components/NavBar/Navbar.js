@@ -175,7 +175,7 @@ function NavBar() {
             <DisplayTextDiv
               onClick={() => {
                 window.open(
-                  "https://www.notion.so/pardhgu/PARD-2-31f2b5a564924185969c3eee246eef43?pvs=4",
+                  "https://www.notion.so/we-pard/Pay-it-Forward-IT-ac8ea82c7313469ead747a89a5c9d3cb?pvs=4",
                   "_blank"
                 );
               }}

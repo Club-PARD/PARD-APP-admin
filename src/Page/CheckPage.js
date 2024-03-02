@@ -379,9 +379,9 @@ const CheckPage = () => {
           <DropdownButton onClick={toggleDropdown}>
             {selectedOption || "전체"}
             {!isOpen ? (
-              <ArrowTop src={require("../Assets/img/Polygon.png")} />
-            ) : (
               <ArrowTop src={require("../Assets/img/PolygonDown.png")} />
+            ) : (
+              <ArrowTop src={require("../Assets/img/Polygon.png")} />
             )}
           </DropdownButton>
           <DropdownContent isOpen={isOpen}>
