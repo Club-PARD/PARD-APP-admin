@@ -712,13 +712,13 @@ const SchedulePage = () => {
               </ModalSubTitle>
               <ModalSubTitle>
                 <ModalContents color={"#111"} right={46} weight={500}>
-                  일정 제목
+                  과제 제목
                 </ModalContents>
                 <ModalContents color={"#A3A3A3"} right={0} weight={600}>
                   <ReasonInput
                     value={inputText}
                     onChange={handleInputChange}
-                    placeholder="일정 제목을 10자 이내로 작성해주세요."
+                    placeholder="과제 제목을 10자 이내로 작성해주세요."
                   />
                   <InputNumNum>{inputText.length}/10</InputNumNum>
                 </ModalContents>
