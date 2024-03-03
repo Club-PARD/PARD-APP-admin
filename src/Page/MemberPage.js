@@ -609,6 +609,15 @@ const MemberPage = () => {
       }
     };
 
+    const [isOpenDeleteConfirmModal, setIsOpenDeleteConfirmModal] = useState(false);
+
+    const openDeleteConfirmModal = () => {
+      setIsOpenDeleteConfirmModal(true);
+    }
+    const closeDeleteConfirmModal = () => {
+      setIsOpenDeleteConfirmModal(false);
+    }
+
     return (
       <ModalWrapper isModalOpen={isModalOpen}>
         <ModalContent>
@@ -698,22 +707,20 @@ const MemberPage = () => {
             </ModalContents>
           </ModalSubTitle>
           <ModalSubTitle>
-            <ModalContents color={"#111"} right={41} weight={500}>
-              전화번호
+            <ModalContents color={"#111"} right={70} weight={500}>
+              삭제
             </ModalContents>
             <ModalContents>
-              <DeleteUserButton>
+              <CheckScoreButton width = '124'onClick={openDeleteConfirmModal}>
                 <Img src={require("../Assets/img/DeleteIconBlue.png")} style={{ width: "20px" }} />
                 <Span>삭제하기</Span>
-              </DeleteUserButton>
+              </CheckScoreButton>
             </ModalContents>
-            {/* <ModalContents color={"#A3A3A3"} right={0} weight={600}>
-              <Input
-                value={inputPhoneNum}
-                onChange={handlePhoneNumChange}
-                placeholder="이름을 10자 이내로 작성해주세요."
-              />
-            </ModalContents> */}
+            {
+              isOpenDeleteConfirmModal && (
+                <DeleteConfirmModal closeModal={closeDeleteConfirmModal} />
+              )
+            }
           </ModalSubTitle>
           <UpdateButton disabled={!isEditm} onClick={handleUpdateButtonClick}>
             저장하기
@@ -1343,7 +1350,7 @@ const TableMinText = styled.td`
 
 const CheckScoreButton = styled.button`
   display: flex;
-  width: 140px;
+  width: ${props => props.width || "140"}px;
   padding: 6px 16px;
   justify-content: center;
   align-items: center;
@@ -1558,3 +1565,66 @@ const Span = styled.span`
 
   color : #5262F5;
 `
+
+const DeleteConfirmModal = ({ closeModal }) => {
+  const ContainerDeleteConfirmModal = styled.div`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 424px;
+    height : 150px;
+    border-radius: 4px;
+
+    border : 1px solid black;
+
+    background-color: #fefefe;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  `;
+  
+  const ContainerContent = styled.span`
+    width : 80%;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    text-align: center;
+  
+    margin-top: 10px;
+    margin-bottom: 15px;
+  `
+
+  const ContainerBottom = styled.div`
+    width : 80%;
+    display: flex;
+    justify-content: end;
+  `
+
+  const Button = styled.span`
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+
+    &:first-child {
+      margin-right: 30px;
+    }
+
+    &:hover{
+      color : #5262F5;
+    }
+  `
+  return (
+    <ContainerDeleteConfirmModal>
+      <ContainerContent>
+        사용자 정보를 삭제하시겠습니까?<br/>삭제 후 정보가 복구되지 않습니다.
+      </ContainerContent>
+      <ContainerBottom>
+        <Button onClick={closeModal}>취소</Button>
+        <Button>확인</Button>
+      </ContainerBottom>
+    </ContainerDeleteConfirmModal>
+  );
+}
