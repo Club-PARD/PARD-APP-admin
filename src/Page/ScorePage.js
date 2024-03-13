@@ -649,6 +649,52 @@ const ScorePage = () => {
       }
     };
 
+
+    // 점수 업데이트 실행 버튼
+    const handleDeleteButtonClick = () => {
+      console.log("hello2");
+      const result = window.confirm("점수를 삭제하시겠습니까?");
+      if (result) {
+        console.log("debug");
+        // deleteScore();
+      }
+    };
+  
+    // 데이터 삭제 함수
+    const deleteScore = async () => {
+        try {
+          // 기존 데이터를 가져옴
+          const pointsQuery = query(
+            collection(dbService, "points"),
+            where("pid", "==", pid)
+          );
+          const pointsSnapshot = await getDocs(pointsQuery);
+          const pointsData = pointsSnapshot.docs.map((doc) => doc.data());
+          console.log("hello");
+          console.log("pointData result", pointsData);
+
+          // 삭제할 데이터를 필터링하여 새로운 배열로 생성
+          const filteredPoints = pointsData[0].points.filter(
+            (point) => point.reason !== inputText && point.type
+          );
+          const filteredBeePoints = pointsData[0].beePoints.filter(
+            (point) => point.reason !== inputText && point.type
+          );
+
+          // 업데이트된 데이터로 업데이트
+          const docRefPoint = doc(dbService, "points", pid);
+          await updateDoc(docRefPoint, {
+            points: filteredPoints,
+            beePoints: filteredBeePoints,
+          });
+
+          // 삭제 성공 알림
+          alert("점수가 성공적으로 삭제되었습니다.");
+        } catch (error) {
+          console.error("Error deleting Points data:", error);
+        }
+    };
+
     // 토글 점수 리스트
     const ScoreList = [
       "주요 행사 MVP (+5점)",
@@ -757,7 +803,7 @@ const ScorePage = () => {
                             locale: koLocale,
                           })}
                         </RowContent>
-                        <RowContent>삭제</RowContent>
+                        <RowContent onClick={() => handleDeleteButtonClick()}>삭제</RowContent>
                       </RowContentDiv>
                     </div>
                   ))}
@@ -898,85 +944,85 @@ const ScorePage = () => {
   };
 
   // Firebase fireStore 전체 Point 데이터 조회
-  // useEffect(() => {
-  //   const fetchUserScores = async () => {
-  //     try {
-  //       const userQuery = query(collection(dbService, "users"));
-  //       const userSnapshot = await getDocs(userQuery);
+  useEffect(() => {
+    const fetchUserScores = async () => {
+      try {
+        const userQuery = query(collection(dbService, "users"));
+        const userSnapshot = await getDocs(userQuery);
 
-  //       const scores = [];
+        const scores = [];
 
-  //       for (const userDoc of userSnapshot.docs) {
-  //         const userData = userDoc.data();
-  //         const userId = userDoc.id;
+        for (const userDoc of userSnapshot.docs) {
+          const userData = userDoc.data();
+          const userId = userDoc.id;
 
-  //         // 사용자의 포인트 데이터 가져오기
-  //         const pointQuery = query(
-  //           collection(dbService, "points"),
-  //           where("uid", "==", userId)
-  //         );
-  //         const pointSnapshot = await getDocs(pointQuery);
+          // 사용자의 포인트 데이터 가져오기
+          const pointQuery = query(
+            collection(dbService, "points"),
+            where("uid", "==", userId)
+          );
+          const pointSnapshot = await getDocs(pointQuery);
 
-  //         let mvpPoints = 0;
-  //         let studyPoints = 0;
-  //         let communicationPoints = 0;
-  //         let retrospectionPoints = 0;
-  //         let penaltyPoints = 0; // 벌점 포인트
+          let mvpPoints = 0;
+          let studyPoints = 0;
+          let communicationPoints = 0;
+          let retrospectionPoints = 0;
+          let penaltyPoints = 0; // 벌점 포인트
 
-  //         pointSnapshot.forEach((pointDoc) => {
-  //           const pointData = pointDoc.data();
-  //           pointData.points.forEach((point) => {
-  //             // 포인트 유형(type)에 따라 각각의 포인트를 계산
-  //             switch (point.type) {
-  //               case "MVP":
-  //                 mvpPoints += point.digit;
-  //                 break;
-  //               case "스터디":
-  //                 studyPoints += point.digit;
-  //                 break;
-  //               case "소통":
-  //                 communicationPoints += point.digit;
-  //                 break;
-  //               case "회고":
-  //                 retrospectionPoints += point.digit;
-  //                 break;
-  //               // 다른 포인트 유형에 대한 계산도 추가할 수 있음
-  //             }
-  //           });
-  //           pointData.beePoints.forEach((beePoints) => {
-  //             // 포인트 유형(type)에 따라 각각의 포인트를 계산
-  //             penaltyPoints += beePoints.digit;
-  //           });
-  //         });
+          pointSnapshot.forEach((pointDoc) => {
+            const pointData = pointDoc.data();
+            pointData.points.forEach((point) => {
+              // 포인트 유형(type)에 따라 각각의 포인트를 계산
+              switch (point.type) {
+                case "MVP":
+                  mvpPoints += point.digit;
+                  break;
+                case "스터디":
+                  studyPoints += point.digit;
+                  break;
+                case "소통":
+                  communicationPoints += point.digit;
+                  break;
+                case "회고":
+                  retrospectionPoints += point.digit;
+                  break;
+                // 다른 포인트 유형에 대한 계산도 추가할 수 있음
+              }
+            });
+            pointData.beePoints.forEach((beePoints) => {
+              // 포인트 유형(type)에 따라 각각의 포인트를 계산
+              penaltyPoints += beePoints.digit;
+            });
+          });
 
-  //         // 전체 포인트 합계 계산
-  //         const totalPoints =
-  //           mvpPoints + studyPoints + communicationPoints + retrospectionPoints;
+          // 전체 포인트 합계 계산
+          const totalPoints =
+            mvpPoints + studyPoints + communicationPoints + retrospectionPoints;
 
-  //         if (userData.member !== "운영진" && userData.member !== "잔잔파도") {
-  //           scores.push({
-  //             name: userData.name,
-  //             pid: userData.pid,
-  //             mvp: mvpPoints,
-  //             study: studyPoints,
-  //             communication: communicationPoints,
-  //             retrospection: retrospectionPoints,
-  //             penalty: penaltyPoints, // 벌점 포인트
-  //             total: totalPoints, // 전체 포인트 합계
-  //             part: userData.part,
-  //           });
-  //         }
-  //       }
+          if (userData.member !== "운영진" && userData.member !== "잔잔파도") {
+            scores.push({
+              name: userData.name,
+              pid: userData.pid,
+              mvp: mvpPoints,
+              study: studyPoints,
+              communication: communicationPoints,
+              retrospection: retrospectionPoints,
+              penalty: penaltyPoints, // 벌점 포인트
+              total: totalPoints, // 전체 포인트 합계
+              part: userData.part,
+            });
+          }
+        }
 
-  //       setUserScores(scores);
-  //       setLoading(false);
-  //     } catch (error) {
-  //       console.error("Error fetching user scores:", error);
-  //     }
-  //   };
+        setUserScores(scores);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching user scores:", error);
+      }
+    };
 
-  //   fetchUserScores();
-  // }, []);
+    fetchUserScores();
+  }, []);
 
   const sortedUserScores = userScores.sort((a, b) => {
     // 이름을 가나다 순으로 비교하여 정렬
@@ -990,12 +1036,17 @@ const ScorePage = () => {
   // Main 화면 코드
   return (
     <DDiv>
+      {/* 사용자 / 로그아웃 */}
       <CommonLogSection />
+
+      {/* 점수 관리 Title Header */}
       <TitleDiv>
         <HomeTitle>점수 관리</HomeTitle>
         <BarText />
         <SubTitle>파트별로 파드너십을 관리해보세요.</SubTitle>
       </TitleDiv>
+
+      {/* 점수 관리 카테고리 드롭다운 */}
       <DropdownWrapper>
         <DropdownButton onClick={toggleDropdown}>
           {selectedOption || "전체"}
@@ -1013,8 +1064,11 @@ const ScorePage = () => {
           ))}
         </DropdownContent>
       </DropdownWrapper>
+
+      {/* 전체 점수 Table */}
       <BodyDiv>
         <Table>
+          {/* Table Head */}
           <TableHead>
             <TableRow>
               <TableHeaderCell width={140} style={{ background: "#F8F8F8" }}>
@@ -1032,6 +1086,8 @@ const ScorePage = () => {
               </TableHeaderCell>
             </TableRow>
           </TableHead>
+
+          {/* Table */}
           <TableBody>
             {loading ? (
               <>

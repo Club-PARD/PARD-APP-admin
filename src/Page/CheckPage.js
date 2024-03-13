@@ -144,6 +144,8 @@ const CheckPage = () => {
     .filter((user) => user.name) // name 속성이 정의된 요소만 필터링
     .sort((a, b) => a.name.localeCompare(b.name));
 
+  
+  // 유저 점수를 필터해서 보여주는 부분 (운영진과 잔잔파도가 아닌 경우! (현재 활동중인 파디 + 거친파도))
   const filteredUserScores = selectedOption
     ? sortedUserScores.filter(
         (userScore) =>
@@ -369,11 +371,15 @@ const CheckPage = () => {
   return (
     <DDiv>
       <CommonLogSection />
+      
+      {/* 타이틀 영역 */}
       <TitleDiv>
         <HomeTitle>출결 관리</HomeTitle>
         <BarText />
         <SubTitle>파트별로 출결을 관리해보세요.</SubTitle>
       </TitleDiv>
+
+      {/* 전체, 취소하기, 수정하기 Header */}
       <FirstDiv>
         <DropdownWrapper>
           <DropdownButton onClick={toggleDropdown}>
@@ -407,9 +413,12 @@ const CheckPage = () => {
           </FlexDiv>
         )}
       </FirstDiv>
+
+      {/* 사용자 출석 정보가 보여지는 Table Content */}
       {addable ? (
         <BodyDiv>
           <Table>
+            {/* Table - Head */}
             <TableHead>
               <TableRow>
                 <TableHeaderCell width={140} style={{ background: "#F8F8F8" }}>
@@ -431,6 +440,8 @@ const CheckPage = () => {
                 <TableHeaderCell width={152}>종강총회</TableHeaderCell>
               </TableRow>
             </TableHead>
+
+            {/* Table - Body */}
             <TableBody>
               {filteredUserScores.map((userData, index) => (
                 <TableRow key={index}>
