@@ -18,4 +18,18 @@ const analytics = getAnalytics(app);
 const dbService = getFirestore(app); //  firebase DB => DB를 관리
 const auth = getAuth(app);
 
+
+export const fetchDataFromFirebase = async () => {
+  try {
+    const snapshot = await dbService.collection('yourCollection').get(); // Firestore 컬렉션에서 데이터 가져오기
+    const data = snapshot.docs.map(doc => doc.data()); // 가져온 데이터 맵핑
+    return data;
+  } catch (error) {
+    console.error('Error fetching data from Firebase:', error);
+    return []; // 에러 발생 시 빈 배열 반환
+  }
+};
+
 export { app, dbService, analytics, auth };
+
+
