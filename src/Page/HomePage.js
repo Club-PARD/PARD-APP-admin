@@ -94,6 +94,7 @@ const HomePage = () => {
   //   calculateUserRankings();
   // }, []);
 
+  // 최근 다섯 개의 스케줄 return하는 핸들러
   const getRecentSchedules = () => {
     const sortedSchedules = [...schedules].sort(
       (a, b) => b.dueDate - a.dueDate
