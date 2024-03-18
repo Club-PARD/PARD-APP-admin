@@ -24,76 +24,78 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
 
   // Firebase fireStore 스케쥴 데이터 조회
-  // useEffect(() => {
-  //   const fetchSchedules = async () => {
-  //     try {
-  //       const data = await getDocs(collection(dbService, "schedules"));
-  //       const newData = data.docs.map((doc) => ({ ...doc.data() }));
-  //       setSchedule(newData);
-  //     } catch (error) {
-  //       console.error("Error fetching schedules:", error);
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        const data = await getDocs(collection(dbService, "schedules"));
+        const newData = data.docs.map((doc) => ({ ...doc.data() }));
+        setSchedule(newData);
+      } catch (error) {
+        console.error("Error fetching schedules:", error);
+      }
+    };
 
-  //   fetchSchedules();
-  // }, []);
+    fetchSchedules();
+  }, []);
 
-  // useEffect(() => {
-
-  //   // Firebase fireStore 유저 데이터 조회
-  //   const calculateUserRankings = async () => {
-  //     try {
-  //       // 1. Firebase에서 사용자 데이터 가져오기
-  //       const userData = await getDocs(collection(dbService, "users"));
-
-  //       const rankings = [];
-
-  //       // 2. 각 사용자에 대한 순위 계산
-  //       for (const userDoc of userData.docs) {
-  //         const userData = userDoc.data();
-  //         const pid = userData.pid;
-
-  //         // 해당 사용자의 points 데이터 가져오기
-  //         const pointsDocRef = doc(dbService, "points", pid);
-  //         const pointsDoc = await getDoc(pointsDocRef);
-
-  //         if (pointsDoc.exists()) {
-  //           const pointsData = pointsDoc.data();
-  //           const pointsArray = pointsData.points || [];
-
-  //           // pointsArray 내부 digit 필드의 값을 합산하여 순위 계산
-  //           const totalPoints = pointsArray.reduce(
-  //             (acc, curr) => acc + curr.digit,
-  //             0
-  //           );
-
-  //           if (
-  //             userData.member !== "운영진" &&
-  //             userData.member !== "잔잔파도"
-  //           ) {
-  //             rankings.push({
-  //               uid: userDoc.id,
-  //               displayName: userData.name,
-  //               totalPoints: totalPoints,
-  //               part: userData.part,
-  //             });
-  //           }
-  //         }
-  //       }
-  //       setLoading(false);
-
-  //       // 3. 사용자를 totalPoints로 정렬하여 순위 설정
-  //       rankings.sort((a, b) => b.totalPoints - a.totalPoints);
-  //       // 순위를 상태에 설정
-  //       setUserRankings(rankings);
-  //     } catch (error) {
-  //       console.error("Error calculating rankings:", error);
-  //     }
-  //   };
-
-  //   calculateUserRankings();
-  // }, []);
-
+  useEffect(() => {
+    // Firebase fireStore 유저 데이터 조회
+    const calculateUserRankings = async () => {
+      try {
+        // Firebase에서 사용자 데이터 가져오기
+        const userData = await getDocs(collection(dbService, "users"));
+  
+        const rankings = [];
+  
+        // 각 사용자에 대한 순위 계산
+        for (const userDoc of userData.docs) {
+          const userData = userDoc.data();
+          
+          // 필요한 조건을 만족하는 사용자인지 확인
+          if (
+            userData.member !== "운영진" &&
+            userData.member !== "잔잔파도"
+          ) {
+            const pid = userData.pid;
+            console.log(userData.name,"읽어오기 pid : ",pid);
+  
+            // 해당 사용자의 points 데이터 가져오기
+            const pointsDocRef = doc(dbService, "points", pid);
+            const pointsDoc = await getDoc(pointsDocRef);
+  
+            if (pointsDoc.exists()) {
+              const pointsData = pointsDoc.data();
+              const pointsArray = pointsData.points || [];
+  
+              // pointsArray 내부 digit 필드의 값을 합산하여 순위 계산
+              const totalPoints = pointsArray.reduce(
+                (acc, curr) => acc + curr.digit,
+                0
+              );
+  
+              rankings.push({
+                uid: userDoc.id,
+                displayName: userData.name,
+                totalPoints: totalPoints,
+                part: userData.part,
+              });
+            }
+          }
+        }
+        setLoading(false);
+  
+        // 사용자를 totalPoints로 정렬하여 순위 설정
+        rankings.sort((a, b) => b.totalPoints - a.totalPoints);
+        // 순위를 상태에 설정
+        setUserRankings(rankings);
+      } catch (error) {
+        console.error("Error calculating rankings:", error);
+      }
+    };
+  
+    calculateUserRankings();
+  }, []);
+  
   // 최근 다섯 개의 스케줄 return하는 핸들러
   const getRecentSchedules = () => {
     const sortedSchedules = [...schedules].sort(

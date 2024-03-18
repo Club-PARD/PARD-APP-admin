@@ -533,10 +533,7 @@ const ScorePage = () => {
       }
     };
 
-    // 첫 화면 Firebase 렌더링
-    useEffect(() => {
-      fetchPoints();
-    }, [fetchPoints]);
+
 
     // 점수 업데이트 실행 버튼
     const handleAddButtonClick = () => {
