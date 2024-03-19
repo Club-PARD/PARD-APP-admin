@@ -194,7 +194,7 @@ const MemberPage = () => {
           phone: phoneInputs[index],
           isAdmin: selectedMembers[index] === "운영진",
           isMaster: selectedMembers[index] === "운영진",
-          generation: 2,
+          generation: 3,
           attend: {},
           attendInfo: [],
           uid: newId,
