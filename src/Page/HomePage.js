@@ -17,7 +17,6 @@ import { FadeLoader } from "react-spinners";
 - Main 화면 코드
 */
 
-
 const HomePage = () => {
   const [schedules, setSchedule] = useState([]);
   const [userRankings, setUserRankings] = useState([]);
