@@ -25,7 +25,15 @@ const LoginPage = () => {
 
   // Main 화면 코드
   return (
-    <Div>
+    <Div> 
+      {/* 
+        아래로 정렬되어 있다. 
+        타이틀 -> 
+        로고 이미지 -> 
+        글자 -> 
+        로그인 버튼 
+      */}
+
       <FlexDiv>
         <PardLogo src={require("../Assets/img/Login/Original.png")} />
         <TitleText>관리자 페이지</TitleText>
