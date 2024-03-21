@@ -22,17 +22,21 @@ export const handleGoogleLogin = (navigate) => {
       const user = data.user;
       const userEmail = user.email;
 
+      // FIREBASE CODE
+      // "users" 컬렉션에서 email이 같은 문서를 참조할 것을 선언
       const pointsQuery = query(
         collection(dbService, "users"),
         where("email", "==", userEmail)
       );
 
-      // Firebase Firestore 조회
+      // Firebase Firestore 조회 
       getDocs(pointsQuery)
         .then((querySnapshot) => {
+          // 비어 있지 않은 값이라면, 존재하는 유저로 판단
           if (!querySnapshot.empty) {
             const doc = querySnapshot.docs[0].data();
             const isAdmin = doc.isAdmin;
+            
             // 운영진 유무 확인
             if (isAdmin) {
               alert("로그인 되었습니다.");
