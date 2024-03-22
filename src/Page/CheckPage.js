@@ -62,7 +62,7 @@ const CheckPage = () => {
                 scheduleIds.sort((a, b) => a.dueDate - b.dueDate);
                 setScheduleKeys(scheduleIds);
 
-                console.log("sid : ", scheduleIds);
+                // console.log("sid : ", scheduleIds);
             } catch (error) {
                 console.error("Error fetching schedules:", error);
             }
@@ -96,7 +96,7 @@ const CheckPage = () => {
             const tempUserData = newData.filter((userScore) => userScore.member !== "운영진" && userScore.member !== "잔잔파도");
             // 전체 유저 정보 저장
             setUserDatas(tempUserData);
-            console.log(userDatas);
+            // console.log(userDatas);
         };
 
         fetchData();
@@ -226,9 +226,9 @@ const CheckPage = () => {
         // 
         updatedAttend[scheduleKeys[idx].sid] = newData; // scheduleKeys를 사용하여 업데이트
         updatedUserDatas[index].attend = updatedAttend;
-        console.log("읽어온 sid :", scheduleKeys);
-        console.log(updatedAttend);
-        console.log(updatedUserDatas[index])
+        // console.log("읽어온 sid :", scheduleKeys);
+        // console.log(updatedAttend);
+        // console.log(updatedUserDatas[index])
 
         // 변경된 user 정보를 저장
         setUserDatas(updatedUserDatas);
