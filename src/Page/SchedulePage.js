@@ -37,12 +37,18 @@ const SchedulePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(true);
 
+  // FIREBASE CODE
   // Firebase fireStore 스케쥴 조회
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
+        // 1. 전체 스케줄 다 가져오기 (type 상관 없이 [false / true])
         const data = await getDocs(collection(dbService, "schedules"));
+        
+        // 2. 가져온 데이터를 newData에 저장 (안전성을 위함)
         const newData = data.docs.map((doc) => ({ ...doc.data() }));
+
+        // 3. useState 변수에 저장
         setSchedule(newData);
       } catch (error) {
         console.error("Error fetching schedules:", error);
@@ -52,38 +58,49 @@ const SchedulePage = () => {
     fetchSchedules();
   }, []);
 
-  // 조회된 데이터 중에 스케쥴 구분 및 sort
+  // 핸들러 : 조회된 데이터 중에 스케쥴 구분 및 sort
   const getRecentSchedules = () => {
+    
+    // 날짜 순으로 정렬된 버전 
     const sortedSchedules = [...schedules].sort(
       (a, b) => b.dueDate - a.dueDate
     );
+
+    // 날짜 순으로 정렬된 버전을 '전체' 스케줄로 필터한 버전
     const filteredSchedules = sortedSchedules.filter(
       (schedule) => schedule.type === true
     );
     return filteredSchedules;
   };
 
-  // 조회된 데이터 중에 과제  구분 및 sort
+  // 핸들러 : 조회된 데이터 중에 과제 구분 및 sort
   const getRecenTask = () => {
+    //  날짜 순으로 정렫뢴 버전
     const sortedSchedules = [...schedules].sort(
       (a, b) => b.dueDate - a.dueDate
     );
+
+    // 날짜 순으로 정렬된 버전을 '과제' 스케줄로 필터한 버전
     const filteredSchedules = sortedSchedules.filter(
       (schedule) => schedule.type === false
     );
     return filteredSchedules;
   };
 
-  // 문서 삭제 기능
+  // 핸들러 : 문서 삭제 기능 (sid값을 받아서 이를 토대로 삭제 진행)
   const handleDeleteSchedule = async (documentId) => {
     const userConfirmed = window.confirm("일정을 삭제하시겠습니까?");
 
     if (userConfirmed) {
       try {
+
+        // 1. sid 값을 참조하는 경로를 설정
         const scheduleRef = doc(dbService, "schedules", documentId);
+
+        // 2. 참조된 경로를 바탕으로 문서 삭제 진행
         await deleteDoc(scheduleRef);
 
-        // 삭제가 성공하면 화면을 새로고침
+        // 3. 삭제가 성공하면 화면을 새로고침
         window.location.reload();
         alert("일정이 삭제되었습니다.");
       } catch (error) {
@@ -114,6 +131,7 @@ const SchedulePage = () => {
     setIsModalOpen(false);
   };
 
+  // 함수 : '파트'를 제외한 파트의 이름을 반환해주는 함수
   function getPartName(part) {
     switch (part) {
       case "기획파트":
@@ -474,21 +492,25 @@ const SchedulePage = () => {
       setSelectedTime(date);
     };
 
-    // d-day 구하기
+    // d-day 구하는 핸들러
     function calculateDateDifference(selectedDateStr) {
+      // 1. 오늘 날짜 구하기
       const today = new Date();
 
+      // 2. 선택한 날짜 구하기
       const selectedDate = new Date(selectedDateStr);
 
+      // 3. 선택한 날짜와 오늘 날짜의 차이 구하기
       const daysDifference = differenceInDays(selectedDate, today);
 
+      // 4. 차이를 포맷하기
       const formattedDifference =
         daysDifference === 0 ? "D-day" : `D-${Math.abs(daysDifference) + 1}`;
 
       return formattedDifference;
     }
 
-    // 일정 등록
+    // 핸들러 : 일정 등록
     const handleRegisterButtonClicked = () => {
       const result = window.confirm("일정을 추가하시겠습니까?");
       if (result) {
@@ -496,17 +518,19 @@ const SchedulePage = () => {
       }
     };
 
+    // 핸들러 : '전체'에 대한 일정 추가 (유효성 검사 후 실제 DB로 등록)
     const UpdateScedule = async () => {
+      // 유효성 검사
       if (inputAbout === "") {
         window.confirm("빈칸을 확인해주세요");
       } else if (inputText === "") {
         window.confirm("빈칸을 확인해주세요");
       } else {
         try {
-          // selectedTime 값을 Timestamp로 변환 (Firestore에 저장할 수 있는 형식으로)
+          // 1. selectedTime 값을 Timestamp로 변환 (Firestore에 저장할 수 있는 형식으로)
           const selectedTimeTimestamp = Timestamp.fromDate(selectedTime);
 
-          // Firestore에 데이터를 추가하고, 반환된 문서의 ID를 받음
+          // 2. Firestore에 데이터를 추가하고, 반환된 문서의 ID를 받음
           const docRef = await addDoc(collection(dbService, "schedules"), {
             dueDate: selectedTimeTimestamp,
             type: true,
@@ -534,7 +558,7 @@ const SchedulePage = () => {
       }
     };
 
-    // 과제 등록
+    // 핸들러 : 과제 등록
     const handleRegisterTaskButtonClicked = () => {
       const result = window.confirm("과제를 추가하시겠습니까?");
       if (result) {
@@ -542,6 +566,7 @@ const SchedulePage = () => {
       }
     };
 
+    // 핸들러 : '과제'에 대한 일정 추가 (유효성 검사 후 실제 DB로 등록)
     const UpdateTask = async () => {
       if (inputAbout === "") {
         window.confirm("빈칸을 확인해주세요");
@@ -678,6 +703,7 @@ const SchedulePage = () => {
             </>
           ) : (
             <>
+              {/* 파트 선택하기 */}
               <ModalSubTitle>
                 <ModalContents color={"#111"} right={81} weight={500}>
                   파트
@@ -710,6 +736,8 @@ const SchedulePage = () => {
                   </DropdownWrapper>
                 </ModalContents>
               </ModalSubTitle>
+              
+              {/* 과제 제목 작성하기 */}
               <ModalSubTitle>
                 <ModalContents color={"#111"} right={46} weight={500}>
                   과제 제목
@@ -723,6 +751,8 @@ const SchedulePage = () => {
                   <InputNumNum>{inputText.length}/10</InputNumNum>
                 </ModalContents>
               </ModalSubTitle>
+              
+              {/* 과제 내용 작성하기 */}
               <ModalSubTitle top={54}>
                 <ModalContents color={"#111"} right={81} weight={500}>
                   내용
@@ -736,6 +766,8 @@ const SchedulePage = () => {
                   <InputNumNum>{inputAbout.length}/20</InputNumNum>
                 </ModalContents>
               </ModalSubTitle>
+              
+              {/* 제출 마감 날짜 선택하기 */}
               <ModalSubTitle top={53}>
                 <ModalContents color={"#111"} right={46} weight={500}>
                   제출 마감
@@ -754,6 +786,8 @@ const SchedulePage = () => {
                   />
                 </ModalContents>
               </ModalSubTitle>
+              
+              {/* 추가하기 버튼 */}
               <RegisterButton onClick={handleRegisterTaskButtonClicked}>
                 추가하기
               </RegisterButton>
@@ -767,14 +801,21 @@ const SchedulePage = () => {
   // Main 화면 코드
   return (
     <DDiv>
+      {/* 상단 바 로그인 정보 표시  */}
       <CommonLogSection />
+
+      {/* 페이지 정보 표시 */}
       <TitleDiv>
         <HomeTitle>일정 관리</HomeTitle>
         <BarText />
         <SubTitle>중요한 일정을 공지하고 알림을 발송하세요.</SubTitle>
         <AlertText>* 일정 전날 오후 9시에 알림이 발송됩니다.</AlertText>
       </TitleDiv>
+
+      {/* 공식 일정과 과제 일정이 보여지는 Content */}
       <BodyDiv>
+
+        {/* 공식 일정 */}
         <RightDiv>
           <FirstDiv>
             <HomeTitle>공식 일정</HomeTitle>
@@ -811,6 +852,8 @@ const SchedulePage = () => {
             ))}
           </ScheduleDiv>
         </RightDiv>
+
+        {/* 과제 일정 */}
         <LeftDiv>
           <FirstDiv>
             <HomeTitle>과제 일정</HomeTitle>
@@ -848,6 +891,8 @@ const SchedulePage = () => {
           </ScheduleDiv>
         </LeftDiv>
       </BodyDiv>
+
+      {/* 추가하기 모달 Content */}
       <Modal
         isOpen={isModalOpen}
         isRegisterModalOpen={isRegisterModalOpen}
