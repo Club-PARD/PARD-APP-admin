@@ -507,13 +507,16 @@ const ScorePage = () => {
     const fetchPoints = async () => {
       try {
         // 해당 사용자의 pid와 일치하는 Points 데이터 조회
+        // 1. 참조 선언
         const pointsQuery = query(
           collection(dbService, "points"),
           where("pid", "==", pid)
         );
+        
+        // 2. 참조를 이용하여 전체 점수 가져오기
         const pointsSnapshot = await getDocs(pointsQuery);
         const pointsData = [];
-
+        // 3. 전체 점수 중에서 points 영역만 return
         pointsSnapshot.forEach((pointDoc) => {
           // "points" 필드 값을 가져옴
           const pointData = pointDoc.data().points;
@@ -526,7 +529,6 @@ const ScorePage = () => {
           // 배열로 합쳐서 저장
           pointsData.push(...beePointData);
         });
-
         setPoints(pointsData);
       } catch (error) {
         console.error("Error fetching Points data:", error);
@@ -547,7 +549,7 @@ const ScorePage = () => {
     const UpdateScore = async () => {
       if (selectedScore && inputText) {
         const scoreMatch = selectedScore.match(/(-?\d+(\.\d+)?)점/);
-
+        
         if (scoreMatch) {
           const scoreDigit = parseFloat(scoreMatch[1]);
           let selectedType;
@@ -925,12 +927,12 @@ const ScorePage = () => {
     "기획파트",
   ];
 
-  // 파트 filter 토글 열기
+  // 핸들러 : 파트 filter 토글 열기
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
 
-  // 파트 filter 토글 선택
+  // 핸들러 : 파트 filter 토글 선택
   const handleOptionClick = (option) => {
     if (option === "전체") {
       setSelectedOption(null);
@@ -941,10 +943,14 @@ const ScorePage = () => {
   };
 
   // Firebase fireStore 전체 Point 데이터 조회
+  // 나의 생각 : 전체 유저 정보는 한 번에 불러오는데, 각 uid에 맞춰서 points 점수를 한 번씩 계속 불러오니까 읽어들이는 양이 많은건가?
   useEffect(() => {
     const fetchUserScores = async () => {
       try {
+        // 1. 'users'라는 컬렉션을 참조하는 변수 선언
         const userQuery = query(collection(dbService, "users"));
+
+        // 2. userQuery 참조를 바탕으로 전체 유저 정보를 가져온다.
         const userSnapshot = await getDocs(userQuery);
 
         const scores = [];
@@ -954,18 +960,22 @@ const ScorePage = () => {
           const userId = userDoc.id;
 
           // 사용자의 포인트 데이터 가져오기
+          // 1. points'라는 컬렉션을 참조하는 변수 선언 (uid값이 같은 것들만)
           const pointQuery = query(
             collection(dbService, "points"),
             where("uid", "==", userId)
           );
+          // 2. pointQuery 참조를 바탕으로 전체 점수 정보를 가져온다.
           const pointSnapshot = await getDocs(pointQuery);
 
+          // 추가되어야 할 점수 계산을 위한 변수 선언
           let mvpPoints = 0;
           let studyPoints = 0;
           let communicationPoints = 0;
           let retrospectionPoints = 0;
           let penaltyPoints = 0; // 벌점 포인트
-
+          
+          // 3. 가져온 점수를 바탕으로 점수 계산을 위한 변수에 할당
           pointSnapshot.forEach((pointDoc) => {
             const pointData = pointDoc.data();
             pointData.points.forEach((point) => {
@@ -1011,6 +1021,9 @@ const ScorePage = () => {
           }
         }
 
+        console.log("scores", scores);
+
+
         setUserScores(scores);
         setLoading(false);
       } catch (error) {
@@ -1021,11 +1034,13 @@ const ScorePage = () => {
     fetchUserScores();
   }, []);
 
+  // 이름으로 정렬된 유저 정보 변수
   const sortedUserScores = userScores.sort((a, b) => {
     // 이름을 가나다 순으로 비교하여 정렬
     return a.name.localeCompare(b.name);
   });
 
+  // 선택한 파트 option에 맞춰서 필터를 거친 유저 정보 변수
   const filteredUserScores = selectedOption
     ? sortedUserScores.filter((userScore) => userScore.part === selectedOption)
     : sortedUserScores;
