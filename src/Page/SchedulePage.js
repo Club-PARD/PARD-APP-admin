@@ -991,7 +991,7 @@ const FlextBoxDiv = styled.div`
 `;
 
 const DelteButton = styled.button`
-  width: 55px;
+  width: 70px;
   height: 28px;
   border-radius: 4px;
   border: 1px solid var(--Gray30, #a3a3a3);
@@ -1011,7 +1011,7 @@ const DelteButton = styled.button`
 `;
 
 const DeleteIcon = styled.img`
-  width: 16px;
+  width: 18px;
   height: 16px;
   margin-right: 2px;
 `;
