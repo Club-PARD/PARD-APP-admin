@@ -467,14 +467,12 @@ const CheckPage = () => {
                                         <TableHeaderCell width={152}>1차 세미나</TableHeaderCell>
                                         <TableHeaderCell width={152}>2차 세미나</TableHeaderCell>
                                         <TableHeaderCell width={152}>3차 세미나</TableHeaderCell>
-                                        <TableHeaderCell width={152}>연합 세미나</TableHeaderCell>
                                         <TableHeaderCell width={152}>4차 세미나</TableHeaderCell>
                                         <TableHeaderCell width={152}>5차 세미나</TableHeaderCell>
                                         <TableHeaderCell width={152}>6차 세미나</TableHeaderCell>
-                                        <TableHeaderCell width={152}>
-                                            기디개 연합 세미나
-                                        </TableHeaderCell>
+                                        <TableHeaderCell width={152}>연합 세미나1</TableHeaderCell>
                                         <TableHeaderCell width={152}>숏커톤</TableHeaderCell>
+                                        <TableHeaderCell width={152}>연합 세미나2</TableHeaderCell>
                                         <TableHeaderCell width={152}>아이디어 피칭</TableHeaderCell>
                                         <TableHeaderCell width={152}>종강총회</TableHeaderCell>
                                     </TableRow>
