@@ -639,6 +639,7 @@ const ScorePage = () => {
               // onClose(); // 점수 로딩이 늦어서 일단 닫았습니다.
               alert("점수 등록이 성공되었습니다.");
               closeModalWidhtUpdate();
+              window.location.reload();
             } catch (error) {
               console.error("Error updating Points data:", error);
             }
@@ -884,7 +885,7 @@ const ScorePage = () => {
                 <UnitSubText>
                   {!editScore
                     ? "* 파드너십에서 점수 분야를 고르면 자동으로 점수가 입력돼요."
-                    : "* 벌점을 직접 입력할 때 -와 함께 점수를 정확히 입력해주세요."}
+                    : "* 벌점을 직접 입력할 때 -를 제외하고 양수로 입력해주세요"}
                 </UnitSubText>
               </ModalSubTitle>
               <ModalSubTitle top={32}>
