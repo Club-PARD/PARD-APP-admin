@@ -5,7 +5,8 @@ import {
     query,
     where,
     updateDoc,
-    doc
+    doc,
+    getDoc
 } from "firebase/firestore";
 import {dbService} from "../fbase";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
@@ -31,6 +32,7 @@ const CheckPage = () => {
     const [scheduleKeys, setScheduleKeys] = useState([]); // schedules의 sid 값들을 저장할 상태
 
     useEffect(() => {
+        // FIREBASE CODE
         // Firebase fireStore 스케쥴 데이터 조회
         const fetchSchedules = async () => {
             try {
@@ -60,12 +62,13 @@ const CheckPage = () => {
                 scheduleIds.sort((a, b) => a.dueDate - b.dueDate);
                 setScheduleKeys(scheduleIds);
 
-                console.log("sid : ", scheduleIds);
+                // console.log("sid : ", scheduleIds);
             } catch (error) {
                 console.error("Error fetching schedules:", error);
             }
         };
 
+        // FIREBASE CODE
         // Firebase fireStore 유저 데이터 조회
         const fetchData = async () => {
             // 1. 유저 정보 전체 데이터 가져오기 user이라는 이름의 collection을 참조
@@ -90,40 +93,52 @@ const CheckPage = () => {
                 keys.push(itemKeys);
                 values.push(itemValues);
             });
-
+            const tempUserData = newData.filter((userScore) => userScore.member !== "운영진" && userScore.member !== "잔잔파도");
             // 전체 유저 정보 저장
-            setUserDatas(newData);
+            setUserDatas(tempUserData);
+            // console.log(userDatas);
         };
 
         fetchData();
         fetchSchedules();
     }, []);
 
-    // 출석 정보 업데이트
+    // 핸들러 : 출석 정보 업데이트
     const updateFirestore = async () => {
         try {
             const batch = [];
+
+            // FIREBASE CODE
             userDatas.forEach((userData) => {
                 const userDocRef = doc(dbService, "users", userData.uid); // userId 필드가 있다고 가정
                 const updatedAttendInfo = userData.attendInfo;
-                batch.push(updateDoc(userDocRef, {attendInfo: updatedAttendInfo}));
+                const updatedAttend = userData.attend;
+
+                // 사용자 문서가 존재하는지 확인
+                getDoc(userDocRef).then((doc) => {
+                    if (doc.exists()) {
+                        batch.push(updateDoc(userDocRef, { attendInfo: updatedAttendInfo, attend : updatedAttend}));
+                    } else {
+                        console.log("문서를 찾을 수 없습니다:", userData.uid);
+                        console.log("userData", userData);
+                    }
+                }).catch((error) => {
+                    console.error("Firestore 문서 조회 오류:", error);
+                });
             });
 
-            await Promise
-                .all(batch)
-                .then(() => {
-                    alert("변경 사항이 저장되었습니다."); // 성공 시 알림 추가
-                    setTimeout(() => {
-                        window
-                            .location
-                            .reload();
-                    }, 1000);
-                });
+            await Promise.all(batch); // 모든 업데이트 작업이 완료될 때까지 대기
+
+            // 변경사항 저장 후 페이지를 새로 고침
+            alert("변경 사항이 저장되었습니다."); // 성공 시 알림 추가
+            setAddable(true);
         } catch (error) {
             console.error("Firestore 문서 업데이트 오류:", error);
         }
     };
 
+
+    // 핸들러 : 변경 사항 저장을 묻는 핸들러
     const handleEditButtonClick = () => {
         const confirmSave = window.confirm("변경 사항을 저장하시겠습니까?");
         if (confirmSave) {
@@ -131,6 +146,7 @@ const CheckPage = () => {
         }
     };
 
+    // 핸들러 : 변경 사항 취소를 묻는 핸들러
     const handleCancelClick = () => {
         const confirmSave = window.confirm("변경사항이 저장되지 않습니다.\n취소 하시겠습니까?");
         if (confirmSave) {
@@ -142,7 +158,7 @@ const CheckPage = () => {
         }
     };
 
-    // 필터 옵션
+    // 변수 : 필터 옵션
     const options = [
         "전체",
         "서버파트",
@@ -152,10 +168,12 @@ const CheckPage = () => {
         "기획파트"
     ];
 
+    // 핸들러 : DropDown의 토클 역할을 수행하며 변수를 false <-> true로 지정하는 핸들러
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
     };
 
+    // 핸들러 : DropDown에서 선택한 값으로 selectedOption 변수를 지정하는 핸들러
     const handleOptionClick = (option) => {
         if (option === "전체") {
             setSelectedOption(null);
@@ -165,11 +183,14 @@ const CheckPage = () => {
         setIsOpen(false);
     };
 
+
+
+    // 변수 : firestore에서 가져온 user 콜렉션 중 'name' 요소가 있는 데이터들 중에서 filter해서 오름차순으로 이름 정렬한 배열을 갖는 배열
     const sortedUserScores = userDatas
         .filter((user) => user.name) // name 속성이 정의된 요소만 필터링
         .sort((a, b) => a.name.localeCompare(b.name));
 
-    // 유저 점수를 필터해서 보여주는 부분 (운영진과 잔잔파도가 아닌 경우! (현재 활동중인 파디 + 거친파도))
+    // 변수 : selectedOption에 맞춰 유저 점수를 필터해서 보여주는 부분 (운영진과 잔잔파도가 아닌 경우! (현재 활동중인 파디 + 거친파도))
     const filteredUserScores = selectedOption
         ? sortedUserScores.filter(
             (userScore) => userScore.part === selectedOption && userScore.member !== "운영진" && userScore.member !== "잔잔파도"
@@ -178,8 +199,12 @@ const CheckPage = () => {
             (userScore) => userScore.member !== "운영진" && userScore.member !== "잔잔파도"
         );
 
-    // 즉시 업데이트 관련 코드
+    
+    
+    // 핸들러 : 즉시 업데이트 관련 코드 (수정중 즉, 출석, 지각, 결석 중 선택했을 때 선택된 값을 변경해주는 핸들러)
     const updateUser = async (index, idx, newData) => {
+
+        // 로컬 변수 : userDatas를 copy한 변수
         const updatedUserDatas = [...userDatas];
 
         // attendInfo를 List로 변경
@@ -188,25 +213,33 @@ const CheckPage = () => {
             attendInfo: [...(updatedUserDatas[index].attendInfo || [])]
         };
 
-        // attendInfo 내 해당 인덱스에 새로운 데이터 할당
+        // attendInfo 내 해당 인덱스에 새로운 출석 데이터 할당 
         updatedUserDatas[index].attendInfo[idx] = newData;
+        
 
-        setUserDatas(updatedUserDatas);
 
-        // attend 맵 업데이트
+        // 로컬 변수 : 변경된 user 정보에서의 attend 정보만 저장하는 배열 선언
         const updatedAttend = {
             ...updatedUserDatas[index].attend
         };
+        
+        // 
         updatedAttend[scheduleKeys[idx].sid] = newData; // scheduleKeys를 사용하여 업데이트
         updatedUserDatas[index].attend = updatedAttend;
-        console.log("읽어온 sid :", scheduleKeys);
+        // console.log("읽어온 sid :", scheduleKeys);
+        // console.log(updatedAttend);
+        // console.log(updatedUserDatas[index])
 
-        // Firestore에 업데이트
-        const userDocRef = doc(dbService, "users", updatedUserDatas[index].uid);
-        await updateDoc(userDocRef, {
-            attendInfo: updatedUserDatas[index].attendInfo,
-            attend: updatedAttend, // attend 맵 업데이트
-        });
+        // 변경된 user 정보를 저장
+        setUserDatas(updatedUserDatas);
+
+        // // FIREBASE CODE
+        // // Firestore에 업데이트
+        // const userDocRef = doc(dbService, "users", updatedUserDatas[index].uid);
+        // await updateDoc(userDocRef, {
+        //     attendInfo: updatedUserDatas[index].attendInfo,
+        //     attend: updatedAttend, // attend 맵 업데이트
+        // });
 
     };
 
@@ -299,13 +332,16 @@ const CheckPage = () => {
     border-radius: 4px;
 `;
 
-    const CustomTableCell = ({value, idx, onUpdate}) => {
+    const CustomTableCell = ({ value, idx, onUpdate }) => {
+        // state 변수
         const [showButtons, setShowButtons] = useState(false);
 
+        // 핸들러 : 토클을 선택시 true <-> false로 변경해주는 핸들러
         const toggleButtons = () => {
             setShowButtons(!showButtons);
         };
 
+        // 핸들러 : 보여질 출석 상태를 선택한 값으로 변경해주는 핸들러
         const updateValue = (newValue) => {
             setShowButtons(false);
             onUpdate(newValue);
@@ -402,7 +438,10 @@ const CheckPage = () => {
     // Main 화면 코드
     return (
         <DDiv>
-            <CommonLogSection/> {/* 타이틀 영역 */}
+            {/* 상단 바 로그인 정보 표시 */}
+            <CommonLogSection />
+            
+            {/* 페이지 정보 표시 */}
             <TitleDiv>
                 <HomeTitle>출결 관리</HomeTitle>
                 <BarText/>
@@ -411,6 +450,8 @@ const CheckPage = () => {
 
             {/* 전체, 취소하기, 수정하기 Header */}
             <FirstDiv>
+
+                {/* 전체 or 파트 선택 */}
                 <DropdownWrapper>
                     <DropdownButton onClick={toggleDropdown}>
                         {selectedOption || "전체"}
@@ -420,6 +461,8 @@ const CheckPage = () => {
                                 : (<ArrowTop src={require("../Assets/img/Polygon.png")}/>)
                         }
                     </DropdownButton>
+
+                    {/* isOpen이 true가 되면 보여지는 드롭다운 영역 */}
                     <DropdownContent isOpen={isOpen}>
                         {
                             options.map((option, index) => (
@@ -430,6 +473,7 @@ const CheckPage = () => {
                         }
                     </DropdownContent>
                 </DropdownWrapper>
+
                 {
                     addable
                         ? (
@@ -485,6 +529,7 @@ const CheckPage = () => {
                                             <TableRow key={index}>
                                                 <TableCell color={"#2A2A2A"} width={140}>
                                                     {userData.name}
+                                                    {/* { console.log(userData)} */}
                                                 </TableCell>
                                                 {
                                                     Array.from({
@@ -505,6 +550,7 @@ const CheckPage = () => {
                     : (
                         <BodyDiv>
                             <Table>
+                                {/* Table - Head */}
                                 <TableHead>
                                     <TableRow>
                                         <TableHeaderCell
@@ -528,6 +574,8 @@ const CheckPage = () => {
                                         <TableHeaderCell width={152}>종강총회</TableHeaderCell>
                                     </TableRow>
                                 </TableHead>
+
+                                {/* Table - Body */}
                                 <tbody>
                                     {
                                         filteredUserScores.map((userData, index) => (

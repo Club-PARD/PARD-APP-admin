@@ -17,12 +17,12 @@ import { FadeLoader } from "react-spinners";
 - Main 화면 코드
 */
 
-
 const HomePage = () => {
   const [schedules, setSchedule] = useState([]);
   const [userRankings, setUserRankings] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // FIREBASE CODE
   // Firebase fireStore 스케쥴 데이터 조회
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -38,11 +38,11 @@ const HomePage = () => {
     fetchSchedules();
   }, []);
 
+  // Firebase fireStore 유저 데이터 조회
   useEffect(() => {
-    // Firebase fireStore 유저 데이터 조회
     const calculateUserRankings = async () => {
       try {
-        // Firebase에서 사용자 데이터 가져오기
+        // Firebase에서 사용자 데이터 가져오기 (전체 문서)
         const userData = await getDocs(collection(dbService, "users"));
   
         const rankings = [];
@@ -51,21 +51,22 @@ const HomePage = () => {
         for (const userDoc of userData.docs) {
           const userData = userDoc.data();
           
-          // 필요한 조건을 만족하는 사용자인지 확인
+          // 필요한 조건을 만족하는 사용자인지 확인 
           if (
             userData.member !== "운영진" &&
             userData.member !== "잔잔파도"
           ) {
             const pid = userData.pid;
-            console.log(userData.name,"읽어오기 pid : ",pid);
+            // console.log(userData.name,"읽어오기 pid : ",pid);
   
-            // 해당 사용자의 points 데이터 가져오기
+            // 해당 사용자의 points 데이터 가져오기 (특정 문서)
             const pointsDocRef = doc(dbService, "points", pid);
             const pointsDoc = await getDoc(pointsDocRef);
-  
+            
+            // pointsDoc가 존재한다면, 아래의 구문을 실행한다
             if (pointsDoc.exists()) {
-              const pointsData = pointsDoc.data();
-              const pointsArray = pointsData.points || [];
+              const pointsData = pointsDoc.data(); // .data() : 키-쌍으로 되어 있는 Firestore 문서의 정보를 가져온다.
+              const pointsArray = pointsData.points || []; // points 배열을 넣거나 없으면, 빈 배열을 넣는다.
   
               // pointsArray 내부 digit 필드의 값을 합산하여 순위 계산
               const totalPoints = pointsArray.reduce(
@@ -73,6 +74,7 @@ const HomePage = () => {
                 0
               );
   
+              // 계산된 점수를 토대로 rankings 배열에 추가
               rankings.push({
                 uid: userDoc.id,
                 displayName: userData.name,
@@ -82,12 +84,14 @@ const HomePage = () => {
             }
           }
         }
+        // 해야 할 일이 끝났으므로 loadingd을 false로 지정한다.
         setLoading(false);
   
         // 사용자를 totalPoints로 정렬하여 순위 설정
         rankings.sort((a, b) => b.totalPoints - a.totalPoints);
         // 순위를 상태에 설정
         setUserRankings(rankings);
+        
       } catch (error) {
         console.error("Error calculating rankings:", error);
       }
@@ -135,41 +139,58 @@ const HomePage = () => {
   // Main 화면 코드
   return (
     <DDiv>
-      <CommonLogSection />
+      {/* 상단 바 로그인 정보 표시 */}
+      <CommonLogSection /> 
+
+      {/* 페이지 정보 표시*/}
       <TitleDiv>
         <HomeTitle>홈</HomeTitle>
         <BarText />
         <SubTitle>대시보드로 주요 내용을 확인해보세요.</SubTitle>
       </TitleDiv>
+
+      {/* HomePage */}
       <BodyDiv>
+        {/* [1] 일정 업데이트 */}
         <RightDiv>
           <HomeTitle>일정 업데이트</HomeTitle>
+
           <ScheduleDiv>
             {getRecentSchedules().map((schedule, index) => (
               <ScheduleItem key={index}>
+                {/* 공지타입 : 공지 제목 */}
                 <ScheduleFirstDiv key={index}>
                   <FlextBoxDiv>
                     <PartNameDiv>{getPartName(schedule.part)}</PartNameDiv>
                     <DateDiv>{schedule.title}</DateDiv>
                   </FlextBoxDiv>
                 </ScheduleFirstDiv>
+
+                {/* 일시 */}
                 <ContentText>
                   일시 :{" "}
                   {format(
-                    fromUnixTime(schedule.dueDate.seconds),
+                    // fromUnixTime(schedule.dueDate.seconds), (정규가 한 부분)
+                    fromUnixTime(schedule.dueDate),
                     "M월 d일 EEEE HH:mm",
-                    { locale: koLocale } // 한국어 로케일 설정
+                    { locale: koLocale } // 한국어 로케일 설정  
                   )}
                 </ContentText>
+                
+                {/* 장소 */}
                 <ContentText>장소 : {schedule.place}</ContentText>
               </ScheduleItem>
             ))}
           </ScheduleDiv>
         </RightDiv>
+
+        {/* [2] 점수 업데이트  */}
         <LeftDiv>
           <HomeTitle>점수 업데이트</HomeTitle>
+          
           <RankDiv>
             {loading ? (
+              // Loading Before 화면
               <>
                 <FadeLoader
                   color="#5262F5"
@@ -179,6 +200,7 @@ const HomePage = () => {
                 />
               </>
             ) : (
+              // Loding After 화면
               <>
                 {userRankings.map((user, index) => (
                   <>

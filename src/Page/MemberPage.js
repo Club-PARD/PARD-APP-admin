@@ -10,6 +10,7 @@ import {
   query,
   where,
   setDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
@@ -47,12 +48,12 @@ const MemberPage = () => {
   const [isdropdownPart, setIsdropdownPart] = useState(false);
   const [isContentChanged, setContentChanged] = useState(false); // 컨텐츠 변경 확인 state
 
-  // User 정보 조회 후 sort
+  // 변수 : User 정보 조회 후 sort
   const sortedUserScores = userScores
     .filter((userScore) => userScore.name)
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  // 파트 구분
+  // 변수 : 파트 구분
   const filteredUserScores = sortedUserScores.filter((userScore) => {
     const memberFilter =
       selectedMemberFilter === "구분" ||
@@ -65,6 +66,7 @@ const MemberPage = () => {
     return memberFilter && partFilter;
   });
 
+  // FIREBASE CODE
   // Firebase fireStore User 데이터 조회
   useEffect(() => {
     const getUsers = async () => {
@@ -73,6 +75,8 @@ const MemberPage = () => {
     };
     getUsers();
   }, []);
+
+
 
   // 토글 코드
   const handleArrowTopClick = () => {
@@ -183,8 +187,8 @@ const MemberPage = () => {
         phoneInputs[index] !== ""
       ) {
         // 고유한 문서 ID 생성
-        const newId =
-          nameInputs[index] + Math.random().toString(36).substr(2, 5);
+        const uid = nameInputs[index] + Math.random().toString(36).substr(2, 5);
+        const pid =nameInputs[index] + Math.random().toString(36).substr(2, 5);
 
         // 사용자 데이터를 준비
         const userData = {
@@ -197,13 +201,13 @@ const MemberPage = () => {
           generation: 3,
           attend: {},
           attendInfo: [],
-          uid: newId,
-          pid: newId,
+          uid: uid,
+          pid: pid,
         };
 
         // 'users' 컬렉션 +  'points' 컬렉션에 추가할 문서 참조 생성
-        const userDocRef = doc(dbService, "users", newId);
-        const pointsDocRef = doc(dbService, "points", newId);
+        const userDocRef = doc(dbService, "users", uid);
+        const pointsDocRef = doc(dbService, "points", pid);
 
         // 사용자 문서를 'users' 컬렉션에 추가하고, 그 후 'points' 컬렉션에 포인트 문서를 추가하는 프로미스를 생성.
         const promise = setDoc(userDocRef, userData).then(() => {
@@ -211,8 +215,8 @@ const MemberPage = () => {
           const pointsData = {
             beePoints: [],
             points: [],
-            pid: newId,
-            uid: newId,
+            pid: pid,
+            uid: uid,
           };
 
           // 포인트 문서 'points' 컬렉션에 추가
@@ -222,12 +226,13 @@ const MemberPage = () => {
         // 프로미스 배열 추가
         promises.push(promise);
       }
+      console.log(index);
     }
 
     try {
       await Promise.all(promises);
       setAddable(true); // 버튼 활성화
-      window.location.reload(); // 페이지 새로고침
+      // window.location.reload(); // 페이지 새로고침
       alert("등록 성공!"); // 사용자에게 성공 메시지 표시
     } catch (error) {
       console.error("Error adding document: ", error);
@@ -711,14 +716,14 @@ const MemberPage = () => {
               삭제
             </ModalContents>
             <ModalContents>
-              <CheckScoreButton width = '124'onClick={openDeleteConfirmModal}>
+              <CheckScoreButton width = '140'onClick={openDeleteConfirmModal}>
                 <Img src={require("../Assets/img/DeleteIconBlue.png")} style={{ width: "20px" }} />
                 <Span>삭제하기</Span>
               </CheckScoreButton>
             </ModalContents>
             {
               isOpenDeleteConfirmModal && (
-                <DeleteConfirmModal closeModal={closeDeleteConfirmModal} />
+                <DeleteConfirmModal closeModal={closeDeleteConfirmModal} uid={uid} />
               )
             }
           </ModalSubTitle>
@@ -1566,7 +1571,22 @@ const Span = styled.span`
   color : #5262F5;
 `
 
-const DeleteConfirmModal = ({ closeModal }) => {
+const DeleteConfirmModal = ({ closeModal, uid }) => {
+
+  const handleDeleteUser = async () => {
+    // delete the user document in Firestore
+    try {
+      const userDocRefUp = doc(dbService, "users", uid);
+      await deleteDoc(userDocRefUp);
+
+      alert("사용자가 삭제되었습니다.");
+      window.location.reload();
+      closeModal();
+    } catch (error){
+      console.error("Error deleting user : ", error)
+    }
+
+  }
   const ContainerDeleteConfirmModal = styled.div`
     position: absolute;
     top: 50%;
@@ -1623,7 +1643,7 @@ const DeleteConfirmModal = ({ closeModal }) => {
       </ContainerContent>
       <ContainerBottom>
         <Button onClick={closeModal}>취소</Button>
-        <Button>확인</Button>
+        <Button onClick={handleDeleteUser}>확인</Button>
       </ContainerBottom>
     </ContainerDeleteConfirmModal>
   );
