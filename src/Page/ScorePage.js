@@ -84,7 +84,7 @@ const ScorePage = () => {
     }
   };
 
-  const closeModalWidhtUppdate = (index) => {
+  const closeModalWidhtUpdate = (index) => {
     const newModals = [...modals];
     newModals[index] = false;
     setModals(newModals);
@@ -453,7 +453,7 @@ const ScorePage = () => {
   `;
 
   const ScoreInput = styled.input`
-    width: 42px;
+    width: 80px;
     height: 26px;
     flex-shrink: 0;
     border-radius: 4px;
@@ -484,14 +484,14 @@ const ScorePage = () => {
     name,
     part,
     pid,
-    closeModalWidhtUppdate,
+    closeModalWidhtUpdate,
   }) => {
     const [points, setPoints] = useState([]); // Points 데이터를 저장할 상태 변수
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(true);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedScoreReason, setSelectedScoreReason] = useState(null);
     const [selectedScore, setSelectedScore] = useState(0);
-    const score = 0;
+    const [score, setScore] = useState(0);
     const [inputText, setInputText] = useState("");
     const [editScore, setEditScore] = useState(false);
 
@@ -551,7 +551,8 @@ const ScorePage = () => {
         const scoreMatch = selectedScore.match(/(-?\d+(\.\d+)?)점/);
         
         if (scoreMatch) {
-          const scoreDigit = parseFloat(scoreMatch[1]);
+          let scoreDigit = parseFloat(scoreMatch[1]);
+          console.log("score" + scoreDigit);
           let selectedType;
           switch (selectedScore) {
             case "주요 행사 MVP (+5점)":
@@ -592,6 +593,9 @@ const ScorePage = () => {
 
           // 현재 시각 Timestamp 형식으로 변환하여 저장
           const currentDate = Timestamp.now();
+
+          if (selectedType == "벌점 조정")
+            scoreDigit = scoreDigit * (-1);
 
           // data값 생성
           const newPoint = {
@@ -634,7 +638,7 @@ const ScorePage = () => {
               // 창 닫기
               // onClose(); // 점수 로딩이 늦어서 일단 닫았습니다.
               alert("점수 등록이 성공되었습니다.");
-              closeModalWidhtUppdate();
+              closeModalWidhtUpdate();
             } catch (error) {
               console.error("Error updating Points data:", error);
             }
@@ -854,9 +858,10 @@ const ScorePage = () => {
                     <ScoreInput
                       type="text"
                       value={score}
-                      onChange={(e) => {
-                        const value = parseFloat(e.target.value);
-                        setSelectedScore(`벌점 조정 (${value}점)`);
+                        onChange={(e) => {
+                          const selectedValue = parseFloat(e.target.value);
+                          setScore(e.target.value);
+                          setSelectedScore(`벌점 조정 (${selectedValue}점)`);
                       }}
                     />
                   </>
@@ -1150,8 +1155,8 @@ const ScorePage = () => {
                         name={userScore.name}
                         part={userScore.part}
                         pid={userScore.pid}
-                        coseModalWidhtUppdate={() =>
-                          closeModalWidhtUppdate(index)
+                        closeModalWidhtUpdate={() =>
+                          closeModalWidhtUpdate(index)
                         }
                       />
                     </TableCell>
