@@ -655,49 +655,50 @@ const ScorePage = () => {
 
 
     // 점수 업데이트 실행 버튼
-    const handleDeleteButtonClick = () => {
-      console.log("hello2");
-      const result = window.confirm("점수를 삭제하시겠습니까?");
-      if (result) {
+  const handleDeleteButtonClick = (reasonToDelete) => {
+    const result = window.confirm("점수를 삭제하시겠습니까?");
+    if (result) {
         console.log("debug");
-        // deleteScore();
-      }
-    };
-  
-    // 데이터 삭제 함수
-    const deleteScore = async () => {
-        try {
-          // 기존 데이터를 가져옴
-          const pointsQuery = query(
+        // 삭제할 데이터의 timestamp를 전달
+        deleteScore(reasonToDelete);
+        // window.location.reload();
+    }
+};
+
+// 데이터 삭제 함수
+const deleteScore = async (reasonToDelete) => {
+    try {
+        // 기존 데이터를 가져옴
+        const pointsQuery = query(
             collection(dbService, "points"),
             where("pid", "==", pid)
-          );
-          const pointsSnapshot = await getDocs(pointsQuery);
-          const pointsData = pointsSnapshot.docs.map((doc) => doc.data());
-          console.log("hello");
-          console.log("pointData result", pointsData);
+        );
+        const pointsSnapshot = await getDocs(pointsQuery);
+        const pointsData = pointsSnapshot.docs.map((doc) => doc.data());
+        console.log("pi", pointsData[0]);
+        // 삭제할 데이터를 찾아서 필터링
+        const updatedPoints = pointsData[0].points.filter(
+            (point) => point.reason !== reasonToDelete
+        );
+        const updatedBeePoints = pointsData[0].beePoints.filter(
+            (point) => point.reason !== reasonToDelete
+        );
+      
 
-          // 삭제할 데이터를 필터링하여 새로운 배열로 생성
-          const filteredPoints = pointsData[0].points.filter(
-            (point) => point.reason !== inputText && point.type
-          );
-          const filteredBeePoints = pointsData[0].beePoints.filter(
-            (point) => point.reason !== inputText && point.type
-          );
+        // 업데이트된 데이터로 업데이트
+        const docRefPoint = doc(dbService, "points", pid);
+        await updateDoc(docRefPoint, {
+            points: updatedPoints,
+            beePoints: updatedBeePoints,
+        });
 
-          // 업데이트된 데이터로 업데이트
-          const docRefPoint = doc(dbService, "points", pid);
-          await updateDoc(docRefPoint, {
-            points: filteredPoints,
-            beePoints: filteredBeePoints,
-          });
-
-          // 삭제 성공 알림
-          alert("점수가 성공적으로 삭제되었습니다.");
-        } catch (error) {
-          console.error("Error deleting Points data:", error);
-        }
-    };
+        // 삭제 성공 알림
+        alert("점수가 성공적으로 삭제되었습니다.");
+        closeModalWidhtUpdate();
+    } catch (error) {
+        console.error("Error deleting Points data:", error);
+    }
+};
 
     // 토글 점수 리스트
     const ScoreList = [
@@ -731,6 +732,18 @@ const ScorePage = () => {
       }
 
       setIsDropdownOpen(false);
+    };
+
+    // 예외 처리를 포함한 format 함수
+    const formatWithErrorHandling = (reason, type, timestamp) => {
+      try {
+        return format(fromUnixTime(timestamp), "MM.dd", {
+          locale: koLocale,
+        });
+      } catch (error) {
+        console.error("error index : " + reason + ", type : " + type + ", 날짜 형식 변환 오류:", error);
+        return "Invalid Date"; // 또는 다른 기본값을 반환할 수 있습니다.
+      }
     };
 
     useEffect(() => {
@@ -803,11 +816,9 @@ const ScorePage = () => {
                           {point.reason}
                         </RowContent>
                         <RowContent right={0} width={50}>
-                          {format(fromUnixTime(point.timestamp), "MM.dd", {
-                            locale: koLocale,
-                          })}
+                          {formatWithErrorHandling(point.reason, point.type, point.timestamp)}
                         </RowContent>
-                        <RowContent onClick={() => handleDeleteButtonClick()}>삭제</RowContent>
+                        <RowContent onClick={() => handleDeleteButtonClick(point.reason)}>삭제</RowContent>
                       </RowContentDiv>
                     </div>
                   ))}
