@@ -61,6 +61,7 @@ const CheckPage = () => {
                 // 정렬하여 저장
                 scheduleIds.sort((a, b) => a.dueDate - b.dueDate);
                 setScheduleKeys(scheduleIds);
+                // console.log("scheduleKeys", scheduleKeys);
 
                 // console.log("sid : ", scheduleIds);
             } catch (error) {
@@ -96,6 +97,7 @@ const CheckPage = () => {
             const tempUserData = newData.filter((userScore) => userScore.member !== "운영진" && userScore.member !== "잔잔파도");
             // 전체 유저 정보 저장
             setUserDatas(tempUserData);
+            // console.log("userDatas", userDatas);
             // console.log(userDatas);
         };
 
@@ -245,92 +247,92 @@ const CheckPage = () => {
 
     // 출석 결석 지각 버튼
     const AttendBox = styled.div `
-    display: flex;
-    padding: 4px 12px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    font-family: "Pretendard";
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 16px;
-    border-radius: 4px;
-`;
+        display: flex;
+        padding: 4px 12px;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        font-family: "Pretendard";
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 16px;
+        border-radius: 4px;
+    `;
 
     const AttendButton = styled.button `
-    display: flex;
-    width: 45px;
-    height: 24px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    font-family: "Pretendard";
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 16px;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    &:hover {
-        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25);
-    }
-    &:active {
-        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25) inset;
-    }
-`;
+        display: flex;
+        width: 45px;
+        height: 24px;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        font-family: "Pretendard";
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 16px;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        &:hover {
+            box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25);
+        }
+        &:active {
+            box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25) inset;
+        }
+    `;
 
     const CustomTableCellContainer = styled.div `
-    position: relative;
-`;
+        position: relative;
+    `;
 
     const ImageContainer = styled.div `
-    position: absolute;
-    top: -60px; 
-    left: -80px; 
-    width: 200px;
-    height: 60px;
-    z-index: 999; 
-`;
+        position: absolute;
+        top: -60px; 
+        left: -80px; 
+        width: 200px;
+        height: 60px;
+        z-index: 999; 
+    `;
 
     const Image = styled.img `
-    width: 200px;
-    height: 60px;
-    object-fit: cover; 
-`;
+        width: 200px;
+        height: 60px;
+        object-fit: cover; 
+    `;
 
     const ButtonFlexDiv = styled.div `
-    display: flex;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    top: -6%;
-`;
+        display: flex;
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: -6%;
+    `;
 
     const Button = styled.button `
-    border: none;
-    margin-right: ${ (props) => props.right}px;
-    margin-left: ${ (
-        props
-    ) => props.left}px;
-    color: ${ (props) => props.color};
-    background-color: ${ (
-        props
-    ) => props.background};
-    display: flex;
-    padding: 4px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: "Pretendard";
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 16px;
-    border-radius: 4px;
-`;
+        border: none;
+        margin-right: ${ (props) => props.right}px;
+        margin-left: ${ (
+            props
+        ) => props.left}px;
+        color: ${ (props) => props.color};
+        background-color: ${ (
+            props
+        ) => props.background};
+        display: flex;
+        padding: 4px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: "Pretendard";
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 16px;
+        border-radius: 4px;
+    `;
 
     const CustomTableCell = ({ value, idx, onUpdate }) => {
         // state 변수
