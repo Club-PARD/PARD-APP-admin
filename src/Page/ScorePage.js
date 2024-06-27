@@ -1,15 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  updateDoc,
-  doc,
-  Timestamp,
-} from "firebase/firestore";
+import {collection, getDocs, query, where, updateDoc, doc, Timestamp} from "firebase/firestore";
 import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
@@ -56,8 +48,98 @@ const ScorePage = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [modals, setModals] = useState([]);
   const [isContentChanged, setContentChanged] = useState(false); // 컨텐츠 변경 확인 state
+  const [loading, setLoading] = useState(true);
 
-  // 모달 관련 코드
+  // Firebase fireStore 전체 Point 데이터 조회
+  useEffect(() => {
+    const fetchUserScores = async () => {
+      try {
+        // 1. 'users'라는 컬렉션을 참조하는 변수 선언
+        const userQuery = query(collection(dbService, "users"));
+
+        // 2. userQuery 참조를 바탕으로 전체 유저 정보를 가져온다.
+        const userSnapshot = await getDocs(userQuery);
+
+        const scores = [];
+
+        for (const userDoc of userSnapshot.docs) {
+          const userData = userDoc.data();
+          const userId = userDoc.id;
+
+          // 사용자의 포인트 데이터 가져오기
+          // 1. points'라는 컬렉션을 참조하는 변수 선언 (uid값이 같은 것들만)
+          const pointQuery = query(
+            collection(dbService, "points"),
+            where("uid", "==", userId)
+          );
+          // 2. pointQuery 참조를 바탕으로 전체 점수 정보를 가져온다.
+          const pointSnapshot = await getDocs(pointQuery);
+
+          // 추가되어야 할 점수 계산을 위한 변수 선언
+          let mvpPoints = 0;
+          let studyPoints = 0;
+          let communicationPoints = 0;
+          let retrospectionPoints = 0;
+          let penaltyPoints = 0; // 벌점 포인트
+          
+          // 3. 가져온 점수를 바탕으로 점수 계산을 위한 변수에 할당
+          pointSnapshot.forEach((pointDoc) => {
+            const pointData = pointDoc.data();
+            pointData.points.forEach((point) => {
+              // 포인트 유형(type)에 따라 각각의 포인트를 계산
+              switch (point.type) {
+                case "MVP":
+                  mvpPoints += point.digit;
+                  break;
+                case "스터디":
+                  studyPoints += point.digit;
+                  break;
+                case "소통":
+                  communicationPoints += point.digit;
+                  break;
+                case "회고":
+                  retrospectionPoints += point.digit;
+                  break;
+                // 다른 포인트 유형에 대한 계산도 추가할 수 있음
+              }
+            });
+            pointData.beePoints.forEach((beePoints) => {
+              // 포인트 유형(type)에 따라 각각의 포인트를 계산
+              penaltyPoints += beePoints.digit;
+            });
+          });
+
+          // 전체 포인트 합계 계산
+          const totalPoints =
+            mvpPoints + studyPoints + communicationPoints + retrospectionPoints;
+
+          if (userData.member !== "운영진" && userData.member !== "잔잔파도") {
+            scores.push({
+              name: userData.name,
+              pid: userData.pid,
+              mvp: mvpPoints,
+              study: studyPoints,
+              communication: communicationPoints,
+              retrospection: retrospectionPoints,
+              penalty: penaltyPoints, // 벌점 포인트
+              total: totalPoints, // 전체 포인트 합계
+              part: userData.part,
+            });
+          }
+        }
+
+        console.log("scores", scores);
+
+
+        setUserScores(scores);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching user scores:", error);
+      }
+    };
+
+    fetchUserScores();
+  }, []);
 
   // 모달 열기
   const openModal = (index) => {
@@ -76,6 +158,7 @@ const ScorePage = () => {
     }
 
     const result = window.confirm("변경사항을 저장하지 않고 나가시겠습니까?");
+    
     if (result) {
       const newModals = [...modals];
       newModals[index] = false;
@@ -90,7 +173,836 @@ const ScorePage = () => {
     setModals(newModals);
   };
 
-  // 모달 관련 Style 코드
+  // 핸들러 : 파트 filter 토글 열기
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+
+  // 핸들러 : 파트 filter 토글 선택
+  const handleOptionClick = (option) => {
+    if (option === "전체") {
+      setSelectedOption(null);
+    } else {
+      setSelectedOption(option);
+    }
+    setIsOpen(false);
+  };
+
+  // 모달 컴포넌트
+  const Modal = ({isOpen, onClose, name, part, pid, closeModalWidhtUpdate}) => {
+    const [points, setPoints] = useState([]); // Points 데이터를 저장할 상태 변수
+    const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(true);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [selectedScoreReason, setSelectedScoreReason] = useState(null);
+    const [selectedScore, setSelectedScore] = useState(0);
+    const [score, setScore] = useState(0);
+    const [inputText, setInputText] = useState("");
+    const [editScore, setEditScore] = useState(false);
+
+    const handleInputChange = (e) => {
+      const text = e.target.value;
+      if (text.length <= 20) {
+        setInputText(text);
+      }
+      setContentChanged(true); // 수정사항이 생겼으므로 true로 설정
+    };
+
+    // Firebase fireStore Point 데이터 조회
+    const fetchPoints = async () => {
+      try {
+        // 해당 사용자의 pid와 일치하는 Points 데이터 조회
+        // 1. 참조 선언
+        const pointsQuery = query(
+          collection(dbService, "points"),
+          where("pid", "==", pid)
+        );
+        
+        // 2. 참조를 이용하여 전체 점수 가져오기
+        const pointsSnapshot = await getDocs(pointsQuery);
+        const pointsData = [];
+        // 3. 전체 점수 중에서 points 영역만 return
+        pointsSnapshot.forEach((pointDoc) => {
+          // "points" 필드 값을 가져옴
+          const pointData = pointDoc.data().points;
+          // 배열로 합쳐서 저장
+          pointsData.push(...pointData);
+        });
+        pointsSnapshot.forEach((beePointDoc) => {
+          // "beePoints" 필드 값을 가져옴
+          const beePointData = beePointDoc.data().beePoints;
+          // 배열로 합쳐서 저장
+          pointsData.push(...beePointData);
+        });
+        setPoints(pointsData);
+      } catch (error) {
+        console.error("Error fetching Points data:", error);
+      }
+    };
+
+
+
+    // 점수 업데이트 실행 버튼
+    const handleAddButtonClick = () => {
+      const result = window.confirm("점수를 추가하시겠습니까?");
+      if (result) {
+        UpdateScore();
+      }
+    };
+
+    // 점수 업데이트 코드
+    const UpdateScore = async () => {
+      if (selectedScore && inputText) {
+        const scoreMatch = selectedScore.match(/(-?\d+(\.\d+)?)점/);
+        
+        if (scoreMatch) {
+          let scoreDigit = parseFloat(scoreMatch[1]);
+          console.log("score" + scoreDigit);
+          let selectedType;
+          switch (selectedScore) {
+            case "주요 행사 MVP (+5점)":
+              selectedType = "MVP";
+              break;
+            case "세미나 파트별 MVP (+3점)":
+              selectedType = "MVP";
+              break;
+            case "스터디 개최 및 수료 (+5점)":
+              selectedType = "스터디";
+              break;
+            case "스터디 참여및 수료 (+3점)":
+              selectedType = "스터디";
+              break;
+            case "파드 소통 인증 (+1점)":
+              selectedType = "소통";
+              break;
+            case "디스콰이엇 회고 (+3점)":
+              selectedType = "회고";
+              break;
+            case "세미나 지각 벌점 (-1점)":
+              selectedType = "세미나 지각";
+              break;
+            case "세미나 결석 벌점 (-2점)":
+              selectedType = "세미나 결석";
+              break;
+            case "과제 지각 벌점 (-0.5점)":
+              selectedType = "과제 지각";
+              break;
+            case "과제 미제출 (-1점)":
+              selectedType = "과제 결석";
+              break;
+
+            default:
+              selectedType = "벌점 조정";
+              break;
+          }
+
+          // 현재 시각 Timestamp 형식으로 변환하여 저장
+          const currentDate = Timestamp.now();
+
+          if (selectedType == "벌점 조정")
+            scoreDigit = scoreDigit * (-1);
+
+          // data값 생성
+          const newPoint = {
+            digit: scoreDigit,
+            reason: inputText,
+            timestamp: currentDate,
+            type: selectedType,
+          };
+
+          if (
+            inputText === null ||
+            currentDate === null ||
+            selectedType === null
+          ) {
+          } else {
+            try {
+              // Points 데이터를 업데이트할 때는 기존 데이터를 가져온 후 새로운 데이터를 추가하고 다시 업데이트
+              const pointsQuery = query(
+                collection(dbService, "points"),
+                where("pid", "==", pid)
+              );
+
+              const pointsSnapshot = await getDocs(pointsQuery);
+              const pointsData = pointsSnapshot.docs.map((doc) => doc.data());
+
+              // 새로운 데이터를 추가
+              if (scoreDigit > 0) {
+                pointsData[0].points.push(newPoint);
+              } else if (scoreDigit < 0) {
+                pointsData[0].beePoints.push(newPoint);
+              }
+
+              const docRefPoint = doc(dbService, "points", pid);
+              // 업데이트된 데이터로 업데이트
+              await updateDoc(docRefPoint, {
+                points: pointsData[0].points,
+                beePoints: pointsData[0].beePoints,
+              });
+
+              // 창 닫기
+              // onClose(); // 점수 로딩이 늦어서 일단 닫았습니다.
+              alert("점수 등록이 성공되었습니다.");
+              closeModalWidhtUpdate();
+              window.location.reload();
+            } catch (error) {
+              console.error("Error updating Points data:", error);
+            }
+          }
+        } else {
+          // 선택한 점수에서 일치하는 패턴을 찾을 수 없는 경우의 처리
+          alert("점수 형식이 올바르지 않습니다.");
+        }
+      } else {
+        window.confirm("빈칸을 확인해주세요");
+      }
+    };
+
+
+    // 점수 업데이트 실행 버튼
+    const handleDeleteButtonClick = (reasonToDelete) => {
+      const result = window.confirm("점수를 삭제하시겠습니까?");
+      if (result) {
+          console.log("debug");
+          // 삭제할 데이터의 timestamp를 전달
+          deleteScore(reasonToDelete);
+          // window.location.reload();
+      }
+    };
+
+    // 데이터 삭제 함수
+    const deleteScore = async (reasonToDelete) => {
+        try {
+            // 기존 데이터를 가져옴
+            const pointsQuery = query(
+                collection(dbService, "points"),
+                where("pid", "==", pid)
+            );
+            const pointsSnapshot = await getDocs(pointsQuery);
+            const pointsData = pointsSnapshot.docs.map((doc) => doc.data());
+            console.log("pi", pointsData[0]);
+            // 삭제할 데이터를 찾아서 필터링
+            const updatedPoints = pointsData[0].points.filter(
+                (point) => point.reason !== reasonToDelete
+            );
+            const updatedBeePoints = pointsData[0].beePoints.filter(
+                (point) => point.reason !== reasonToDelete
+            );
+          
+
+            // 업데이트된 데이터로 업데이트
+            const docRefPoint = doc(dbService, "points", pid);
+            await updateDoc(docRefPoint, {
+                points: updatedPoints,
+                beePoints: updatedBeePoints,
+            });
+
+            // 삭제 성공 알림
+            alert("점수가 성공적으로 삭제되었습니다.");
+            closeModalWidhtUpdate();
+        } catch (error) {
+            console.error("Error deleting Points data:", error);
+        }
+    };
+
+    // 토글 점수 리스트
+    const ScoreList = [
+      "주요 행사 MVP (+5점)",
+      "세미나 파트별 MVP (+3점)",
+      "스터디 개최 및 수료 (+5점)",
+      "스터디 참여및 수료 (+3점)",
+      "파드 소통 인증 (+1점)",
+      "디스콰이엇 회고 (+3점)",
+      "세미나 지각 벌점 (-1점)",
+      "세미나 결석 벌점 (-2점)",
+      "과제 지각 벌점 (-0.5점)",
+      "과제 미제출 (-1점)",
+      "벌점 조정",
+    ];
+
+    // 점수용 토글 열기
+    const ScoreoggleDropdown = () => {
+      setIsDropdownOpen(!isDropdownOpen);
+    };
+
+    // 토글 list 중 점수 선택
+    const handleScoreClick = (option) => {
+      setSelectedScoreReason(option);
+
+      // 만약 벌점 조정일 경우 Input으로 점수 입력할 수 있도록 환경 설졍
+      if (option === "벌점 조정") {
+        setEditScore(true);
+      } else {
+        setEditScore(false);
+      }
+
+      setIsDropdownOpen(false);
+    };
+
+    // 예외 처리를 포함한 format 함수
+    const formatWithErrorHandling = (reason, type, timestamp) => {
+      try {
+        return format(fromUnixTime(timestamp), "MM.dd", {
+          locale: koLocale,
+        });
+      } catch (error) {
+        console.error("error index : " + reason + ", type : " + type + ", 날짜 형식 변환 오류:", error);
+        return "Invalid Date"; // 또는 다른 기본값을 반환할 수 있습니다.
+      }
+    };
+
+    useEffect(() => {
+      fetchPoints();
+      if (isOpen) {
+        setSelectedScore(null);
+        fetchPoints();
+      }
+    }, [isOpen, pid]);
+
+    return (
+      <ModalWrapper isOpen={isOpen}>
+        <ModalContent>
+          <ModalTitleDiv>
+            {isRegisterModalOpen ? (
+              <ModalTitle>점수 기록</ModalTitle>
+            ) : (
+              <ModalTitle>점수 추가</ModalTitle>
+            )}
+            <CancelIcon
+              src={require("../Assets/img/CancelButton.png")}
+              onClick={onClose}
+            />
+          </ModalTitleDiv>
+          <ModalSubTitle>
+            <ModalContents color={"#111"} right={71} weight={500}>
+              이름
+            </ModalContents>
+            <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+              {name}
+            </ModalContents>
+          </ModalSubTitle>
+          <ModalSubTitle>
+            <ModalContents color={"#111"} right={71} weight={500}>
+              파트
+            </ModalContents>
+            <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+              {part}
+            </ModalContents>
+          </ModalSubTitle>
+          {isRegisterModalOpen ? (
+            <>
+              <HR top={24} />
+              <RowTitleDiv>
+                <RowTitle right={40}>파드너십</RowTitle>
+                <RowTitle right={113}>점수</RowTitle>
+                <RowTitle right={165}>내용</RowTitle>
+                <RowTitle right={20}>날짜</RowTitle>
+                <RowTitle right={0}>삭제</RowTitle>
+              </RowTitleDiv>
+              
+              <HR top={8} />
+              <ContentDiv>
+                {points
+                  .slice()
+                  .reverse()
+                  .map((point, index) => (
+                    <div key={index}>
+                      <RowContentDiv>
+                        <RowContentType right={30} width={60}>
+                          {point.type === "MVP" ? "MVP" : point.type}
+                        </RowContentType>
+                        <RowContentDigit right={38} width={45}>
+                          {" "}
+                          {point.digit > 0
+                            ? `+${point.digit}점`
+                            : `${point.digit}점`}
+                        </RowContentDigit>
+                        <RowContent right={40} width={230}>
+                          {point.reason}
+                        </RowContent>
+                        <RowContent right={0} width={50}>
+                          {formatWithErrorHandling(point.reason, point.type, point.timestamp)}
+                        </RowContent>
+                        <RowContent onClick={() => handleDeleteButtonClick(point.reason)}>삭제</RowContent>
+                      </RowContentDiv>
+                    </div>
+                  ))}
+              </ContentDiv>
+              <RegisterButton onClick={() => setIsRegisterModalOpen(false)}>
+                점수 추가
+              </RegisterButton>
+            </>
+          ) : (
+            <>
+              <ModalSubTitle>
+                <ModalContents color={"#111"} top={10} weight={500}>
+                  파드너십
+                </ModalContents>
+                <DropdownWrapper1>
+                  <DropdownButton1 onClick={ScoreoggleDropdown}>
+                    {selectedScoreReason || "선택"}
+                    {isDropdownOpen ? (
+                      <ArrowTop1 src={require("../Assets/img/PolygonDown.png")} />
+                    ) : (
+                      <ArrowTop1
+                        src={require("../Assets/img/Polygon.png")}
+                      />
+                    )}
+                  </DropdownButton1>
+                  <DropdownContent1 isOpen={isDropdownOpen}>
+                    {ScoreList.map((option, index) => (
+                      <DropdownItem1
+                        key={index}
+                        onClick={() => {
+                          handleScoreClick(option);
+                          setSelectedScore(option);
+                          setContentChanged(true); // 수정사항이 생겼으므로 true로 설정
+                        }}
+                      >
+                        {option}
+                      </DropdownItem1>
+                    ))}
+                  </DropdownContent1>
+                </DropdownWrapper1>
+              </ModalSubTitle>
+              <ModalSubTitle top={36}>
+                <ModalContents color={"#111"} right={71} weight={500}>
+                  점수
+                </ModalContents>
+                {/* {selectedScore === "벌점 조정" ? ( */}
+                {editScore ? (
+                  <>
+                    <ScoreInput
+                      type="text"
+                      value={score}
+                        onChange={(e) => {
+                          const selectedValue = parseFloat(e.target.value);
+                          setScore(e.target.value);
+                          setSelectedScore(`벌점 조정 (${selectedValue}점)`);
+                      }}
+                    />
+                  </>
+                ) : (
+                  <ScoreDiv
+                    score={
+                      selectedScore && selectedScore.match(/(-?\d+(\.\d+)?)점/)
+                        ? parseFloat(
+                            selectedScore.match(/(-?\d+(\.\d+)?)점/)[1]
+                          )
+                        : 0
+                    }
+                  >
+                    {selectedScore && selectedScore.match(/(-?\d+(\.\d+)?)점/)
+                      ? selectedScore.match(/(-?\d+(\.\d+)?)점/)[1]
+                      : 0}
+                  </ScoreDiv>
+                )}
+                <UnitText>점</UnitText>
+                <UnitSubText>
+                  {!editScore
+                    ? "* 파드너십에서 점수 분야를 고르면 자동으로 점수가 입력돼요."
+                    : "* 벌점을 직접 입력할 때 -를 제외하고 양수로 입력해주세요"}
+                </UnitSubText>
+              </ModalSubTitle>
+              <ModalSubTitle top={32}>
+                <ModalContents color={"#111"} right={71} weight={500}>
+                  이유
+                </ModalContents>
+                <ReasonInput
+                  value={inputText}
+                  onChange={handleInputChange}
+                  placeholder="파드 포인트나 벌점 추가하는 사유 (20자 이내)"
+                />
+              </ModalSubTitle>
+              <InputNumNum>{inputText.length}/20</InputNumNum>
+              <RegisterAddButton
+                onClick={() => {
+                  handleAddButtonClick();
+                }}
+              >
+                추가하기
+              </RegisterAddButton>
+            </>
+          )}
+        </ModalContent>
+      </ModalWrapper>
+    );
+  };
+
+  // 이름으로 정렬된 유저 정보 변수
+  const sortedUserScores = userScores.sort((a, b) => {
+    // 이름을 가나다 순으로 비교하여 정렬
+    return a.name.localeCompare(b.name);
+  });
+
+  // 선택한 파트 option에 맞춰서 필터를 거친 유저 정보 변수
+  const filteredUserScores = selectedOption
+    ? sortedUserScores.filter((userScore) => userScore.part === selectedOption)
+    : sortedUserScores;
+
+    // 로딩 관련 코드
+  const override = {
+    display: "flex",
+    margin: "0 auto",
+    marginTop: "300px",
+    borderColor: "#5262F5",
+    textAlign: "center",
+  };
+
+  // 파트별 토글 버튼
+  const options = [
+    "전체",
+    "서버파트",
+    "웹파트",
+    "iOS파트",
+    "디자인파트",
+    "기획파트",
+  ];
+  
+  // Main 화면 코드
+  return (
+    <DDiv>
+      {/* 사용자 / 로그아웃 */}
+      <CommonLogSection />
+
+      {/* 점수 관리 Title Header */}
+      <TitleDiv>
+        <HomeTitle>점수 관리</HomeTitle>
+        <BarText />
+        <SubTitle>파트별로 파드너십을 관리해보세요.</SubTitle>
+      </TitleDiv>
+
+      {/* 점수 관리 카테고리 드롭다운 */}
+      <DropdownWrapper>
+        <DropdownButton onClick={toggleDropdown}>
+          {selectedOption || "전체"}
+          {!isOpen ? (
+            <ArrowTop1 src={require("../Assets/img/PolygonDown.png")} />
+          ) : (
+            <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
+          )}
+        </DropdownButton>
+        <DropdownContent isOpen={isOpen}>
+          {options.map((option, index) => (
+            <DropdownItem key={index} onClick={() => handleOptionClick(option)}>
+              {option}
+            </DropdownItem>
+          ))}
+        </DropdownContent>
+      </DropdownWrapper>
+
+      {/* 전체 점수 Table */}
+      <BodyDiv>
+        <Table>
+          {/* Table Head */}
+          <TableHead>
+            <TableRow>
+              <TableHeaderCell width={140} style={{ background: "#F8F8F8" }}>
+                이름
+              </TableHeaderCell>
+              <TableHeaderCell width={180}>MVP</TableHeaderCell>
+              <TableHeaderCell width={180}>스터디</TableHeaderCell>
+              <TableHeaderCell width={180}>소통</TableHeaderCell>
+              <TableHeaderCell width={180}>회고</TableHeaderCell>
+              <TableHeaderCell width={180} style={{ background: "#FFEFEF" }}>
+                벌점
+              </TableHeaderCell>
+              <TableHeaderCell width={180} style={{ background: "#F8F8F8" }}>
+                점수 관리
+              </TableHeaderCell>
+            </TableRow>
+          </TableHead>
+
+          {/* Table */}
+          <TableBody>
+            {loading ? (
+              <>
+                <FadeLoader
+                  color="#5262F5"
+                  loading={loading}
+                  cssOverride={override}
+                  size={100}
+                />
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                ></div>
+              </>
+            ) : (
+              <>
+                {filteredUserScores.map((userScore, index) => (
+                  <TableRow key={index}>
+                    <TableCell color={"#2A2A2A"} width={140}>
+                      {userScore.name}
+                    </TableCell>
+                    <TableCell color={"#64C59A"} width={180}>
+                      +{userScore.mvp}점
+                    </TableCell>
+                    <TableCell color={"#64C59A"} width={180}>
+                      +{userScore.study}점
+                    </TableCell>
+                    <TableCell color={"#64C59A"} width={180}>
+                      +{userScore.communication}점
+                    </TableCell>
+                    <TableCell color={"#64C59A"} width={180}>
+                      +{userScore.retrospection}점
+                    </TableCell>
+                    <TableCell color={"#FF5A5A"} width={180}>
+                      {userScore.penalty}점
+                    </TableCell>
+                    <TableCell width={180}>
+                      <CheckScoreButton onClick={() => openModal(index)}>
+                        점수 관리
+                      </CheckScoreButton>
+                      <Modal
+                        isOpen={modals[index] || false}
+                        onClose={() => closeModal(index)}
+                        name={userScore.name}
+                        part={userScore.part}
+                        pid={userScore.pid}
+                        closeModalWidhtUpdate={() =>
+                          closeModalWidhtUpdate(index)
+                        }
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </>
+            )}
+          </TableBody>
+        </Table>
+      </BodyDiv>
+    </DDiv>
+  );
+};
+
+export default ScorePage;
+
+const DDiv = styled.div`
+  background: #fff;
+  height: 100%;
+  overflow-y: hidden;
+  margin: 0 auto;
+`;
+
+const TitleDiv = styled.div`
+  display: flex;
+  margin-top: 25px;
+  margin-left: 80px;
+  align-items: center;
+`;
+
+const HomeTitle = styled.div`
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 32px;
+`;
+
+const SubTitle = styled.div`
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  margin-top: 1px;
+`;
+
+const BarText = styled.div`
+  width: 2px;
+  height: 24px;
+  margin-top: 1px;
+  margin-left: 12px;
+  margin-right: 14px;
+  background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
+`;
+
+const BodyDiv = styled.div`
+  display: flex;
+  margin-top: 16px;
+  margin-left: 80px;
+  max-width: 1300px;
+  width: 90%;
+  height: 700px;
+  margin-bottom: 10px;
+  overflow-y: scroll;
+`;
+
+const Table = styled.table`
+  width: 1200px;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border-radius: 4px;
+`;
+
+const TableHead = styled.thead`
+  background-color: #eee;
+  border-bottom: 1px solid #a3a3a3;
+  position: sticky;
+  top: 0;
+`;
+
+const TableBody = styled.tbody`
+  display: block;
+  max-height: calc(100% - 48px);
+  overflow-y: auto;
+  border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
+`;
+
+const TableRow = styled.tr`
+  border-bottom: 1px solid #ddd;
+  display: flex;
+`;
+
+const TableHeaderCell = styled.th`
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  display: flex;
+  width: ${(props) => props.width}px;
+  height: 48px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  border-top: 1px solid var(--Gray30, #a3a3a3);
+  border-left: 0.5px solid var(--Gray30, #a3a3a3);
+  border-right: 0.5px solid var(--Gray30, #a3a3a3);
+  background: #f0f9f5;
+
+  &:first-child {
+    border-radius: 4px 0px 0px 0px;
+    border-left: 1px solid var(--Gray30, #a3a3a3);
+  }
+
+  &:last-child {
+    border-radius: 0px 4px 0px 0px;
+    border-right: 1px solid var(--Gray30, #a3a3a3);
+  }
+`;
+
+const TableCell = styled.td`
+  color: ${(props) => props.color};
+  font-family: "Pretendard";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  width: ${(props) => props.width}px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  border-right: 0.5px solid var(--Gray30, #a3a3a3);
+  border-left: 0.5px solid var(--Gray30, #a3a3a3);
+
+  &:first-child {
+    border-left: 1px solid var(--Gray30, #a3a3a3);
+  }
+
+  &:last-child {
+    border-right: 1px solid var(--Gray30, #a3a3a3);
+  }
+`;
+
+const DropdownWrapper = styled.div`
+  position: relative;
+  display: inline-block;
+  margin-top: 89px;
+  margin-left: 83px;
+  display: flex;
+  width: 125px;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  border-radius: 2px;
+  border: 1px solid var(--primary-blue, #5262f5);
+  background: var(--White, #fff);
+`;
+
+const DropdownButton = styled.button`
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  border: none;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const DropdownContent = styled.div`
+  display: ${(props) => (props.isOpen ? "block" : "none")};
+  position: absolute;
+  background-color: #f1f1f1;
+  width: 125px;
+  z-index: 1;
+  top: 100%;
+  left: 0;
+  margin-top: 5px;
+  border: 1px solid var(--primary-blue, #5262f5);
+`;
+
+const DropdownItem = styled.div`
+  padding: 10px;
+  cursor: pointer;
+  background: var(--White, #fff);
+  border: 0.5px solid var(--primary-blue, #5262f5);
+  text-align: center;
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
+  &:hover {
+    background-color: #eeeffe;
+  }
+`;
+
+const CheckScoreButton = styled.button`
+  display: flex;
+  width: 140px;
+  padding: 6px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  color: var(--primary-blue, #5262f5);
+  font-family: "Pretendard";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
+  border-radius: 4px;
+  border: 1px solid var(--primary-blue, #5262f5);
+  background: var(--primary-blue-10, #eeeffe);
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
+  }
+  &:active {
+    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
+  }
+`;
+
+// 모달 관련 Style 코드
   const ModalWrapper = styled.div`
     position: fixed;
     top: 0;
@@ -476,931 +1388,3 @@ const ScorePage = () => {
     height: 14px;
     cursor: pointer;
   `;
-
-  // 모달 컴포넌트
-  const Modal = ({
-    isOpen,
-    onClose,
-    name,
-    part,
-    pid,
-    closeModalWidhtUpdate,
-  }) => {
-    const [points, setPoints] = useState([]); // Points 데이터를 저장할 상태 변수
-    const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(true);
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [selectedScoreReason, setSelectedScoreReason] = useState(null);
-    const [selectedScore, setSelectedScore] = useState(0);
-    const [score, setScore] = useState(0);
-    const [inputText, setInputText] = useState("");
-    const [editScore, setEditScore] = useState(false);
-
-    const handleInputChange = (e) => {
-      const text = e.target.value;
-      if (text.length <= 20) {
-        setInputText(text);
-      }
-      setContentChanged(true); // 수정사항이 생겼으므로 true로 설정
-    };
-
-    // Firebase fireStore Point 데이터 조회
-    const fetchPoints = async () => {
-      try {
-        // 해당 사용자의 pid와 일치하는 Points 데이터 조회
-        // 1. 참조 선언
-        const pointsQuery = query(
-          collection(dbService, "points"),
-          where("pid", "==", pid)
-        );
-        
-        // 2. 참조를 이용하여 전체 점수 가져오기
-        const pointsSnapshot = await getDocs(pointsQuery);
-        const pointsData = [];
-        // 3. 전체 점수 중에서 points 영역만 return
-        pointsSnapshot.forEach((pointDoc) => {
-          // "points" 필드 값을 가져옴
-          const pointData = pointDoc.data().points;
-          // 배열로 합쳐서 저장
-          pointsData.push(...pointData);
-        });
-        pointsSnapshot.forEach((beePointDoc) => {
-          // "beePoints" 필드 값을 가져옴
-          const beePointData = beePointDoc.data().beePoints;
-          // 배열로 합쳐서 저장
-          pointsData.push(...beePointData);
-        });
-        setPoints(pointsData);
-      } catch (error) {
-        console.error("Error fetching Points data:", error);
-      }
-    };
-
-
-
-    // 점수 업데이트 실행 버튼
-    const handleAddButtonClick = () => {
-      const result = window.confirm("점수를 추가하시겠습니까?");
-      if (result) {
-        UpdateScore();
-      }
-    };
-
-    // 점수 업데이트 코드
-    const UpdateScore = async () => {
-      if (selectedScore && inputText) {
-        const scoreMatch = selectedScore.match(/(-?\d+(\.\d+)?)점/);
-        
-        if (scoreMatch) {
-          let scoreDigit = parseFloat(scoreMatch[1]);
-          console.log("score" + scoreDigit);
-          let selectedType;
-          switch (selectedScore) {
-            case "주요 행사 MVP (+5점)":
-              selectedType = "MVP";
-              break;
-            case "세미나 파트별 MVP (+3점)":
-              selectedType = "MVP";
-              break;
-            case "스터디 개최 및 수료 (+5점)":
-              selectedType = "스터디";
-              break;
-            case "스터디 참여및 수료 (+3점)":
-              selectedType = "스터디";
-              break;
-            case "파드 소통 인증 (+1점)":
-              selectedType = "소통";
-              break;
-            case "디스콰이엇 회고 (+3점)":
-              selectedType = "회고";
-              break;
-            case "세미나 지각 벌점 (-1점)":
-              selectedType = "세미나 지각";
-              break;
-            case "세미나 결석 벌점 (-2점)":
-              selectedType = "세미나 결석";
-              break;
-            case "과제 지각 벌점 (-0.5점)":
-              selectedType = "과제 지각";
-              break;
-            case "과제 미제출 (-1점)":
-              selectedType = "과제 결석";
-              break;
-
-            default:
-              selectedType = "벌점 조정";
-              break;
-          }
-
-          // 현재 시각 Timestamp 형식으로 변환하여 저장
-          const currentDate = Timestamp.now();
-
-          if (selectedType == "벌점 조정")
-            scoreDigit = scoreDigit * (-1);
-
-          // data값 생성
-          const newPoint = {
-            digit: scoreDigit,
-            reason: inputText,
-            timestamp: currentDate,
-            type: selectedType,
-          };
-
-          if (
-            inputText === null ||
-            currentDate === null ||
-            selectedType === null
-          ) {
-          } else {
-            try {
-              // Points 데이터를 업데이트할 때는 기존 데이터를 가져온 후 새로운 데이터를 추가하고 다시 업데이트
-              const pointsQuery = query(
-                collection(dbService, "points"),
-                where("pid", "==", pid)
-              );
-
-              const pointsSnapshot = await getDocs(pointsQuery);
-              const pointsData = pointsSnapshot.docs.map((doc) => doc.data());
-
-              // 새로운 데이터를 추가
-              if (scoreDigit > 0) {
-                pointsData[0].points.push(newPoint);
-              } else if (scoreDigit < 0) {
-                pointsData[0].beePoints.push(newPoint);
-              }
-
-              const docRefPoint = doc(dbService, "points", pid);
-              // 업데이트된 데이터로 업데이트
-              await updateDoc(docRefPoint, {
-                points: pointsData[0].points,
-                beePoints: pointsData[0].beePoints,
-              });
-
-              // 창 닫기
-              // onClose(); // 점수 로딩이 늦어서 일단 닫았습니다.
-              alert("점수 등록이 성공되었습니다.");
-              closeModalWidhtUpdate();
-              window.location.reload();
-            } catch (error) {
-              console.error("Error updating Points data:", error);
-            }
-          }
-        } else {
-          // 선택한 점수에서 일치하는 패턴을 찾을 수 없는 경우의 처리
-          alert("점수 형식이 올바르지 않습니다.");
-        }
-      } else {
-        window.confirm("빈칸을 확인해주세요");
-      }
-    };
-
-
-    // 점수 업데이트 실행 버튼
-  const handleDeleteButtonClick = (reasonToDelete) => {
-    const result = window.confirm("점수를 삭제하시겠습니까?");
-    if (result) {
-        console.log("debug");
-        // 삭제할 데이터의 timestamp를 전달
-        deleteScore(reasonToDelete);
-        // window.location.reload();
-    }
-};
-
-// 데이터 삭제 함수
-const deleteScore = async (reasonToDelete) => {
-    try {
-        // 기존 데이터를 가져옴
-        const pointsQuery = query(
-            collection(dbService, "points"),
-            where("pid", "==", pid)
-        );
-        const pointsSnapshot = await getDocs(pointsQuery);
-        const pointsData = pointsSnapshot.docs.map((doc) => doc.data());
-        console.log("pi", pointsData[0]);
-        // 삭제할 데이터를 찾아서 필터링
-        const updatedPoints = pointsData[0].points.filter(
-            (point) => point.reason !== reasonToDelete
-        );
-        const updatedBeePoints = pointsData[0].beePoints.filter(
-            (point) => point.reason !== reasonToDelete
-        );
-      
-
-        // 업데이트된 데이터로 업데이트
-        const docRefPoint = doc(dbService, "points", pid);
-        await updateDoc(docRefPoint, {
-            points: updatedPoints,
-            beePoints: updatedBeePoints,
-        });
-
-        // 삭제 성공 알림
-        alert("점수가 성공적으로 삭제되었습니다.");
-        closeModalWidhtUpdate();
-    } catch (error) {
-        console.error("Error deleting Points data:", error);
-    }
-};
-
-    // 토글 점수 리스트
-    const ScoreList = [
-      "주요 행사 MVP (+5점)",
-      "세미나 파트별 MVP (+3점)",
-      "스터디 개최 및 수료 (+5점)",
-      "스터디 참여및 수료 (+3점)",
-      "파드 소통 인증 (+1점)",
-      "디스콰이엇 회고 (+3점)",
-      "세미나 지각 벌점 (-1점)",
-      "세미나 결석 벌점 (-2점)",
-      "과제 지각 벌점 (-0.5점)",
-      "과제 미제출 (-1점)",
-      "벌점 조정",
-    ];
-
-    // 점수용 토글 열기
-    const ScoreoggleDropdown = () => {
-      setIsDropdownOpen(!isDropdownOpen);
-    };
-
-    // 토글 list 중 점수 선택
-    const handleScoreClick = (option) => {
-      setSelectedScoreReason(option);
-
-      // 만약 벌점 조정일 경우 Input으로 점수 입력할 수 있도록 환경 설졍
-      if (option === "벌점 조정") {
-        setEditScore(true);
-      } else {
-        setEditScore(false);
-      }
-
-      setIsDropdownOpen(false);
-    };
-
-    // 예외 처리를 포함한 format 함수
-    const formatWithErrorHandling = (reason, type, timestamp) => {
-      try {
-        return format(fromUnixTime(timestamp), "MM.dd", {
-          locale: koLocale,
-        });
-      } catch (error) {
-        console.error("error index : " + reason + ", type : " + type + ", 날짜 형식 변환 오류:", error);
-        return "Invalid Date"; // 또는 다른 기본값을 반환할 수 있습니다.
-      }
-    };
-
-    useEffect(() => {
-      fetchPoints();
-      if (isOpen) {
-        setSelectedScore(null);
-        fetchPoints();
-      }
-    }, [isOpen, pid]);
-
-    return (
-      <ModalWrapper isOpen={isOpen}>
-        <ModalContent>
-          <ModalTitleDiv>
-            {isRegisterModalOpen ? (
-              <ModalTitle>점수 기록</ModalTitle>
-            ) : (
-              <ModalTitle>점수 추가</ModalTitle>
-            )}
-            <CancelIcon
-              src={require("../Assets/img/CancelButton.png")}
-              onClick={onClose}
-            />
-          </ModalTitleDiv>
-          <ModalSubTitle>
-            <ModalContents color={"#111"} right={71} weight={500}>
-              이름
-            </ModalContents>
-            <ModalContents color={"#A3A3A3"} right={0} weight={600}>
-              {name}
-            </ModalContents>
-          </ModalSubTitle>
-          <ModalSubTitle>
-            <ModalContents color={"#111"} right={71} weight={500}>
-              파트
-            </ModalContents>
-            <ModalContents color={"#A3A3A3"} right={0} weight={600}>
-              {part}
-            </ModalContents>
-          </ModalSubTitle>
-          {isRegisterModalOpen ? (
-            <>
-              <HR top={24} />
-              <RowTitleDiv>
-                <RowTitle right={40}>파드너십</RowTitle>
-                <RowTitle right={113}>점수</RowTitle>
-                <RowTitle right={165}>내용</RowTitle>
-                <RowTitle right={20}>날짜</RowTitle>
-                <RowTitle right={0}>삭제</RowTitle>
-              </RowTitleDiv>
-              
-              <HR top={8} />
-              <ContentDiv>
-                {points
-                  .slice()
-                  .reverse()
-                  .map((point, index) => (
-                    <div key={index}>
-                      <RowContentDiv>
-                        <RowContentType right={30} width={60}>
-                          {point.type === "MVP" ? "MVP" : point.type}
-                        </RowContentType>
-                        <RowContentDigit right={38} width={45}>
-                          {" "}
-                          {point.digit > 0
-                            ? `+${point.digit}점`
-                            : `${point.digit}점`}
-                        </RowContentDigit>
-                        <RowContent right={40} width={230}>
-                          {point.reason}
-                        </RowContent>
-                        <RowContent right={0} width={50}>
-                          {formatWithErrorHandling(point.reason, point.type, point.timestamp)}
-                        </RowContent>
-                        <RowContent onClick={() => handleDeleteButtonClick(point.reason)}>삭제</RowContent>
-                      </RowContentDiv>
-                    </div>
-                  ))}
-              </ContentDiv>
-              <RegisterButton onClick={() => setIsRegisterModalOpen(false)}>
-                점수 추가
-              </RegisterButton>
-            </>
-          ) : (
-            <>
-              <ModalSubTitle>
-                <ModalContents color={"#111"} top={10} weight={500}>
-                  파드너십
-                </ModalContents>
-                <DropdownWrapper1>
-                  <DropdownButton1 onClick={ScoreoggleDropdown}>
-                    {selectedScoreReason || "선택"}
-                    {isDropdownOpen ? (
-                      <ArrowTop1 src={require("../Assets/img/PolygonDown.png")} />
-                    ) : (
-                      <ArrowTop1
-                        src={require("../Assets/img/Polygon.png")}
-                      />
-                    )}
-                  </DropdownButton1>
-                  <DropdownContent1 isOpen={isDropdownOpen}>
-                    {ScoreList.map((option, index) => (
-                      <DropdownItem1
-                        key={index}
-                        onClick={() => {
-                          handleScoreClick(option);
-                          setSelectedScore(option);
-                          setContentChanged(true); // 수정사항이 생겼으므로 true로 설정
-                        }}
-                      >
-                        {option}
-                      </DropdownItem1>
-                    ))}
-                  </DropdownContent1>
-                </DropdownWrapper1>
-              </ModalSubTitle>
-              <ModalSubTitle top={36}>
-                <ModalContents color={"#111"} right={71} weight={500}>
-                  점수
-                </ModalContents>
-                {/* {selectedScore === "벌점 조정" ? ( */}
-                {editScore ? (
-                  <>
-                    <ScoreInput
-                      type="text"
-                      value={score}
-                        onChange={(e) => {
-                          const selectedValue = parseFloat(e.target.value);
-                          setScore(e.target.value);
-                          setSelectedScore(`벌점 조정 (${selectedValue}점)`);
-                      }}
-                    />
-                  </>
-                ) : (
-                  <ScoreDiv
-                    score={
-                      selectedScore && selectedScore.match(/(-?\d+(\.\d+)?)점/)
-                        ? parseFloat(
-                            selectedScore.match(/(-?\d+(\.\d+)?)점/)[1]
-                          )
-                        : 0
-                    }
-                  >
-                    {selectedScore && selectedScore.match(/(-?\d+(\.\d+)?)점/)
-                      ? selectedScore.match(/(-?\d+(\.\d+)?)점/)[1]
-                      : 0}
-                  </ScoreDiv>
-                )}
-                <UnitText>점</UnitText>
-                <UnitSubText>
-                  {!editScore
-                    ? "* 파드너십에서 점수 분야를 고르면 자동으로 점수가 입력돼요."
-                    : "* 벌점을 직접 입력할 때 -를 제외하고 양수로 입력해주세요"}
-                </UnitSubText>
-              </ModalSubTitle>
-              <ModalSubTitle top={32}>
-                <ModalContents color={"#111"} right={71} weight={500}>
-                  이유
-                </ModalContents>
-                <ReasonInput
-                  value={inputText}
-                  onChange={handleInputChange}
-                  placeholder="파드 포인트나 벌점 추가하는 사유 (20자 이내)"
-                />
-              </ModalSubTitle>
-              <InputNumNum>{inputText.length}/20</InputNumNum>
-              <RegisterAddButton
-                onClick={() => {
-                  handleAddButtonClick();
-                }}
-              >
-                추가하기
-              </RegisterAddButton>
-            </>
-          )}
-        </ModalContent>
-      </ModalWrapper>
-    );
-  };
-
-  // 로딩 관련 코드
-  const override = {
-    display: "flex",
-    margin: "0 auto",
-    marginTop: "300px",
-    borderColor: "#5262F5",
-    textAlign: "center",
-  };
-  const [loading, setLoading] = useState(true);
-
-  // 파트별 토글 버튼
-  const options = [
-    "전체",
-    "서버파트",
-    "웹파트",
-    "iOS파트",
-    "디자인파트",
-    "기획파트",
-  ];
-
-  // 핸들러 : 파트 filter 토글 열기
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
-
-  // 핸들러 : 파트 filter 토글 선택
-  const handleOptionClick = (option) => {
-    if (option === "전체") {
-      setSelectedOption(null);
-    } else {
-      setSelectedOption(option);
-    }
-    setIsOpen(false);
-  };
-
-  // Firebase fireStore 전체 Point 데이터 조회
-  // 나의 생각 : 전체 유저 정보는 한 번에 불러오는데, 각 uid에 맞춰서 points 점수를 한 번씩 계속 불러오니까 읽어들이는 양이 많은건가?
-  useEffect(() => {
-    const fetchUserScores = async () => {
-      try {
-        // 1. 'users'라는 컬렉션을 참조하는 변수 선언
-        const userQuery = query(collection(dbService, "users"));
-
-        // 2. userQuery 참조를 바탕으로 전체 유저 정보를 가져온다.
-        const userSnapshot = await getDocs(userQuery);
-
-        const scores = [];
-
-        for (const userDoc of userSnapshot.docs) {
-          const userData = userDoc.data();
-          const userId = userDoc.id;
-
-          // 사용자의 포인트 데이터 가져오기
-          // 1. points'라는 컬렉션을 참조하는 변수 선언 (uid값이 같은 것들만)
-          const pointQuery = query(
-            collection(dbService, "points"),
-            where("uid", "==", userId)
-          );
-          // 2. pointQuery 참조를 바탕으로 전체 점수 정보를 가져온다.
-          const pointSnapshot = await getDocs(pointQuery);
-
-          // 추가되어야 할 점수 계산을 위한 변수 선언
-          let mvpPoints = 0;
-          let studyPoints = 0;
-          let communicationPoints = 0;
-          let retrospectionPoints = 0;
-          let penaltyPoints = 0; // 벌점 포인트
-          
-          // 3. 가져온 점수를 바탕으로 점수 계산을 위한 변수에 할당
-          pointSnapshot.forEach((pointDoc) => {
-            const pointData = pointDoc.data();
-            pointData.points.forEach((point) => {
-              // 포인트 유형(type)에 따라 각각의 포인트를 계산
-              switch (point.type) {
-                case "MVP":
-                  mvpPoints += point.digit;
-                  break;
-                case "스터디":
-                  studyPoints += point.digit;
-                  break;
-                case "소통":
-                  communicationPoints += point.digit;
-                  break;
-                case "회고":
-                  retrospectionPoints += point.digit;
-                  break;
-                // 다른 포인트 유형에 대한 계산도 추가할 수 있음
-              }
-            });
-            pointData.beePoints.forEach((beePoints) => {
-              // 포인트 유형(type)에 따라 각각의 포인트를 계산
-              penaltyPoints += beePoints.digit;
-            });
-          });
-
-          // 전체 포인트 합계 계산
-          const totalPoints =
-            mvpPoints + studyPoints + communicationPoints + retrospectionPoints;
-
-          if (userData.member !== "운영진" && userData.member !== "잔잔파도") {
-            scores.push({
-              name: userData.name,
-              pid: userData.pid,
-              mvp: mvpPoints,
-              study: studyPoints,
-              communication: communicationPoints,
-              retrospection: retrospectionPoints,
-              penalty: penaltyPoints, // 벌점 포인트
-              total: totalPoints, // 전체 포인트 합계
-              part: userData.part,
-            });
-          }
-        }
-
-        console.log("scores", scores);
-
-
-        setUserScores(scores);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching user scores:", error);
-      }
-    };
-
-    fetchUserScores();
-  }, []);
-
-  // 이름으로 정렬된 유저 정보 변수
-  const sortedUserScores = userScores.sort((a, b) => {
-    // 이름을 가나다 순으로 비교하여 정렬
-    return a.name.localeCompare(b.name);
-  });
-
-  // 선택한 파트 option에 맞춰서 필터를 거친 유저 정보 변수
-  const filteredUserScores = selectedOption
-    ? sortedUserScores.filter((userScore) => userScore.part === selectedOption)
-    : sortedUserScores;
-
-  // Main 화면 코드
-  return (
-    <DDiv>
-      {/* 사용자 / 로그아웃 */}
-      <CommonLogSection />
-
-      {/* 점수 관리 Title Header */}
-      <TitleDiv>
-        <HomeTitle>점수 관리</HomeTitle>
-        <BarText />
-        <SubTitle>파트별로 파드너십을 관리해보세요.</SubTitle>
-      </TitleDiv>
-
-      {/* 점수 관리 카테고리 드롭다운 */}
-      <DropdownWrapper>
-        <DropdownButton onClick={toggleDropdown}>
-          {selectedOption || "전체"}
-          {!isOpen ? (
-            <ArrowTop1 src={require("../Assets/img/PolygonDown.png")} />
-          ) : (
-            <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
-          )}
-        </DropdownButton>
-        <DropdownContent isOpen={isOpen}>
-          {options.map((option, index) => (
-            <DropdownItem key={index} onClick={() => handleOptionClick(option)}>
-              {option}
-            </DropdownItem>
-          ))}
-        </DropdownContent>
-      </DropdownWrapper>
-
-      {/* 전체 점수 Table */}
-      <BodyDiv>
-        <Table>
-          {/* Table Head */}
-          <TableHead>
-            <TableRow>
-              <TableHeaderCell width={140} style={{ background: "#F8F8F8" }}>
-                이름
-              </TableHeaderCell>
-              <TableHeaderCell width={180}>MVP</TableHeaderCell>
-              <TableHeaderCell width={180}>스터디</TableHeaderCell>
-              <TableHeaderCell width={180}>소통</TableHeaderCell>
-              <TableHeaderCell width={180}>회고</TableHeaderCell>
-              <TableHeaderCell width={180} style={{ background: "#FFEFEF" }}>
-                벌점
-              </TableHeaderCell>
-              <TableHeaderCell width={180} style={{ background: "#F8F8F8" }}>
-                점수 관리
-              </TableHeaderCell>
-            </TableRow>
-          </TableHead>
-
-          {/* Table */}
-          <TableBody>
-            {loading ? (
-              <>
-                <FadeLoader
-                  color="#5262F5"
-                  loading={loading}
-                  cssOverride={override}
-                  size={100}
-                />
-                <div
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                ></div>
-              </>
-            ) : (
-              <>
-                {filteredUserScores.map((userScore, index) => (
-                  <TableRow key={index}>
-                    <TableCell color={"#2A2A2A"} width={140}>
-                      {userScore.name}
-                    </TableCell>
-                    <TableCell color={"#64C59A"} width={180}>
-                      +{userScore.mvp}점
-                    </TableCell>
-                    <TableCell color={"#64C59A"} width={180}>
-                      +{userScore.study}점
-                    </TableCell>
-                    <TableCell color={"#64C59A"} width={180}>
-                      +{userScore.communication}점
-                    </TableCell>
-                    <TableCell color={"#64C59A"} width={180}>
-                      +{userScore.retrospection}점
-                    </TableCell>
-                    <TableCell color={"#FF5A5A"} width={180}>
-                      {userScore.penalty}점
-                    </TableCell>
-                    <TableCell width={180}>
-                      <CheckScoreButton onClick={() => openModal(index)}>
-                        점수 관리
-                      </CheckScoreButton>
-                      <Modal
-                        isOpen={modals[index] || false}
-                        onClose={() => closeModal(index)}
-                        name={userScore.name}
-                        part={userScore.part}
-                        pid={userScore.pid}
-                        closeModalWidhtUpdate={() =>
-                          closeModalWidhtUpdate(index)
-                        }
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </>
-            )}
-          </TableBody>
-        </Table>
-      </BodyDiv>
-    </DDiv>
-  );
-};
-
-export default ScorePage;
-
-const DDiv = styled.div`
-  background: #fff;
-  height: 100%;
-  overflow-y: hidden;
-  margin: 0 auto;
-`;
-
-const TitleDiv = styled.div`
-  display: flex;
-  margin-top: 25px;
-  margin-left: 80px;
-  align-items: center;
-`;
-
-const HomeTitle = styled.div`
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 32px;
-`;
-
-const SubTitle = styled.div`
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 24px;
-  margin-top: 1px;
-`;
-
-const BarText = styled.div`
-  width: 2px;
-  height: 24px;
-  margin-top: 1px;
-  margin-left: 12px;
-  margin-right: 14px;
-  background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
-`;
-
-const BodyDiv = styled.div`
-  display: flex;
-  margin-top: 16px;
-  margin-left: 80px;
-  max-width: 1300px;
-  width: 90%;
-  height: 700px;
-  margin-bottom: 10px;
-  overflow-y: scroll;
-`;
-
-const Table = styled.table`
-  width: 1200px;
-  border-collapse: collapse;
-  border-spacing: 0;
-  border-radius: 4px;
-`;
-
-const TableHead = styled.thead`
-  background-color: #eee;
-  border-bottom: 1px solid #a3a3a3;
-  position: sticky;
-  top: 0;
-`;
-const TableBody = styled.tbody`
-  display: block;
-  max-height: calc(100% - 48px);
-  overflow-y: auto;
-  border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
-`;
-
-const TableRow = styled.tr`
-  border-bottom: 1px solid #ddd;
-  display: flex;
-`;
-
-const TableHeaderCell = styled.th`
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
-  display: flex;
-  width: ${(props) => props.width}px;
-  height: 48px;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-  border-top: 1px solid var(--Gray30, #a3a3a3);
-  border-left: 0.5px solid var(--Gray30, #a3a3a3);
-  border-right: 0.5px solid var(--Gray30, #a3a3a3);
-  background: #f0f9f5;
-
-  &:first-child {
-    border-radius: 4px 0px 0px 0px;
-    border-left: 1px solid var(--Gray30, #a3a3a3);
-  }
-
-  &:last-child {
-    border-radius: 0px 4px 0px 0px;
-    border-right: 1px solid var(--Gray30, #a3a3a3);
-  }
-`;
-
-const TableCell = styled.td`
-  color: ${(props) => props.color};
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
-  width: ${(props) => props.width}px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 40px;
-  border-right: 0.5px solid var(--Gray30, #a3a3a3);
-  border-left: 0.5px solid var(--Gray30, #a3a3a3);
-
-  &:first-child {
-    border-left: 1px solid var(--Gray30, #a3a3a3);
-  }
-
-  &:last-child {
-    border-right: 1px solid var(--Gray30, #a3a3a3);
-  }
-`;
-
-const DropdownWrapper = styled.div`
-  position: relative;
-  display: inline-block;
-  margin-top: 89px;
-  margin-left: 83px;
-  display: flex;
-  width: 125px;
-  justify-content: center;
-  align-items: center;
-  gap: 24px;
-  border-radius: 2px;
-  border: 1px solid var(--primary-blue, #5262f5);
-  background: var(--White, #fff);
-`;
-
-const DropdownButton = styled.button`
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-  background-color: white;
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
-  border: none;
-  padding: 8px 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const DropdownContent = styled.div`
-  display: ${(props) => (props.isOpen ? "block" : "none")};
-  position: absolute;
-  background-color: #f1f1f1;
-  width: 125px;
-  z-index: 1;
-  top: 100%;
-  left: 0;
-  margin-top: 5px;
-  border: 1px solid var(--primary-blue, #5262f5);
-`;
-
-const DropdownItem = styled.div`
-  padding: 10px;
-  cursor: pointer;
-  background: var(--White, #fff);
-  border: 0.5px solid var(--primary-blue, #5262f5);
-  text-align: center;
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 18px;
-  &:hover {
-    background-color: #eeeffe;
-  }
-`;
-
-const CheckScoreButton = styled.button`
-  display: flex;
-  width: 140px;
-  padding: 6px 16px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  color: var(--primary-blue, #5262f5);
-  font-family: "Pretendard";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 18px;
-  border-radius: 4px;
-  border: 1px solid var(--primary-blue, #5262f5);
-  background: var(--primary-blue-10, #eeeffe);
-  cursor: pointer;
-
-  &:hover {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-  }
-  &:active {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-  }
-`;
