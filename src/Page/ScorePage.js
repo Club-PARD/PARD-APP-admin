@@ -439,13 +439,13 @@ const ScorePage = () => {
     };
 
     // 예외 처리를 포함한 format 함수
-    const formatWithErrorHandling = (reason, type, timestamp) => {
+    const formatWithErrorHandling = (reason, type, timestamp, name) => {
       try {
         return format(fromUnixTime(timestamp), "MM.dd", {
           locale: koLocale,
         });
       } catch (error) {
-        console.error("error index : " + reason + ", type : " + type + ", 날짜 형식 변환 오류:", error);
+        console.error("name : "+ name +", error index : " + reason + ", type : " + type + ", 날짜 형식 변환 오류:", error);
         return "Invalid Date"; // 또는 다른 기본값을 반환할 수 있습니다.
       }
     };
@@ -520,7 +520,7 @@ const ScorePage = () => {
                           {point.reason}
                         </RowContent>
                         <RowContent right={0} width={50}>
-                          {formatWithErrorHandling(point.reason, point.type, point.timestamp)}
+                          {formatWithErrorHandling(point.reason, point.type, point.timestamp, name)}
                         </RowContent>
                         <RowContent onClick={() => handleDeleteButtonClick(point.reason)}>삭제</RowContent>
                       </RowContentDiv>
@@ -614,6 +614,17 @@ const ScorePage = () => {
                 />
               </ModalSubTitle>
               <InputNumNum>{inputText.length}/20</InputNumNum>
+              <ModalSubTitle top={20}>
+                  <ModalContents color={"#111"} top={-35} right={71} weight={500}>
+                  예시
+                </ModalContents>
+                <ScoreInputExample>
+                    1. [MVP] : 1차 세미나 MVP / 숏커톤 MVP <br />
+                    2. [스터디] : 피그마 스터디 개최 / 피그마 스터디 수료<br />
+                    3. [소통] : 10월 2일 (월) 소통 <br />
+                    4. [회고] : 10월 2일 (월) 디콰 회고
+                </ScoreInputExample>
+              </ModalSubTitle>
               <RegisterAddButton
                 onClick={() => {
                   handleAddButtonClick();
@@ -1354,7 +1365,7 @@ const CheckScoreButton = styled.button`
     font-style: normal;
     font-weight: 600;
     line-height: 24px;
-    margin-top: 66px;
+    margin-top: 40px;
     border: none;
     &:hover {
       box-shadow: 0px 4px 8px 0px #5262f5;
@@ -1388,3 +1399,12 @@ const CheckScoreButton = styled.button`
     height: 14px;
     cursor: pointer;
   `;
+
+const ScoreInputExample = styled.div`
+    color: var(--Gray30, #a3a3a3);
+    font-family: "Pretendard";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 14px;
+`;

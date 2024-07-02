@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import React, { useEffect } from "react";
 import { handleGoogleLogin } from "../Api/LoginService";
+import AxiosTest from "./AxiosTest";
 
 /* 
 - 로그인 기능
@@ -49,6 +50,7 @@ const LoginPage = () => {
         />
         구글로 로그인 하기
       </GoogleLoginButton>
+      {/* <AxiosTest/> */}
     </Div>
   );
 };
