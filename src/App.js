@@ -7,6 +7,7 @@ import LoginPage from "./Page/LoginPage";
 import MemberPage from "./Page/MemberPage";
 import SchedulePage from "./Page/SchedulePage";
 import ScorePage from "./Page/ScorePage";
+import { useEffect, useState } from "react";
 
 /* 
 - 개발자 도구 Console 메세지 강제 제거
@@ -26,11 +27,12 @@ function App() {
 
   // 토큰 조회
   const token = localStorage.getItem("token");
-
+  
   // Route 코드
   return (
     <Router>
       <AppContainer>
+
         {token === "pardo-admin-key" ? (
           <NavBarContainer>
             <NavBar />
