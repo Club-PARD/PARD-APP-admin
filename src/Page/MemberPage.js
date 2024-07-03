@@ -485,16 +485,16 @@ const MemberPage = () => {
         part,
         uid,
         Num,
-        level,
+        role,
         pid,
         generation
     }) => {
         const [inputName, setInputName] = useState(name);
         const [inputPhoneNum, setInputPhoneNum] = useState(Num);
         const [selectedOption, setSelectedOption] = useState(part);
-        const [selectedLevelOption, setSelectedLevelOption] = useState(level);
+        const [selectedRoleOption, setSelectedRoleOption] = useState(role);
         const [toggleToPart, setToggleToPart] = useState(false);
-        const [toggleToLevel, setToggleToLever] = useState(false);
+        const [toggleToRole, setToggleToRole] = useState(false);
         const [isEditm, setIsEdit] = useState(false);
         const [inputGeneration, setInputGeneartion] = useState(generation);
 
@@ -535,7 +535,7 @@ const MemberPage = () => {
 
         const PartOption = ["서버파트", "웹파트", "iOS", "디자인파트", "기획파트"];
 
-        const LevelOption = ["ROLE_YB", "ROLE_OB", "ROLE_ADMIN"];
+        const RoleOption = ["ROLE_YB", "ROLE_OB", "ROLE_ADMIN"];
 
         const handleOptionClick = (option) => {
             if (option === "ALL") {
@@ -547,22 +547,22 @@ const MemberPage = () => {
             setToggleToPart(false);
         };
 
-        const handleOptionLevelClick = (option) => {
+        const handleOptionRoleClick = (option) => {
             if (option === "ALL") {
-                setSelectedLevelOption(null);
+                setSelectedRoleOption(null);
             } else {
                 setIsEdit(true);
-                setSelectedLevelOption(option);
+                setSelectedRoleOption(option);
             }
-            setToggleToLever(false);
+            setToggleToRole(false);
         };
 
         const toggleDropdownPart = () => {
             setToggleToPart(!toggleToPart);
         };
 
-        const toggleDropdownLevel = () => {
-            setToggleToLever(!toggleToLevel);
+        const toggleDropdownRole = () => {
+            setToggleToRole(!toggleToRole);
         };
 
         // user 정보 업데이트 코드
@@ -575,15 +575,15 @@ const MemberPage = () => {
                         name: inputName,
                         phone: inputPhoneNum,
                         part: selectedOption,
-                        member: selectedLevelOption
+                        member: selectedRoleOption
                     };
 
-                    if (selectedLevelOption === "ROLE_ADMIN") {
+                    if (selectedRoleOption === "ROLE_ADMIN") {
                         updates.isAdmin = true;
                         updates.isMaster = true;
                     }
 
-                    if (selectedLevelOption === "ROLE_ADMIN" || selectedLevelOption === "ROLE_OB") {
+                    if (selectedRoleOption === "ROLE_ADMIN" || selectedRoleOption === "ROLE_OB") {
                         updates.attend = {};
                         updates.attendInfo = {};
                     }
@@ -683,18 +683,18 @@ const MemberPage = () => {
                         </ModalContents>
                         <ModalContents color={"#A3A3A3"} right={0} weight={600}>
                             <DropdownWrapperModal>
-                                <DropdownButtonModal onClick={toggleDropdownLevel}>
-                                    {selectedLevelOption || level}
+                                <DropdownButtonModal onClick={toggleDropdownRole}>
+                                    {selectedRoleOption || role}
                                     {
-                                        !toggleToLevel
+                                        !toggleToRole
                                             ? (<ArrowTop1 src={require("../Assets/img/PolygonDown.png")}/>)
                                             : (<ArrowTop1 src={require("../Assets/img/Polygon.png")}/>)
                                     }
                                 </DropdownButtonModal>
-                                <DropdownContentModal isOpen={toggleToLevel}>
+                                <DropdownContentModal isOpen={toggleToRole}>
                                     {
-                                        LevelOption.map((option, index) => (
-                                            <DropdownItemModal key={index} onClick={() => handleOptionLevelClick(option)}>
+                                        RoleOption.map((option, index) => (
+                                            <DropdownItemModal key={index} onClick={() => handleOptionRoleClick(option)}>
                                                 {option}
                                             </DropdownItemModal>
                                         ))
@@ -929,10 +929,8 @@ const MemberPage = () => {
                                       closeModalUpdate={() => closeModalUpdate(index)}
                                       name={userInfo.name}
                                       part={userInfo.part}
-                                      uid={userInfo.uid}
                                       Num={userInfo.phone}
-                                      level={userInfo.role}
-                                      pid={userInfo.pid}
+                                      role={userInfo.role}
                                       generation = {userInfo.generation}
                                     />
                                   </TableBody2>
