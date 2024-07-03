@@ -930,13 +930,7 @@ const MemberPage = () => {
                         <BodyAddDiv>
                             <FirstDiv>
                                 <FlexDiv>
-                                    <MemberNumText color={"#1A1A1A"} right={4}>
-                                        총
-                                    </MemberNumText>
-                                    <MemberNumText color={"#5262F5"}>
-                                        {filteredUserDataList.length}
-                                    </MemberNumText>
-                                    <MemberNumText color={"#1A1A1A"}>명</MemberNumText>
+
                                 </FlexDiv>
                                 <FlexDiv>
                                     <CancelButton onClick={handleCancelClick}>취소하기</CancelButton>
@@ -1362,7 +1356,7 @@ const TableMinText = styled.td `
 
 const CheckScoreButton = styled.button `
   display: flex;
-  width: ${props => props.width || "140"}px;
+  width: ${props => props.width || "100"}px;
   padding: 6px 16px;
   justify-content: center;
   align-items: center;
