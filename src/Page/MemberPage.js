@@ -58,7 +58,7 @@ const MemberPage = () => {
 
     // 변수 : 파트 구분
     const filteredUserScores = sortedUserScores.filter((userScore) => {
-        const memberFilter = selectedMemberFilter === "구분" || selectedMemberFilter === "전체" || userScore.member === selectedMemberFilter;
+        const memberFilter = selectedMemberFilter === "구분" || selectedMemberFilter === "ALL" || userScore.role === selectedMemberFilter;
         const partFilter = selectedPartFilter === "전체" || selectedPartFilter === "파트" || userScore.part === selectedPartFilter;
         return memberFilter && partFilter;
     });
