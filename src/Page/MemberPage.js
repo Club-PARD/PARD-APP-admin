@@ -35,7 +35,7 @@ import {getAllUserData, postUserData} from "../Api/UserAPI";
 */
 
 const MemberPage = () => {
-    const [userScores, setUserScores] = useState([]);
+    const [userDataList, setUserDataList] = useState([]);
     const [addable, setAddable] = useState(true);
     const [isOpen, setIsOpen] = useState(Array(15).fill(false));
     const [isOpenPart, setIsOpenPart] = useState(Array(15).fill(false));
@@ -52,14 +52,14 @@ const MemberPage = () => {
     const [isContentChanged, setContentChanged] = useState(false); // 컨텐츠 변경 확인 state
 
     // 변수 : User 정보 조회 후 sort
-    const sortedUserScores = userScores
-        .filter((userScore) => userScore.name)
+    const sortedUserDataList = userDataList
+        .filter((userDataList) => userDataList.name)
         .sort((a, b) => a.name.localeCompare(b.name));
 
     // 변수 : 파트 구분
-    const filteredUserScores = sortedUserScores.filter((userScore) => {
-        const memberFilter = selectedMemberFilter === "구분" || selectedMemberFilter === "ALL" || userScore.role === selectedMemberFilter;
-        const partFilter = selectedPartFilter === "전체" || selectedPartFilter === "파트" || userScore.part === selectedPartFilter;
+    const filteredUserDataList = sortedUserDataList.filter((userDataList) => {
+        const memberFilter = selectedMemberFilter === "구분" || selectedMemberFilter === "ALL" || userDataList.role === selectedMemberFilter;
+        const partFilter = selectedPartFilter === "전체" || selectedPartFilter === "파트" || userDataList.part === selectedPartFilter;
         return memberFilter && partFilter;
     });
 
@@ -67,7 +67,7 @@ const MemberPage = () => {
     useEffect(() => {
         const getUsers = async () => {
             const users = await getAllUserData();
-            setUserScores(users);
+            setUserDataList(users);
         };
         getUsers();
     }, []);
@@ -225,7 +225,7 @@ const MemberPage = () => {
 
     // 모달 관련 코드
     const [modals, setModals] = useState(
-        new Array(filteredUserScores.length).fill(false)
+        new Array(filteredUserDataList.length).fill(false)
     );
 
     const openModal = (index) => {
@@ -794,7 +794,7 @@ const MemberPage = () => {
                                 총
                               </MemberNumText>
                               <MemberNumText color={"#5262F5"}>
-                                {filteredUserScores.length}
+                                {filteredUserDataList.length}
                               </MemberNumText>
                               <MemberNumText color={"#1A1A1A"}>명</MemberNumText>
                             </FlexDiv>
@@ -894,7 +894,7 @@ const MemberPage = () => {
                                   관리
                                 </TableHead2Cell >
                               </TableHead2>
-                                {filteredUserScores.map((userInfo, index) => (
+                                {filteredUserDataList.map((userInfo, index) => (
                                   <TableBody2>
                                     <TableHead2Cell flex = {1}>
                                       {index + 1}
@@ -931,7 +931,7 @@ const MemberPage = () => {
                                       part={userInfo.part}
                                       uid={userInfo.uid}
                                       Num={userInfo.phone}
-                                      level={userInfo.member}
+                                      level={userInfo.role}
                                       pid={userInfo.pid}
                                       generation = {userInfo.generation}
                                     />
@@ -948,7 +948,7 @@ const MemberPage = () => {
                                         총
                                     </MemberNumText>
                                     <MemberNumText color={"#5262F5"}>
-                                        {filteredUserScores.length}
+                                        {filteredUserDataList.length}
                                     </MemberNumText>
                                     <MemberNumText color={"#1A1A1A"}>명</MemberNumText>
                                 </FlexDiv>
