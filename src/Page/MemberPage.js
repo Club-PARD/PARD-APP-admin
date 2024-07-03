@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-
 import styled from "styled-components";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import {
@@ -9,13 +8,9 @@ import {
     doc,
     query,
     where,
-    setDoc,
     deleteDoc
 } from "firebase/firestore";
 import {dbService} from "../fbase";
-import {format, fromUnixTime} from "date-fns";
-import koLocale from "date-fns/locale/ko";
-import {fetchUsers} from "../Api/FireStore";
 import {getAllUserData, postUserData} from "../Api/UserAPI";
 
 /*
@@ -53,7 +48,9 @@ const MemberPage = () => {
 
     // 변수 : User 정보 조회 후 sort
     const sortedUserDataList = userDataList
-        .filter((userDataList) => userDataList.name)
+        .filter(
+            (userDataList) => userDataList.name
+        )
         .sort((a, b) => a.name.localeCompare(b.name));
 
     // 변수 : 파트 구분
@@ -95,13 +92,12 @@ const MemberPage = () => {
         setSelectedPartFilter(memberOption);
     };
 
-    // 선택 관련 코드
-  // const member = ["파디", "거친파도", "운영진", "잔잔파도"];
-      const member = ["ROLE_YB", "ROLE_OB", "ROLE_ADMIN"];
+    // 선택 관련 코드 const member = ["파디", "거친파도", "운영진", "잔잔파도"];
+    const member = ["ROLE_YB", "ROLE_OB", "ROLE_ADMIN"];
     const memberFillter = ["ALL", "ROLE_YB", "ROLE_OB", "ROLE_ADMIN"];
 
-  // const part = ["기획파트", "디자인파트", "웹파트", "iOS파트", "서버파트"];
-  const part = ["기획파트", "디자인파트", "웹파트", "iOS", "서버파트"];
+    // const part = ["기획파트", "디자인파트", "웹파트", "iOS파트", "서버파트"];
+    const part = ["기획파트", "디자인파트", "웹파트", "iOS", "서버파트"];
     const partFillter = [
         "전체",
         "기획파트",
@@ -180,36 +176,38 @@ const MemberPage = () => {
     };
 
     const handleAddButtonClick = async () => {
-      let addUserInfo = [];
-      // 최대 처리할 횟수 : 15회
-      for (let index = 0; index < 15; index++) {
-          // 선택된 사용자 정보가 모두 유효한 경우만 처리
-          if (selectedMembers[index] !== null && selectedPart[index] !== null && nameInputs[index] !== "" && phoneInputs[index] !== "") {
-              const data = {
-                  name: nameInputs[index],
-                  email: emailInputs[index],
-                  part: selectedPart[index],
-                  generation: generationInputs[index],
-                  phoneNumber: phoneInputs[index],
-                  role: selectedMembers[index],
-              };
+        let addUserInfo = [];
+        // 최대 처리할 횟수 : 15회
+        for (let index = 0; index < 15; index++) {
+            // 선택된 사용자 정보가 모두 유효한 경우만 처리
+            if (selectedMembers[index] !== null && selectedPart[index] !== null && nameInputs[index] !== "" && phoneInputs[index] !== "") {
+                const data = {
+                    name: nameInputs[index],
+                    email: emailInputs[index],
+                    part: selectedPart[index],
+                    generation: generationInputs[index],
+                    phoneNumber: phoneInputs[index],
+                    role: selectedMembers[index]
+                };
 
-              // addUserInfo 배열에 data를 추가
-              addUserInfo.push(data);
-          }
-          console.log(index);
-      }
+                // addUserInfo 배열에 data를 추가
+                addUserInfo.push(data);
+            }
+            console.log(index);
+        }
 
-      try {
-          // Firestore에 addUserInfo를 추가하는 로직을 여기서 작성
-          postUserData(addUserInfo);
-          setAddable(true); // 버튼 활성화
-          alert("등록 성공!"); // 사용자에게 성공 메시지 표시
-          window.location.reload();  // 페이지 새로고침
-      } catch (error) {
-          console.error("Error adding document: ", error);
-      }
-  }
+        try {
+            // Firestore에 addUserInfo를 추가하는 로직을 여기서 작성
+            postUserData(addUserInfo);
+            setAddable(true); // 버튼 활성화
+            alert("등록 성공!"); // 사용자에게 성공 메시지 표시
+            window
+                .location
+                .reload(); // 페이지 새로고침
+        } catch (error) {
+            console.error("Error adding document: ", error);
+        }
+    }
 
     // 취소 버튼
     const handleCancelClick = () => {
@@ -529,8 +527,13 @@ const MemberPage = () => {
         };
 
         const handleGenerationChange = (e) => {
+
+            setIsEdit(true);
             const text = e.target.value;
-            setInputGeneartion(text);
+            if (text.length <= 20) {
+                setInputGeneartion(text);
+                setContentChanged(true); // 정보 수정이 되었으므로 true로 설정
+            }
         }
 
         const PartOption = ["서버파트", "웹파트", "iOS", "디자인파트", "기획파트"];
@@ -788,153 +791,138 @@ const MemberPage = () => {
                 addable
                     ? (
                         <BodyAddDiv>
-                          <FirstDiv>
-                            <FlexDiv>
-                              <MemberNumText color={"#1A1A1A"} right={4}>
-                                총
-                              </MemberNumText>
-                              <MemberNumText color={"#5262F5"}>
-                                {filteredUserDataList.length}
-                              </MemberNumText>
-                              <MemberNumText color={"#1A1A1A"}>명</MemberNumText>
-                            </FlexDiv>
-                            <RegisterButton onClick={() => setAddable(false)}>
-                              <RegisterMemberIcon
-                                src={require("../Assets/img/MemberIcon.png")}
-                              />
-                              사용자 추가
-                            </RegisterButton>
-                          </FirstDiv>
-                          <SecondDiv>
-                              <TableHead2>
-                                <TableHead2Cell flex = {1}>
-                                  No.
-                                </TableHead2Cell>
-                                <TableHead2Cell flex = {1}>
-                                  기수
-                                </TableHead2Cell>
-                                <TableHead2Cell flex = {2}>
-                                  이름
-                                </TableHead2Cell >
-                                <TableHead2Cell flex = {4}>
-                                  이메일
-                                </TableHead2Cell>
-                                <TableHead2Cell >
-                                  전화번호
-                                </TableHead2Cell>
-                                <TableHead2Cell flex = {2}>
-                                  <DropdownWrapper>
-                                    <DropdownButton
-                                      onClick={handleArrowTopClick}
-                                      color={true}
-                                      Backcolor={"#eee"}
-                                    >
-                                      {selectedMemberFilter || "구분"}
-                                      {!isDropdownOpen ? (
-                                        <ArrowTop1
-                                          src={require("../Assets/img/PolygonDown.png")}
-                                        />
-                                      ) : (
-                                        <ArrowTop1
-                                          src={require("../Assets/img/Polygon.png")}
-                                        />
-                                      )}
-                                    </DropdownButton>
-                                    <DropdownContent
-                                      isOpen={isDropdownOpen}
-                                      left={-5}
-                                      width={145}
-                                    >
-                                      {memberFillter.map((memberOption, memberIndex) => (
-                                        <DropdownItem
-                                          key={memberIndex}
-                                          onClick={() => handleMemberItemClick(memberOption)}
-                                        >
-                                          {memberOption}
-                                        </DropdownItem>
-                                      ))}
-                                    </DropdownContent>
-                                  </DropdownWrapper>
-                                </TableHead2Cell>
-                                <TableHead2Cell flex = {2}>
-                                  <DropdownWrapper>
-                                    <DropdownButton
-                                      onClick={handleArrowPartClick}
-                                      color={true}
-                                      Backcolor={"#eee"}
-                                    >
-                                      {selectedPartFilter || "파트"}
-                                      {!isdropdownPart ? (
-                                        <ArrowTop1
-                                          src={require("../Assets/img/PolygonDown.png")}
-                                        />
-                                      ) : (
-                                        <ArrowTop1
-                                          src={require("../Assets/img/Polygon.png")}
-                                        />
-                                      )}
-                                    </DropdownButton>
-                                    <DropdownContent
-                                      isOpen={isdropdownPart}
-                                      left={-7}
-                                      width={120}
-                                    >
-                                      {partFillter.map((memberOption, memberIndex) => (
-                                        <DropdownItem
-                                          key={memberIndex}
-                                          onClick={() => handlePartItemClick(memberOption)}
-                                        >
-                                          {memberOption}
-                                        </DropdownItem>
-                                      ))}
-                                    </DropdownContent>
-                                  </DropdownWrapper>
-                                </TableHead2Cell>
-                                <TableHead2Cell flex = {2}>
-                                  관리
-                                </TableHead2Cell >
-                              </TableHead2>
-                                {filteredUserDataList.map((userInfo, index) => (
-                                  <TableBody2>
-                                    <TableHead2Cell flex = {1}>
-                                      {index + 1}
+                            <FirstDiv>
+                                <FlexDiv>
+                                    <MemberNumText color={"#1A1A1A"} right={4}>
+                                        총
+                                    </MemberNumText>
+                                    <MemberNumText color={"#5262F5"}>
+                                        {filteredUserDataList.length}
+                                    </MemberNumText>
+                                    <MemberNumText color={"#1A1A1A"}>명</MemberNumText>
+                                </FlexDiv>
+                                <RegisterButton onClick={() => setAddable(false)}>
+                                    <RegisterMemberIcon src={require("../Assets/img/MemberIcon.png")}/>
+                                    사용자 추가
+                                </RegisterButton>
+                            </FirstDiv>
+                            <SecondDiv>
+                                <TableHead2>
+                                    <TableHead2Cell flex={1}>
+                                        No.
                                     </TableHead2Cell>
-                                    <TableHead2Cell flex = {1}>
-                                      {userInfo.generation}기
+                                    <TableHead2Cell flex={1}>
+                                        기수
+                                    </TableHead2Cell>
+                                    <TableHead2Cell flex={2}>
+                                        이름
                                     </TableHead2Cell >
-                                    <TableHead2Cell flex = {2}>
-                                      {userInfo.name}
-                                    </TableHead2Cell >
-                                    <TableHead2Cell flex = {4}>
-                                      {userInfo.email}
+                                    <TableHead2Cell flex={4}>
+                                        이메일
                                     </TableHead2Cell>
                                     <TableHead2Cell >
-                                      {userInfo.phone}
+                                        전화번호
                                     </TableHead2Cell>
-                                    <TableHead2Cell flex = {2}>
-                                      {/* {handleChangeRoleName(userInfo.role)} */}
-                                      {userInfo.role}
+                                    <TableHead2Cell flex={2}>
+                                        <DropdownWrapper>
+                                            <DropdownButton onClick={handleArrowTopClick} color={true} Backcolor={"#eee"}>
+                                                {selectedMemberFilter || "구분"}
+                                                {
+                                                    !isDropdownOpen
+                                                        ? (
+                                                            <ArrowTop1 src={require("../Assets/img/PolygonDown.png")}/>
+                                                        )
+                                                        : (
+                                                            <ArrowTop1 src={require("../Assets/img/Polygon.png")}/>
+                                                        )
+                                                }
+                                            </DropdownButton>
+                                            <DropdownContent isOpen={isDropdownOpen} left={-5} width={145}>
+                                                {
+                                                    memberFillter.map((memberOption, memberIndex) => (
+                                                        <DropdownItem
+                                                            key={memberIndex}
+                                                            onClick={() => handleMemberItemClick(memberOption)}>
+                                                            {memberOption}
+                                                        </DropdownItem>
+                                                    ))
+                                                }
+                                            </DropdownContent>
+                                        </DropdownWrapper>
                                     </TableHead2Cell>
-                                    <TableHead2Cell flex = {2}>
-                                      {userInfo.part}
+                                    <TableHead2Cell flex={2}>
+                                        <DropdownWrapper>
+                                            <DropdownButton onClick={handleArrowPartClick} color={true} Backcolor={"#eee"}>
+                                                {selectedPartFilter || "파트"}
+                                                {
+                                                    !isdropdownPart
+                                                        ? (
+                                                            <ArrowTop1 src={require("../Assets/img/PolygonDown.png")}/>
+                                                        )
+                                                        : (
+                                                            <ArrowTop1 src={require("../Assets/img/Polygon.png")}/>
+                                                        )
+                                                }
+                                            </DropdownButton>
+                                            <DropdownContent isOpen={isdropdownPart} left={-7} width={120}>
+                                                {
+                                                    partFillter.map((memberOption, memberIndex) => (
+                                                        <DropdownItem
+                                                            key={memberIndex}
+                                                            onClick={() => handlePartItemClick(memberOption)}>
+                                                            {memberOption}
+                                                        </DropdownItem>
+                                                    ))
+                                                }
+                                            </DropdownContent>
+                                        </DropdownWrapper>
                                     </TableHead2Cell>
-                                    <TableHead2Cell flex = {2}>
-                                      <CheckScoreButton onClick={() => openModal(index)}>
+                                    <TableHead2Cell flex={2}>
                                         관리
-                                      </CheckScoreButton>
-                                    </TableHead2Cell>
-                                    <Modal
-                                      isModalOpen={modals[index]}
-                                      onModalClose={() => closeModal(index)}
-                                      closeModalUpdate={() => closeModalUpdate(index)}
-                                      name={userInfo.name}
-                                      part={userInfo.part}
-                                      Num={userInfo.phone}
-                                      role={userInfo.role}
-                                      generation = {userInfo.generation}
-                                    />
-                                  </TableBody2>
-                                ))}
+                                    </TableHead2Cell >
+                                </TableHead2>
+                                {
+                                    filteredUserDataList.map((userInfo, index) => (
+                                        <TableBody2>
+                                            <TableHead2Cell flex={1}>
+                                                {index + 1}
+                                            </TableHead2Cell>
+                                            <TableHead2Cell flex={1}>
+                                                {userInfo.generation}기
+                                            </TableHead2Cell >
+                                            <TableHead2Cell flex={2}>
+                                                {userInfo.name}
+                                            </TableHead2Cell >
+                                            <TableHead2Cell flex={4}>
+                                                {userInfo.email}
+                                            </TableHead2Cell>
+                                            <TableHead2Cell >
+                                                {userInfo.phone}
+                                            </TableHead2Cell>
+                                            <TableHead2Cell flex={2}>
+                                                {/* {handleChangeRoleName(userInfo.role)} */}
+                                                {userInfo.role}
+                                            </TableHead2Cell>
+                                            <TableHead2Cell flex={2}>
+                                                {userInfo.part}
+                                            </TableHead2Cell>
+                                            <TableHead2Cell flex={2}>
+                                                <CheckScoreButton onClick={() => openModal(index)}>
+                                                    관리
+                                                </CheckScoreButton>
+                                            </TableHead2Cell>
+                                            <Modal
+                                                isModalOpen={modals[index]}
+                                                onModalClose={() => closeModal(index)}
+                                                closeModalUpdate={() => closeModalUpdate(index)}
+                                                name={userInfo.name}
+                                                part={userInfo.part}
+                                                Num={userInfo.phone}
+                                                role={userInfo.role}
+                                                generation={userInfo.generation}/>
+                                        </TableBody2>
+                                    ))
+                                }
                             </SecondDiv>
                         </BodyAddDiv>
                     )
@@ -958,121 +946,114 @@ const MemberPage = () => {
                                 </FlexDiv>
                             </FirstDiv>
                             <SecondDiv>
-                              <TableHead2>
-                                <TableHead2Cell flex = {1}>
-                                  No.
-                                </TableHead2Cell>
-                                <TableHead2Cell flex = {1}>
-                                  기수
-                                </TableHead2Cell>
-                                <TableHead2Cell flex = {2}>
-                                  이름
-                                </TableHead2Cell >
-                                <TableHead2Cell flex = {4}>
-                                  이메일
-                                </TableHead2Cell>
-                                <TableHead2Cell >
-                                  전화번호
-                                </TableHead2Cell>
-                                <TableHead2Cell flex = {2}>
-                                  구분
-                                </TableHead2Cell>
-                                <TableHead2Cell flex = {2}>
-                                  파트
-                                </TableHead2Cell>
-                              </TableHead2>
-                                {Array.from({ length: 15 }).map((_, index) => (
-                                  <TableBody2>
-                                    <TableHead2Cell flex = {1}>
-                                      {index + 1}
+                                <TableHead2>
+                                    <TableHead2Cell flex={1}>
+                                        No.
                                     </TableHead2Cell>
-                                    <TableHead2Cell flex = {1}>
-                                      <InputBox
-                                        type="text"
-                                        placeholder="입력"
-                                        value={generationInputs[index] || ""}
-                                        onChange={(e) => handleGenerationInputChange(e, index)}
-                                      />
+                                    <TableHead2Cell flex={1}>
+                                        기수
+                                    </TableHead2Cell>
+                                    <TableHead2Cell flex={2}>
+                                        이름
                                     </TableHead2Cell >
-                                    <TableHead2Cell flex = {2}>
-                                      <InputBox
-                                        type="text"
-                                        placeholder="입력"
-                                        value={nameInputs[index] || ""}
-                                        onChange={(e) => handleNameInputChange(e, index)}
-                                      />
-                                    </TableHead2Cell >
-                                    <TableHead2Cell flex = {4}>
-                                      <InputBox
-                                        type="text"
-                                        placeholder="입력"
-                                        value={emailInputs[index] || ""}
-                                        onChange={(e) => handleEmailInputChange(e, index)}
-                                      />
+                                    <TableHead2Cell flex={4}>
+                                        이메일
                                     </TableHead2Cell>
                                     <TableHead2Cell >
-                                      <InputBox
-                                        type="text"
-                                        placeholder="입력"
-                                        value={phoneInputs[index] || ""}
-                                        onChange={(e) => handlePhoneInputChange(e, index)}
-                                      />
+                                        전화번호
                                     </TableHead2Cell>
-                                    <TableHead2Cell flex = {2}>
-                                      <DropdownWrapper>
-                                        <DropdownButton
-                                          onClick={() => toggleDropdown(index)}
-                                          color={selectedMembers[index] !== null}
-                                        >
-                                          {selectedMembers[index] || "선택"}
-                                        </DropdownButton>
-                                        <DropdownContent
-                                          isOpen={isOpen[index]}
-                                          left={-7}
-                                          width={160}
-                                          top={1}
-                                        >
-                                          {" "}
-                                          {/* 인덱스에 따라 열림 상태 설정 */}
-                                          {member.map((memberOption, memberIndex) => (
-                                            <DropdownItem
-                                              key={memberIndex}
-                                              onClick={() =>
-                                                handleMemberClick(memberOption, index)
-                                              }
-                                            >
-                                              {memberOption}
-                                            </DropdownItem>
-                                          ))}
-                                        </DropdownContent>
-                                      </DropdownWrapper>
+                                    <TableHead2Cell flex={2}>
+                                        구분
                                     </TableHead2Cell>
-                                    <TableHead2Cell flex = {2}>
-                                      <DropdownWrapper1>
-                                        <DropdownButton1
-                                          onClick={() => toggleDropdownPart(index)}
-                                          color={selectedPart[index] !== null}
-                                        >
-                                          {selectedPart[index] || "선택"}
-                                        </DropdownButton1>
-                                        <DropdownContent1 isOpen={isOpenPart[index]}>
-                                          {part.map((partOption, partIndex) => (
-                                            <DropdownItem1
-                                              key={partIndex}
-                                              onClick={() => handlePartClick(partOption, index)}
-                                            >
-                                              {partOption}
-                                            </DropdownItem1>
-                                          ))}
-                                        </DropdownContent1>
-                                      </DropdownWrapper1>{" "}
+                                    <TableHead2Cell flex={2}>
+                                        파트
                                     </TableHead2Cell>
-                                  </TableBody2>
-                                ))}
+                                </TableHead2>
+                                {
+                                    Array
+                                        .from({length: 15})
+                                        .map((_, index) => (
+                                            <TableBody2>
+                                                <TableHead2Cell flex={1}>
+                                                    {index + 1}
+                                                </TableHead2Cell>
+                                                <TableHead2Cell flex={1}>
+                                                    <InputBox
+                                                        type="text"
+                                                        placeholder="입력"
+                                                        value={generationInputs[index] || ""}
+                                                        onChange={(e) => handleGenerationInputChange(e, index)}/>
+                                                </TableHead2Cell >
+                                                <TableHead2Cell flex={2}>
+                                                    <InputBox
+                                                        type="text"
+                                                        placeholder="입력"
+                                                        value={nameInputs[index] || ""}
+                                                        onChange={(e) => handleNameInputChange(e, index)}/>
+                                                </TableHead2Cell >
+                                                <TableHead2Cell flex={4}>
+                                                    <InputBox
+                                                        type="text"
+                                                        placeholder="입력"
+                                                        value={emailInputs[index] || ""}
+                                                        onChange={(e) => handleEmailInputChange(e, index)}/>
+                                                </TableHead2Cell>
+                                                <TableHead2Cell >
+                                                    <InputBox
+                                                        type="text"
+                                                        placeholder="입력"
+                                                        value={phoneInputs[index] || ""}
+                                                        onChange={(e) => handlePhoneInputChange(e, index)}/>
+                                                </TableHead2Cell>
+                                                <TableHead2Cell flex={2}>
+                                                    <DropdownWrapper>
+                                                        <DropdownButton
+                                                            onClick={() => toggleDropdown(index)}
+                                                            color={selectedMembers[index] !== null}>
+                                                            {selectedMembers[index] || "선택"}
+                                                        </DropdownButton>
+                                                        <DropdownContent isOpen={isOpen[index]} left={-7} width={160} top={1}>
+                                                            {" "}
+                                                            {/* 인덱스에 따라 열림 상태 설정 */}
+                                                            {
+                                                                member.map((memberOption, memberIndex) => (
+                                                                    <DropdownItem
+                                                                        key={memberIndex}
+                                                                        onClick={() => handleMemberClick(memberOption, index)}>
+                                                                        {memberOption}
+                                                                    </DropdownItem>
+                                                                ))
+                                                            }
+                                                        </DropdownContent>
+                                                    </DropdownWrapper>
+                                                </TableHead2Cell>
+                                                <TableHead2Cell flex={2}>
+                                                    <DropdownWrapper1>
+                                                        <DropdownButton1
+                                                            onClick={() => toggleDropdownPart(index)}
+                                                            color={selectedPart[index] !== null}>
+                                                            {selectedPart[index] || "선택"}
+                                                        </DropdownButton1>
+                                                        <DropdownContent1 isOpen={isOpenPart[index]}>
+                                                            {
+                                                                part.map((partOption, partIndex) => (
+                                                                    <DropdownItem1
+                                                                        key={partIndex}
+                                                                        onClick={() => handlePartClick(partOption, index)}>
+                                                                        {partOption}
+                                                                    </DropdownItem1>
+                                                                ))
+                                                            }
+                                                        </DropdownContent1>
+                                                    </DropdownWrapper1>{" "}
+                                                </TableHead2Cell>
+                                            </TableBody2>
+                                        ))
+                                }
                             </SecondDiv>
                         </BodyAddDiv>
                     )
-                    
+
             }
         </DDiv>
     );
@@ -1709,7 +1690,7 @@ const SecondDiv = styled.div `
   flex-direction: column;
 `;
 
-const TableRow2 = styled.div`
+const TableRow2 = styled.div `
   width : 100%;
   height : 48px;
   display: flex;
@@ -1723,7 +1704,7 @@ const TableBody2 = styled(TableRow2)`
   background-color: white;
 `;
 
-const TableHead2Cell = styled.div`
+const TableHead2Cell = styled.div `
   width: 100%;
   height : 100%;
   display: flex;
@@ -1742,7 +1723,7 @@ const TableHead2Cell = styled.div`
   border-right: 0.5px solid var(--Gray30, #a3a3a3);
 `;
 
-const InputBox = styled.input`
+const InputBox = styled.input `
   width: 100%;
   height : 90%;
   border : none;

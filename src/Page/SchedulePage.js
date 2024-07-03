@@ -16,6 +16,7 @@ import koLocale from "date-fns/locale/ko";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import style from "../Styles/calendar.module.scss";
+import { getAllSchedulerData, postScheduleData } from "../Api/ScheduleAPI";
 
 /* 
 - Firebase fireStore 스케쥴 데이터 조회
@@ -43,13 +44,14 @@ const SchedulePage = () => {
     const fetchSchedules = async () => {
       try {
         // 1. 전체 스케줄 다 가져오기 (type 상관 없이 [false / true])
-        const data = await getDocs(collection(dbService, "schedules"));
+        const data = await getAllSchedulerData();
+
         
         // 2. 가져온 데이터를 newData에 저장 (안전성을 위함)
-        const newData = data.docs.map((doc) => ({ ...doc.data() }));
+        // const newData = data.docs.map((doc) => ({ ...doc.data() }));
 
         // 3. useState 변수에 저장
-        setSchedule(newData);
+        setSchedule(data);
       } catch (error) {
         console.error("Error fetching schedules:", error);
       }
@@ -60,33 +62,37 @@ const SchedulePage = () => {
 
   // 핸들러 : 조회된 데이터 중에 스케쥴 구분 및 sort
   const getRecentSchedules = () => {
-    
-    // 날짜 순으로 정렬된 버전 
-    const sortedSchedules = [...schedules].sort(
-      (a, b) => b.dueDate - a.dueDate
-    );
+      console.log(schedules);
 
-    // 날짜 순으로 정렬된 버전을 '전체' 스케줄로 필터한 버전
-    const filteredSchedules = sortedSchedules.filter(
-      (schedule) => schedule.type === true
-    );
-    return filteredSchedules;
+      // 날짜 순으로 정렬된 버전
+      const sortedSchedules = [...schedules].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      // 날짜 순으로 정렬된 버전을 '전체' 스케줄로 필터한 버전
+      const filteredSchedules = sortedSchedules.filter(schedule => schedule.part === "전체");
+
+      return filteredSchedules;
   };
 
   // 핸들러 : 조회된 데이터 중에 과제 구분 및 sort
   const getRecenTask = () => {
-    //  날짜 순으로 정렫뢴 버전
-    const sortedSchedules = [...schedules].sort(
-      (a, b) => b.dueDate - a.dueDate
-    );
+    console.log(schedules);
 
-    // 날짜 순으로 정렬된 버전을 '과제' 스케줄로 필터한 버전
-    const filteredSchedules = sortedSchedules.filter(
-      (schedule) => schedule.type === false
-    );
-    return filteredSchedules;
+      // 날짜 순으로 정렬된 버전
+      const sortedSchedules = [...schedules].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      // 날짜 순으로 정렬된 버전을 '전체' 스케줄로 필터한 버전
+      const filteredSchedules = sortedSchedules.filter(schedule => schedule.part != "전체");
+
+      return filteredSchedules;
   };
 
+  // 날짜 형식을 'MM월 DD일'로 변환하는 함수
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = { month: '2-digit', day: '2-digit' };
+    return date.toLocaleDateString('ko-KR', options).replace('.', '월 ').replace('.', '일').replace(' ', '');
+  };
+    
   // 핸들러 : 문서 삭제 기능 (sid값을 받아서 이를 토대로 삭제 진행)
   const handleDeleteSchedule = async (documentId) => {
     const userConfirmed = window.confirm("일정을 삭제하시겠습니까?");
@@ -527,25 +533,17 @@ const SchedulePage = () => {
         window.confirm("빈칸을 확인해주세요");
       } else {
         try {
-          // 1. selectedTime 값을 Timestamp로 변환 (Firestore에 저장할 수 있는 형식으로)
-          const selectedTimeTimestamp = Timestamp.fromDate(selectedTime);
-
-          // 2. Firestore에 데이터를 추가하고, 반환된 문서의 ID를 받음
-          const docRef = await addDoc(collection(dbService, "schedules"), {
-            dueDate: selectedTimeTimestamp,
-            type: true,
-            place: inputAbout,
+          const addScheduleInfo = {
             title: inputText,
+            content: "",
             part: "전체",
-          });
-
-          if (docRef) {
-            const docRefid = doc(dbService, "schedules", docRef.id);
-            updateDoc(docRefid, {
-              sid: docRef.id,
-            });
+            date: selectedTime,
+            contentsLocation: inputAbout,
+            notice: true,
+            remaingDay: 0,
+            pastEvent: false,
           }
-
+          postScheduleData(addScheduleInfo);
           alert("일정이 추가되었습니다.");
           closeModalWidhtUppdate();
           setTimeout(() => {
@@ -568,34 +566,25 @@ const SchedulePage = () => {
 
     // 핸들러 : '과제'에 대한 일정 추가 (유효성 검사 후 실제 DB로 등록)
     const UpdateTask = async () => {
+            // 유효성 검사
       if (inputAbout === "") {
         window.confirm("빈칸을 확인해주세요");
       } else if (inputText === "") {
         window.confirm("빈칸을 확인해주세요");
-      } else if (selectedOption === null) {
-        window.confirm("파트를 선택해주세요");
       } else {
         try {
-          // selectedTime 값을 Timestamp로 변환 (Firestore에 저장할 수 있는 형식으로)
-          const selectedTimeTimestamp = Timestamp.fromDate(selectedTime);
-
-          // Firestore에 데이터를 추가하고, 반환된 문서의 ID를 받음
-          const docRef = await addDoc(collection(dbService, "schedules"), {
-            dueDate: selectedTimeTimestamp,
-            type: false,
-            place: inputAbout,
+          const addScheduleInfo = {
             title: inputText,
+            content: inputAbout,
             part: selectedOption,
-          });
-
-          if (docRef) {
-            const docRefid = doc(dbService, "schedules", docRef.id);
-            updateDoc(docRefid, {
-              sid: docRef.id,
-            });
+            date: selectedTime,
+            contentsLocation: "",
+            notice: false,
+            remaingDay: 0,
+            pastEvent: false,
           }
-
-          alert("과제 일정이 추가되었습니다.");
+          postScheduleData(addScheduleInfo);
+          alert("일정이 추가되었습니다.");
           closeModalWidhtUppdate();
           setTimeout(() => {
             window.location.reload();
@@ -840,14 +829,9 @@ const SchedulePage = () => {
                   </DelteButton>
                 </ScheduleFirstDiv>
                 <ContentText>
-                  일시 :{" "}
-                  {format(
-                    fromUnixTime(schedule.dueDate.seconds),
-                    "M월 d일 EEEE HH:mm",
-                    { locale: koLocale } // 한국어 로케일 설정
-                  )}
+                  일시 : {formatDate(schedule.date)}
                 </ContentText>
-                <ContentText>장소 : {schedule.place}</ContentText>
+                <ContentText>장소 : {schedule.contentsLocation}</ContentText>
               </ScheduleItem>
             ))}
           </ScheduleDiv>
@@ -867,7 +851,7 @@ const SchedulePage = () => {
               <ScheduleItem key={index}>
                 <ScheduleFirstDiv key={index}>
                   <FlextBoxDiv>
-                    <PartNameDiv>{getPartName(schedule.part)}</PartNameDiv>
+                    <PartNameDiv isPastEvent = {schedule.isPastEvent}>{getPartName(schedule.part)}</PartNameDiv>
                     <DateDiv>{schedule.title}</DateDiv>
                   </FlextBoxDiv>
                   <DelteButton
@@ -877,15 +861,13 @@ const SchedulePage = () => {
                     삭제
                   </DelteButton>
                 </ScheduleFirstDiv>
-                <ContentText>{schedule.description}</ContentText>
                 <ContentText>
-                  마감 :{" "}
-                  {format(
-                    fromUnixTime(schedule.dueDate.seconds),
-                    "M월 d일 EEEE HH:mm",
-                    { locale: koLocale } // 한국어 로케일 설정
-                  )}
+                  설명 : {schedule.content || "내용 없음"}
                 </ContentText>
+                <ContentText>
+                  마감 : {formatDate(schedule.date)}
+                </ContentText>
+                
               </ScheduleItem>
             ))}
           </ScheduleDiv>
@@ -1004,7 +986,7 @@ const ScheduleFirstDiv = styled.div`
 const PartNameDiv = styled.div`
   border-radius: 4px;
   border: 1px solid var(--black-background, #1a1a1a);
-  background: var(--Gray10, #e4e4e4);
+  background: ${props => props.isPastEvent ? 'pink' : 'var(--Gray30, #b0b0b0)'};
   width: 60px;
   height: 32px;
   display: flex;
