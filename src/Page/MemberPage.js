@@ -97,7 +97,7 @@ const MemberPage = () => {
     const memberFillter = ["ALL", "ROLE_YB", "ROLE_OB", "ROLE_ADMIN"];
 
     // const part = ["기획파트", "디자인파트", "웹파트", "iOS파트", "서버파트"];
-    const part = ["기획파트", "디자인파트", "웹파트", "iOS", "서버파트"];
+    const part = ["기획파트", "디자인파트", "웹파트", "iOS파트", "서버파트"];
     const partFillter = [
         "전체",
         "기획파트",
@@ -536,7 +536,7 @@ const MemberPage = () => {
             }
         }
 
-        const PartOption = ["서버파트", "웹파트", "iOS", "디자인파트", "기획파트"];
+        const PartOption = ["서버파트", "웹파트", "iOS파트", "디자인파트", "기획파트"];
 
         const RoleOption = ["ROLE_YB", "ROLE_OB", "ROLE_ADMIN"];
 
