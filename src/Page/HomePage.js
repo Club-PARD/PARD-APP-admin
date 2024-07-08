@@ -214,7 +214,7 @@ const HomePage = () => {
               </>
             ) : (
               // Loding After 화면
-              <>xw
+              <>
                 {userRankings.map((user, index) => (
                   <>
                     <RankingNumDiv key={user.uid}>
