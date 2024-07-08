@@ -11,6 +11,7 @@ import {
 import {dbService} from "../fbase";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import React, {useEffect, useState} from "react";
+import { getAllAttendanceData } from "../Api/Attendence";
 
 /*
 - Firebase fireStore 스케쥴 데이터 조회
@@ -69,39 +70,46 @@ const CheckPage = () => {
             }
         };
 
-        // FIREBASE CODE
-        // Firebase fireStore 유저 데이터 조회
-        const fetchData = async () => {
-            // 1. 유저 정보 전체 데이터 가져오기 user이라는 이름의 collection을 참조
-            const data = await getDocs(collection(dbService, "users"));
+        // // FIREBASE CODE
+        // // Firebase fireStore 유저 데이터 조회
+        // const fetchData = async () => {
+        //     // 1. 유저 정보 전체 데이터 가져오기 user이라는 이름의 collection을 참조
+        //     const data = await getDocs(collection(dbService, "users"));
 
-            // 기존의 유저 정보 전체 데이터 복사본 만들기
-            const newData = data
-                .docs
-                .map((doc) => ({
-                    ...doc.data()
-                }));
+        //     // 기존의 유저 정보 전체 데이터 복사본 만들기
+        //     const newData = data
+        //         .docs
+        //         .map((doc) => ({
+        //             ...doc.data()
+        //         }));
 
-            // key값과 values값을 저장할 배열 선언
-            const keys = [];
-            const values = [];
+        //     // key값과 values값을 저장할 배열 선언
+        //     const keys = [];
+        //     const values = [];
 
-            // 복사한 유저 정보 데이터 수정
-            newData.forEach((item) => {
-                const attend = item.attend || {};
-                const itemKeys = Object.keys(attend);
-                const itemValues = Object.values(attend);
-                keys.push(itemKeys);
-                values.push(itemValues);
-            });
-            const tempUserData = newData.filter((userScore) => userScore.member !== "운영진" && userScore.member !== "잔잔파도");
-            // 전체 유저 정보 저장
-            setUserDatas(tempUserData);
-            // console.log("userDatas", userDatas);
-            // console.log(userDatas);
-        };
+        //     // 복사한 유저 정보 데이터 수정
+        //     newData.forEach((item) => {
+        //         const attend = item.attend || {};
+        //         const itemKeys = Object.keys(attend);
+        //         const itemValues = Object.values(attend);
+        //         keys.push(itemKeys);
+        //         values.push(itemValues);
+        //     });
+        //     const tempUserData = newData.filter((userScore) => userScore.member !== "운영진" && userScore.member !== "잔잔파도");
+        //     // 전체 유저 정보 저장
+        //     setUserDatas(tempUserData);
+        //     // console.log("userDatas", userDatas);
+        //     // console.log(userDatas);
+        // };
 
-        fetchData();
+        // fetchData();
+
+        
+        const fetchAllAttendanceData = async () => {
+            const result = await getAllAttendanceData('3');
+            console.log(result);
+        }
+        fetchAllAttendanceData()
         fetchSchedules();
     }, []);
 
