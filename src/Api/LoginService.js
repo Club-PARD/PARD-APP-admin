@@ -29,7 +29,9 @@ export const handleGoogleLogin = async (navigate) => {
             localStorage.setItem("userName", user.displayName);
             navigate("/");
             window.location.reload();
-        } 
+        } else {
+            localStorage.removeItem();
+        }
 
     } catch (err) {
         console.log(err);
