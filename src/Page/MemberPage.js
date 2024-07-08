@@ -778,6 +778,20 @@ const MemberPage = () => {
         }
     }
 
+    const formatPhoneNumber = (userInfo) => {
+        const phoneNumber = userInfo.phoneNumber;
+
+        // 전화번호가 11글자인지 확인
+        if (phoneNumber.length === 11) {
+            // 포맷 변경
+            const formattedNumber = phoneNumber.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+            return formattedNumber;
+        } else {
+            // 예외처리: 전화번호가 11글자가 아닌 경우
+            throw new Error('전화번호는 11글자여야 합니다.');
+        }
+    }
+
     // Main 화면 코드
     return (
         <DDiv>
@@ -897,7 +911,7 @@ const MemberPage = () => {
                                                 {userInfo.userEmail}
                                             </TableHead2Cell>
                                             <TableHead2Cell >
-                                                {userInfo.phoneNumber}
+                                                {formatPhoneNumber(userInfo)}
                                             </TableHead2Cell>
                                             <TableHead2Cell flex={2}>
                                                 {/* {handleChangeRoleName(userInfo.role)} */}
