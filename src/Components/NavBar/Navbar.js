@@ -23,7 +23,8 @@ function NavBar() {
         <HRLight />
         <li>
           <DisplayDiv>
-            <DisplayTextDiv bottom={0} active={pathname === "/"}>
+            {/* <DisplayTextDiv bottom={0} active={pathname === "/"}> */}
+                        <DisplayTextDiv bottom={0} active={pathname === "/" ? "true" : undefined}>
               {pathname === "/" ? (
                 <>
                   <Icon
@@ -43,7 +44,8 @@ function NavBar() {
                   />
                 </>
               )}
-              <MenuLink to="/" active={pathname === "/as"}>
+              {/* <MenuLink to="/" active={pathname === "/as"}> */}
+            <MenuLink to="/" active={pathname === "/" ? "true" : undefined}>
                 홈
               </MenuLink>
             </DisplayTextDiv>
@@ -51,7 +53,8 @@ function NavBar() {
         </li>
         <li>
           <DisplayDiv>
-            <DisplayTextDiv bottom={0} active={pathname.startsWith("/Check")}>
+            {/* <DisplayTextDiv bottom={0} active={pathname.startsWith("/Check")}> */}
+            <DisplayTextDiv bottom={0} active={pathname.startsWith("/Check") ? "true" : undefined}>
               {pathname.startsWith("/Check") ? (
                 <>
                   <Icon
@@ -71,7 +74,8 @@ function NavBar() {
                   />
                 </>
               )}
-              <MenuLink to="/Check" active={pathname.startsWith("/asd")}>
+              {/* <MenuLink to="/Check" active={pathname.startsWith("/asd")}> */}
+              <MenuLink to="/Check" active={pathname.startsWith("/Check") ? "true" : undefined}>
                 출결 관리
               </MenuLink>
             </DisplayTextDiv>
@@ -79,10 +83,8 @@ function NavBar() {
         </li>
         <li>
           <DisplayDiv>
-            <DisplayTextDiv
-              bottom={0}
-              active={pathname.startsWith("/Schedule")}
-            >
+            {/* <DisplayTextDiv bottom={0} active={pathname.startsWith("/Schedule")}> */}
+            <DisplayTextDiv bottom={0} active={pathname.startsWith("/Schedule") ? "true" : undefined}>
               {pathname.startsWith("/re") ? (
                 <>
                   <Icon
@@ -102,10 +104,8 @@ function NavBar() {
                   />
                 </>
               )}
-              <MenuLink
-                to="/Schedule"
-                active={pathname.startsWith("/Scheduasdle")}
-              >
+              {/* <MenuLink to="/Schedule" active={pathname.startsWith("/Scheduasdle")}> */}
+              <MenuLink to="/Schedule" active={pathname.startsWith("/Schedule") ? "true" : undefined}>
                 일정 관리
               </MenuLink>
             </DisplayTextDiv>
@@ -113,7 +113,8 @@ function NavBar() {
         </li>
         <li>
           <DisplayDiv>
-            <DisplayTextDiv bottom={0} active={pathname.startsWith("/Score")}>
+            {/* <DisplayTextDiv bottom={0} active={pathname.startsWith("/Score")}> */}
+            <DisplayTextDiv bottom={0} active={pathname.startsWith("/Score") ? "true" : undefined}>
               {pathname.startsWith("/shopManager") ? (
                 <>
                   <Icon
@@ -133,10 +134,8 @@ function NavBar() {
                   />
                 </>
               )}
-              <MenuLink
-                to="/Score"
-                active={pathname.startsWith("/shopManager")}
-              >
+              {/* <MenuLink to="/Score" active={pathname.startsWith("/shopManager")}> */}
+              <MenuLink to="/Score" active={pathname.startsWith("/Score") ? "true" : undefined}>
                 점수 관리
               </MenuLink>
             </DisplayTextDiv>
@@ -144,7 +143,8 @@ function NavBar() {
         </li>
         <li>
           <DisplayDiv>
-            <DisplayTextDiv bottom={0} active={pathname.startsWith("/Member")}>
+            {/* <DisplayTextDiv bottom={0} active={pathname.startsWith("/Member")}> */}
+            <DisplayTextDiv bottom={0} active={pathname.startsWith("/Member") ? "true" : undefined}>
               {pathname.startsWith("/Member") ? (
                 <>
                   <Icon
@@ -164,7 +164,8 @@ function NavBar() {
                   />
                 </>
               )}
-              <MenuLink to="/Member" active={pathname.startsWith("/ㅁㄴㅇ")}>
+              {/* <MenuLink to="/Member" active={pathname.startsWith("/ㅁㄴㅇ")}> */}
+              <MenuLink to="/Member" active={pathname.startsWith("/Member") ? "true" : undefined}>
                 사용자 관리
               </MenuLink>
             </DisplayTextDiv>
