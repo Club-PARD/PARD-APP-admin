@@ -1,9 +1,9 @@
 import axios from "axios";
 
-export const getAllAttendanceData = async (generationId) => {
+export const getAllScoreData = async () => {
     try {
         const response = await axios.get(
-            "/v1/attendance/all/" + generationId,
+            "/v1/reason"
         );
         console.log(response.data);
         return response.data;
@@ -13,7 +13,7 @@ export const getAllAttendanceData = async (generationId) => {
     }
 };
 
-export const postAttendanceData = async (addUserInfo) => {
+export const postScoreData = async (addUserInfo) => {
     try {
         const data = addUserInfo;
         const response = await axios.post(
