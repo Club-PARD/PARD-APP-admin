@@ -6,6 +6,7 @@ import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
 import { FadeLoader } from "react-spinners";
+import { getAllSchedulerData } from "../Api/ScheduleAPI";
 
 /* 
 - Firebase fireStore 스케쥴 데이터 조회
@@ -27,9 +28,16 @@ const HomePage = () => {
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
-        const data = await getDocs(collection(dbService, "schedules"));
-        const newData = data.docs.map((doc) => ({ ...doc.data() }));
-        setSchedule(newData);
+        // 1. 전체 스케줄 다 가져오기 (type 상관 없이 [false / true])
+        const data = await getAllSchedulerData();
+
+        
+        // 2. 가져온 데이터를 newData에 저장 (안전성을 위함)
+        // const newData = data.docs.map((doc) => ({ ...doc.data() }));
+
+        // 3. useState 변수에 저장
+        setSchedule(data);
+        console.log(data);
       } catch (error) {
         console.error("Error fetching schedules:", error);
       }
@@ -102,10 +110,18 @@ const HomePage = () => {
   
   // 최근 다섯 개의 스케줄 return하는 핸들러
   const getRecentSchedules = () => {
-    const sortedSchedules = [...schedules].sort(
-      (a, b) => b.dueDate - a.dueDate
-    );
+    // const sortedSchedules = [...schedules].sort(
+    //   (a, b) => b.dueDate - a.dueDate
+    // );
+    const sortedSchedules = [...schedules].sort((a, b) => new Date(b.date) - new Date(a.date));
     return sortedSchedules.slice(0, 5);
+  };
+
+    // 날짜 형식을 'MM월 DD일'로 변환하는 함수
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = { month: '2-digit', day: '2-digit' };
+    return date.toLocaleDateString('ko-KR', options).replace('.', '월 ').replace('.', '일').replace(' ', '');
   };
 
   // 로딩 css
@@ -161,24 +177,21 @@ const HomePage = () => {
                 {/* 공지타입 : 공지 제목 */}
                 <ScheduleFirstDiv key={index}>
                   <FlextBoxDiv>
-                    <PartNameDiv>{getPartName(schedule.part)}</PartNameDiv>
+                    <PartNameDiv isPastEvent = {schedule.isPastEvent}>{getPartName(schedule.part)}</PartNameDiv>
                     <DateDiv>{schedule.title}</DateDiv>
                   </FlextBoxDiv>
                 </ScheduleFirstDiv>
 
                 {/* 일시 */}
                 <ContentText>
-                  일시 :{" "}
-                  {format(
-                    // fromUnixTime(schedule.dueDate.seconds), (정규가 한 부분)
-                    fromUnixTime(schedule.dueDate),
-                    "M월 d일 EEEE HH:mm",
-                    { locale: koLocale } // 한국어 로케일 설정  
-                  )}
+                  {schedule.notice ?  "일시 : "  : "기한 : "} {formatDate(schedule.date)}
                 </ContentText>
                 
                 {/* 장소 */}
-                <ContentText>장소 : {schedule.place}</ContentText>
+                <ContentText>
+                   {schedule.notice ?  "장소 : " + schedule.contentsLocation: "설명 : " + schedule.content} 
+                  {/* 장소 : {schedule.place} */}
+                </ContentText>
               </ScheduleItem>
             ))}
           </ScheduleDiv>
@@ -201,7 +214,7 @@ const HomePage = () => {
               </>
             ) : (
               // Loding After 화면
-              <>xw
+              <>
                 {userRankings.map((user, index) => (
                   <>
                     <RankingNumDiv key={user.uid}>
@@ -327,7 +340,7 @@ const ScheduleFirstDiv = styled.div`
 const PartNameDiv = styled.div`
   border-radius: 4px;
   border: 1px solid var(--black-background, #1a1a1a);
-  background: var(--Gray10, #e4e4e4);
+  background: ${props => props.isPastEvent ? 'pink' : 'var(--Gray30, #b0b0b0)'};
   width: 60px;
   height: 32px;
   display: flex;

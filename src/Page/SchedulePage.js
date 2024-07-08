@@ -16,6 +16,7 @@ import koLocale from "date-fns/locale/ko";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import style from "../Styles/calendar.module.scss";
+import { deleteScheduleData, getAllSchedulerData, postScheduleData } from "../Api/ScheduleAPI";
 
 /* 
 - Firebase fireStore 스케쥴 데이터 조회
@@ -43,13 +44,14 @@ const SchedulePage = () => {
     const fetchSchedules = async () => {
       try {
         // 1. 전체 스케줄 다 가져오기 (type 상관 없이 [false / true])
-        const data = await getDocs(collection(dbService, "schedules"));
+        const data = await getAllSchedulerData();
+
         
         // 2. 가져온 데이터를 newData에 저장 (안전성을 위함)
-        const newData = data.docs.map((doc) => ({ ...doc.data() }));
+        // const newData = data.docs.map((doc) => ({ ...doc.data() }));
 
         // 3. useState 변수에 저장
-        setSchedule(newData);
+        setSchedule(data);
       } catch (error) {
         console.error("Error fetching schedules:", error);
       }
@@ -60,48 +62,47 @@ const SchedulePage = () => {
 
   // 핸들러 : 조회된 데이터 중에 스케쥴 구분 및 sort
   const getRecentSchedules = () => {
-    
-    // 날짜 순으로 정렬된 버전 
-    const sortedSchedules = [...schedules].sort(
-      (a, b) => b.dueDate - a.dueDate
-    );
+      // console.log(schedules);
 
-    // 날짜 순으로 정렬된 버전을 '전체' 스케줄로 필터한 버전
-    const filteredSchedules = sortedSchedules.filter(
-      (schedule) => schedule.type === true
-    );
-    return filteredSchedules;
+      // 날짜 순으로 정렬된 버전
+      const sortedSchedules = [...schedules].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      // 날짜 순으로 정렬된 버전을 '전체' 스케줄로 필터한 버전
+      const filteredSchedules = sortedSchedules.filter(schedule => schedule.part === "전체");
+
+      return filteredSchedules;
   };
 
   // 핸들러 : 조회된 데이터 중에 과제 구분 및 sort
   const getRecenTask = () => {
-    //  날짜 순으로 정렫뢴 버전
-    const sortedSchedules = [...schedules].sort(
-      (a, b) => b.dueDate - a.dueDate
-    );
+    // console.log(schedules);
 
-    // 날짜 순으로 정렬된 버전을 '과제' 스케줄로 필터한 버전
-    const filteredSchedules = sortedSchedules.filter(
-      (schedule) => schedule.type === false
-    );
-    return filteredSchedules;
+      // 날짜 순으로 정렬된 버전
+      const sortedSchedules = [...schedules].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      // 날짜 순으로 정렬된 버전을 '전체' 스케줄로 필터한 버전
+      const filteredSchedules = sortedSchedules.filter(schedule => schedule.part != "전체");
+
+      return filteredSchedules;
   };
 
+  // 날짜 형식을 'MM월 DD일'로 변환하는 함수
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = { month: '2-digit', day: '2-digit' };
+    return date.toLocaleDateString('ko-KR', options).replace('.', '월 ').replace('.', '일').replace(' ', '');
+  };
+    
   // 핸들러 : 문서 삭제 기능 (sid값을 받아서 이를 토대로 삭제 진행)
-  const handleDeleteSchedule = async (documentId) => {
+  const handleDeleteSchedule = async (scheduleId) => {
     const userConfirmed = window.confirm("일정을 삭제하시겠습니까?");
 
     if (userConfirmed) {
       try {
-
-        // 1. sid 값을 참조하는 경로를 설정
-        const scheduleRef = doc(dbService, "schedules", documentId);
-
-        // 2. 참조된 경로를 바탕으로 문서 삭제 진행
-        await deleteDoc(scheduleRef);
+        deleteScheduleData(scheduleId);
 
         // 3. 삭제가 성공하면 화면을 새로고침
-        window.location.reload();
+        // window.location.reload();
         alert("일정이 삭제되었습니다.");
       } catch (error) {
         console.error("Error deleting schedule:", error);
@@ -151,7 +152,314 @@ const SchedulePage = () => {
     }
   }
 
-  // 모달 관련 Style 코드
+  // Main 화면 코드
+  return (
+    <DDiv>
+      {/* 상단 바 로그인 정보 표시  */}
+      <CommonLogSection />
+
+      {/* 페이지 정보 표시 */}
+      <TitleDiv>
+        <HomeTitle>일정 관리</HomeTitle>
+        <BarText />
+        <SubTitle>중요한 일정을 공지하고 알림을 발송하세요.</SubTitle>
+        <AlertText>* 일정 전날 오후 9시에 알림이 발송됩니다.</AlertText>
+      </TitleDiv>
+
+      {/* 공식 일정과 과제 일정이 보여지는 Content */}
+      <BodyDiv>
+
+        {/* 공식 일정 */}
+        <RightDiv>
+          <FirstDiv>
+            <HomeTitle>공식 일정</HomeTitle>
+            <EditButton onClick={openModal}>
+              <EditIcon src={require("../Assets/img/ScheduleCIcon.png")} />
+              공식 일정 추가하기
+            </EditButton>
+          </FirstDiv>
+          <ScheduleDiv>
+            {getRecentSchedules().map((schedule, index) => (
+              <ScheduleItem key={index}>
+                <ScheduleFirstDiv key={index}>
+                  <FlextBoxDiv>
+                    <PartNameDiv isPastEvent = {schedule.isPastEvent}>{schedule.part}</PartNameDiv>
+                    <DateDiv>{schedule.title}</DateDiv>
+                  </FlextBoxDiv>
+                  <DelteButton
+                    onClick={() => handleDeleteSchedule(schedule.scheduleId) }
+                  >
+                    <DeleteIcon src={require("../Assets/img/DeleteIcon.png")} />
+                    삭제
+                  </DelteButton>
+                </ScheduleFirstDiv>
+                <ContentText>
+                  일시 : {formatDate(schedule.date)}
+                </ContentText>
+                <ContentText>장소 : {schedule.contentsLocation}</ContentText>
+              </ScheduleItem>
+            ))}
+          </ScheduleDiv>
+        </RightDiv>
+
+        {/* 과제 일정 */}
+        <LeftDiv>
+          <FirstDiv>
+            <HomeTitle>과제 일정</HomeTitle>
+            <EditButton onClick={openTaskModal}>
+              <EditIcon src={require("../Assets/img/ScheduleCIcon.png")} />
+              과제 일정 추가하기
+            </EditButton>
+          </FirstDiv>
+          <ScheduleDiv>
+            {getRecenTask().map((schedule, index) => (
+              <ScheduleItem key={index}>
+                <ScheduleFirstDiv key={index}>
+                  <FlextBoxDiv>
+                    <PartNameDiv isPastEvent = {schedule.isPastEvent}>{getPartName(schedule.part)}</PartNameDiv>
+                    <DateDiv>{schedule.title}</DateDiv>
+                  </FlextBoxDiv>
+                  <DelteButton
+                    onClick={() => handleDeleteSchedule(schedule.sid)}
+                  >
+                    <DeleteIcon src={require("../Assets/img/DeleteIcon.png")} />
+                    삭제
+                  </DelteButton>
+                </ScheduleFirstDiv>
+                <ContentText>
+                  설명 : {schedule.content || "내용 없음"}
+                </ContentText>
+                <ContentText>
+                  마감 : {formatDate(schedule.date)}
+                </ContentText>
+                
+              </ScheduleItem>
+            ))}
+          </ScheduleDiv>
+        </LeftDiv>
+      </BodyDiv>
+
+      {/* 추가하기 모달 Content */}
+      <Modal
+        isOpen={isModalOpen}
+        isRegisterModalOpen={isRegisterModalOpen}
+        onClose={() => closeModal()}
+        closeModalWidhtUppdate={() => closeModalWidhtUppdate()}
+      />
+    </DDiv>
+  );
+};
+
+export default SchedulePage;
+
+const DDiv = styled.div`
+  background: #fff;
+  margin: 0 auto;
+  height: 100%;
+  overflow-y: hidden;
+`;
+
+const TitleDiv = styled.div`
+  display: flex;
+  margin-top: 25px;
+  margin-left: 80px;
+  align-items: center;
+`;
+
+const HomeTitle = styled.div`
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 32px;
+`;
+
+const SubTitle = styled.div`
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  margin-top: 1px;
+`;
+
+const BarText = styled.div`
+  width: 2px;
+  height: 24px;
+  margin-top: 1px;
+  margin-left: 12px;
+  margin-right: 14px;
+  background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
+`;
+
+const AlertText = styled.div`
+  color: var(--Gray30, #a3a3a3);
+  font-family: "Pretendard";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 18px;
+  margin-left: 8px;
+`;
+
+const BodyDiv = styled.div`
+  display: flex;
+  margin-top: 83px;
+  margin-left: 80px;
+  height: 744px;
+`;
+
+const RightDiv = styled.div`
+  width: 602px;
+  height: 744px;
+  margin-right: 40px;
+`;
+
+const LeftDiv = styled.div`
+  height: 744px;
+  width: 602px;
+`;
+
+const ScheduleDiv = styled.div`
+  margin-top: 16px;
+  height: 696px;
+  overflow: scroll;
+`;
+
+const ScheduleItem = styled.div`
+  width: 600px;
+  height: 115px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 22px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ScheduleFirstDiv = styled.div`
+  margin-top: 24px;
+  width: 100%;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const PartNameDiv = styled.div`
+  border-radius: 4px;
+  border: 1px solid var(--black-background, #1a1a1a);
+  background: ${props => props.isPastEvent ? 'pink' : 'var(--Gray30, #b0b0b0)'};
+  width: 60px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  margin-left: 24px;
+`;
+
+const DateDiv = styled.div`
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  margin-left: 12px;
+`;
+
+const FlextBoxDiv = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+`;
+
+const DelteButton = styled.button`
+  width: 70px;
+  height: 28px;
+  border-radius: 4px;
+  border: 1px solid var(--Gray30, #a3a3a3);
+  background: var(--Gray-5, #f8f8f8);
+  color: var(--Gray30, #a3a3a3);
+  font-family: "Pretendard";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24px;
+  margin-bottom: 3px;
+  cursor: pointer;
+`;
+
+const DeleteIcon = styled.img`
+  width: 18px;
+  height: 16px;
+  margin-right: 2px;
+`;
+
+const ContentText = styled.div`
+  color: var(--black-background, #1a1a1a);
+  font-family: "Pretendard";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 12px;
+  margin-left: 24px;
+  margin-top: 8px;
+`;
+
+const EditButton = styled.button`
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  border-radius: 8px;
+  border: 1px solid var(--primary-blue, #5262f5);
+  background: rgba(82, 98, 245, 0.1);
+  color: var(--primary-blue, #5262f5);
+  font-family: "Pretendard";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  padding: 12px 16px;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
+  }
+  &:active {
+    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
+  }
+`;
+
+const EditIcon = styled.img`
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+`;
+
+const FirstDiv = styled.div`
+  display: flex;
+  height: 48px;
+  width: 100%;
+  margin-bottom: 16px;
+  justify-content: space-between;
+  align-items: flex-end;
+`;
+
+// 모달 관련 Style 코드
   const ModalWrapper = styled.div`
     position: fixed;
     top: 0;
@@ -527,25 +835,17 @@ const SchedulePage = () => {
         window.confirm("빈칸을 확인해주세요");
       } else {
         try {
-          // 1. selectedTime 값을 Timestamp로 변환 (Firestore에 저장할 수 있는 형식으로)
-          const selectedTimeTimestamp = Timestamp.fromDate(selectedTime);
-
-          // 2. Firestore에 데이터를 추가하고, 반환된 문서의 ID를 받음
-          const docRef = await addDoc(collection(dbService, "schedules"), {
-            dueDate: selectedTimeTimestamp,
-            type: true,
-            place: inputAbout,
+          const addScheduleInfo = {
             title: inputText,
+            content: "",
             part: "전체",
-          });
-
-          if (docRef) {
-            const docRefid = doc(dbService, "schedules", docRef.id);
-            updateDoc(docRefid, {
-              sid: docRef.id,
-            });
+            date: selectedTime,
+            contentsLocation: inputAbout,
+            notice: true,
+            remaingDay: 0,
+            pastEvent: false,
           }
-
+          postScheduleData(addScheduleInfo);
           alert("일정이 추가되었습니다.");
           closeModalWidhtUppdate();
           setTimeout(() => {
@@ -568,34 +868,25 @@ const SchedulePage = () => {
 
     // 핸들러 : '과제'에 대한 일정 추가 (유효성 검사 후 실제 DB로 등록)
     const UpdateTask = async () => {
+            // 유효성 검사
       if (inputAbout === "") {
         window.confirm("빈칸을 확인해주세요");
       } else if (inputText === "") {
         window.confirm("빈칸을 확인해주세요");
-      } else if (selectedOption === null) {
-        window.confirm("파트를 선택해주세요");
       } else {
         try {
-          // selectedTime 값을 Timestamp로 변환 (Firestore에 저장할 수 있는 형식으로)
-          const selectedTimeTimestamp = Timestamp.fromDate(selectedTime);
-
-          // Firestore에 데이터를 추가하고, 반환된 문서의 ID를 받음
-          const docRef = await addDoc(collection(dbService, "schedules"), {
-            dueDate: selectedTimeTimestamp,
-            type: false,
-            place: inputAbout,
+          const addScheduleInfo = {
             title: inputText,
+            content: inputAbout,
             part: selectedOption,
-          });
-
-          if (docRef) {
-            const docRefid = doc(dbService, "schedules", docRef.id);
-            updateDoc(docRefid, {
-              sid: docRef.id,
-            });
+            date: selectedTime,
+            contentsLocation: "",
+            notice: false,
+            remaingDay: 0,
+            pastEvent: false,
           }
-
-          alert("과제 일정이 추가되었습니다.");
+          postScheduleData(addScheduleInfo);
+          alert("일정이 추가되었습니다.");
           closeModalWidhtUppdate();
           setTimeout(() => {
             window.location.reload();
@@ -797,317 +1088,3 @@ const SchedulePage = () => {
       </ModalWrapper>
     );
   };
-
-  // Main 화면 코드
-  return (
-    <DDiv>
-      {/* 상단 바 로그인 정보 표시  */}
-      <CommonLogSection />
-
-      {/* 페이지 정보 표시 */}
-      <TitleDiv>
-        <HomeTitle>일정 관리</HomeTitle>
-        <BarText />
-        <SubTitle>중요한 일정을 공지하고 알림을 발송하세요.</SubTitle>
-        <AlertText>* 일정 전날 오후 9시에 알림이 발송됩니다.</AlertText>
-      </TitleDiv>
-
-      {/* 공식 일정과 과제 일정이 보여지는 Content */}
-      <BodyDiv>
-
-        {/* 공식 일정 */}
-        <RightDiv>
-          <FirstDiv>
-            <HomeTitle>공식 일정</HomeTitle>
-            <EditButton onClick={openModal}>
-              <EditIcon src={require("../Assets/img/ScheduleCIcon.png")} />
-              공식 일정 추가하기
-            </EditButton>
-          </FirstDiv>
-          <ScheduleDiv>
-            {getRecentSchedules().map((schedule, index) => (
-              <ScheduleItem key={index}>
-                <ScheduleFirstDiv key={index}>
-                  <FlextBoxDiv>
-                    <PartNameDiv>{schedule.part}</PartNameDiv>
-                    <DateDiv>{schedule.title}</DateDiv>
-                  </FlextBoxDiv>
-                  <DelteButton
-                    onClick={() => handleDeleteSchedule(schedule.sid)}
-                  >
-                    <DeleteIcon src={require("../Assets/img/DeleteIcon.png")} />
-                    삭제
-                  </DelteButton>
-                </ScheduleFirstDiv>
-                <ContentText>
-                  일시 :{" "}
-                  {format(
-                    fromUnixTime(schedule.dueDate.seconds),
-                    "M월 d일 EEEE HH:mm",
-                    { locale: koLocale } // 한국어 로케일 설정
-                  )}
-                </ContentText>
-                <ContentText>장소 : {schedule.place}</ContentText>
-              </ScheduleItem>
-            ))}
-          </ScheduleDiv>
-        </RightDiv>
-
-        {/* 과제 일정 */}
-        <LeftDiv>
-          <FirstDiv>
-            <HomeTitle>과제 일정</HomeTitle>
-            <EditButton onClick={openTaskModal}>
-              <EditIcon src={require("../Assets/img/ScheduleCIcon.png")} />
-              과제 일정 추가하기
-            </EditButton>
-          </FirstDiv>
-          <ScheduleDiv>
-            {getRecenTask().map((schedule, index) => (
-              <ScheduleItem key={index}>
-                <ScheduleFirstDiv key={index}>
-                  <FlextBoxDiv>
-                    <PartNameDiv>{getPartName(schedule.part)}</PartNameDiv>
-                    <DateDiv>{schedule.title}</DateDiv>
-                  </FlextBoxDiv>
-                  <DelteButton
-                    onClick={() => handleDeleteSchedule(schedule.sid)}
-                  >
-                    <DeleteIcon src={require("../Assets/img/DeleteIcon.png")} />
-                    삭제
-                  </DelteButton>
-                </ScheduleFirstDiv>
-                <ContentText>{schedule.description}</ContentText>
-                <ContentText>
-                  마감 :{" "}
-                  {format(
-                    fromUnixTime(schedule.dueDate.seconds),
-                    "M월 d일 EEEE HH:mm",
-                    { locale: koLocale } // 한국어 로케일 설정
-                  )}
-                </ContentText>
-              </ScheduleItem>
-            ))}
-          </ScheduleDiv>
-        </LeftDiv>
-      </BodyDiv>
-
-      {/* 추가하기 모달 Content */}
-      <Modal
-        isOpen={isModalOpen}
-        isRegisterModalOpen={isRegisterModalOpen}
-        onClose={() => closeModal()}
-        closeModalWidhtUppdate={() => closeModalWidhtUppdate()}
-      />
-    </DDiv>
-  );
-};
-
-export default SchedulePage;
-
-const DDiv = styled.div`
-  background: #fff;
-  margin: 0 auto;
-  height: 100%;
-  overflow-y: hidden;
-`;
-
-const TitleDiv = styled.div`
-  display: flex;
-  margin-top: 25px;
-  margin-left: 80px;
-  align-items: center;
-`;
-
-const HomeTitle = styled.div`
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 32px;
-`;
-
-const SubTitle = styled.div`
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 24px;
-  margin-top: 1px;
-`;
-
-const BarText = styled.div`
-  width: 2px;
-  height: 24px;
-  margin-top: 1px;
-  margin-left: 12px;
-  margin-right: 14px;
-  background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
-`;
-
-const AlertText = styled.div`
-  color: var(--Gray30, #a3a3a3);
-  font-family: "Pretendard";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 18px;
-  margin-left: 8px;
-`;
-
-const BodyDiv = styled.div`
-  display: flex;
-  margin-top: 83px;
-  margin-left: 80px;
-  height: 744px;
-`;
-
-const RightDiv = styled.div`
-  width: 602px;
-  height: 744px;
-  margin-right: 40px;
-`;
-
-const LeftDiv = styled.div`
-  height: 744px;
-  width: 602px;
-`;
-
-const ScheduleDiv = styled.div`
-  margin-top: 16px;
-  height: 696px;
-  overflow: scroll;
-`;
-
-const ScheduleItem = styled.div`
-  width: 600px;
-  height: 115px;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  margin-bottom: 22px;
-  border-radius: 4px;
-  display: flex;
-  flex-direction: column;
-`;
-
-const ScheduleFirstDiv = styled.div`
-  margin-top: 24px;
-  width: 100%;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const PartNameDiv = styled.div`
-  border-radius: 4px;
-  border: 1px solid var(--black-background, #1a1a1a);
-  background: var(--Gray10, #e4e4e4);
-  width: 60px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
-  margin-left: 24px;
-`;
-
-const DateDiv = styled.div`
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  margin-left: 12px;
-`;
-
-const FlextBoxDiv = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 8px;
-`;
-
-const DelteButton = styled.button`
-  width: 70px;
-  height: 28px;
-  border-radius: 4px;
-  border: 1px solid var(--Gray30, #a3a3a3);
-  background: var(--Gray-5, #f8f8f8);
-  color: var(--Gray30, #a3a3a3);
-  font-family: "Pretendard";
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 24px;
-  margin-bottom: 3px;
-  cursor: pointer;
-`;
-
-const DeleteIcon = styled.img`
-  width: 18px;
-  height: 16px;
-  margin-right: 2px;
-`;
-
-const ContentText = styled.div`
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 12px;
-  margin-left: 24px;
-  margin-top: 8px;
-`;
-
-const EditButton = styled.button`
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  border-radius: 8px;
-  border: 1px solid var(--primary-blue, #5262f5);
-  background: rgba(82, 98, 245, 0.1);
-  color: var(--primary-blue, #5262f5);
-  font-family: "Pretendard";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  padding: 12px 16px;
-  cursor: pointer;
-
-  &:hover {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-  }
-  &:active {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-  }
-`;
-
-const EditIcon = styled.img`
-  width: 24px;
-  height: 24px;
-  margin-right: 8px;
-`;
-
-const FirstDiv = styled.div`
-  display: flex;
-  height: 48px;
-  width: 100%;
-  margin-bottom: 16px;
-  justify-content: space-between;
-  align-items: flex-end;
-`;
