@@ -897,7 +897,7 @@ const MemberPage = () => {
                                                 {userInfo.email}
                                             </TableHead2Cell>
                                             <TableHead2Cell >
-                                                {userInfo.phone}
+                                                {userInfo.phoneNumber}
                                             </TableHead2Cell>
                                             <TableHead2Cell flex={2}>
                                                 {/* {handleChangeRoleName(userInfo.role)} */}
@@ -1601,8 +1601,6 @@ const DeleteConfirmModal = ({closeModal, uid}) => {
     const handleDeleteUser = async () => {
         // delete the user document in Firestore
         try {
-            const userDocRefUp = doc(dbService, "users", uid);
-            await deleteDoc(userDocRefUp);
 
             alert("사용자가 삭제되었습니다.");
             window
