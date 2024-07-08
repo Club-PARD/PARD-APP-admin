@@ -6,7 +6,7 @@ export const getAllSchedulerData = async () => {
             //  "https://we-pard.store/v1/users/login",
             "/v1/schedule",
         );
-        console.log(response);
+        // console.log(response);
         return response.data;
     } catch (error) {
         console.log("get error");
@@ -32,10 +32,22 @@ export const postScheduleData = async (addScheduleInfo) => {
             //  "https://we-pard.store/v1/users/login",
             "/v1/schedule", data
         );
-        console.log(response);
+        // console.log(response);
         return response.data;
     } catch (error) {
         console.log("get error");
         throw error;
+    }
+};
+
+export const deleteScheduleData = async (scheduleId) => {
+    try {
+        console.log("delete id : " + scheduleId);
+        const response = await axios.delete(`/v1/schedule/11`);
+        console.log(response);
+        return response.data;
+    } catch (error) {
+        console.log("delete schedule error", error);
+        return error;
     }
 };
