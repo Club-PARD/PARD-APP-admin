@@ -11,7 +11,7 @@ import {
 import {dbService} from "../fbase";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import React, {useEffect, useState} from "react";
-import { getAllAttendanceData } from "../Api/Attendence";
+import { getAllAttendanceData } from "../Api/AttendenceAPI";
 
 /*
 - Firebase fireStore 스케쥴 데이터 조회
@@ -26,49 +26,80 @@ import { getAllAttendanceData } from "../Api/Attendence";
 */
 
 const CheckPage = () => {
+    // const [userDatas, setUserDatas] = useState([]);
     const [userDatas, setUserDatas] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState(null);
     const [addable, setAddable] = useState(true);
     const [scheduleKeys, setScheduleKeys] = useState([]); // schedules의 sid 값들을 저장할 상태
+    
+    const userDataMock = [
+        {
+            name: "김광일",
+            part : "웹파트",
+            attendances: [
+                {
+                    status: "지각",
+                    seminar: "OT"
+                },
+                {
+                    status: "지각",
+                    seminar : "1차 세미나"
+                }
+            ]
+        },{
+            name: "천주현",
+            part : "서버파트",
+            attendances: [
+                {
+                    status: "출석",
+                    seminar: "OT"
+                },
+                {
+                    status: "결석",
+                    seminar : "1차 세미나"
+                }
+            ]
+        }
+    ];
 
     useEffect(() => {
         // FIREBASE CODE
         // Firebase fireStore 스케쥴 데이터 조회
-        const fetchSchedules = async () => {
-            try {
-                // 1. 스케줄 전체 데이터 가져오기 schedules라는 이름의 collection을 참조
-                const schedulesRef = collection(dbService, "schedules");
+        // const fetchSchedules = async () => {
+        //     try {
+        //         // 1. 스케줄 전체 데이터 가져오기 schedules라는 이름의 collection을 참조
+        //         const schedulesRef = collection(dbService, "schedules");
 
-                // 전체 스케줄 다 가져오기
-                const querySnapshot = await getDocs(
-                    query(schedulesRef, where("type", "==", true))
-                );
+        //         // 전체 스케줄 다 가져오기
+        //         const querySnapshot = await getDocs(
+        //             query(schedulesRef, where("type", "==", true))
+        //         );
 
-                // 2. 조회된 데이터 중 날짜로 sort 및 sid 저장 정렬된 날짜를 저장할 배열 선언
-                const scheduleIds = [];
+        //         // 2. 조회된 데이터 중 날짜로 sort 및 sid 저장 정렬된 날짜를 저장할 배열 선언
+        //         const scheduleIds = [];
 
-                // schedule의 id를 저장
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    scheduleIds.push({
-                        ...data,
-                        dueDate: data
-                            .dueDate
-                            .toDate()
-                    });
-                });
+        //         // schedule의 id를 저장
+        //         querySnapshot.forEach((doc) => {
+        //             const data = doc.data();
+        //             scheduleIds.push({
+        //                 ...data,
+        //                 dueDate: data
+        //                     .dueDate
+        //                     .toDate()
+        //             });
+        //         });
 
-                // 정렬하여 저장
-                scheduleIds.sort((a, b) => a.dueDate - b.dueDate);
-                setScheduleKeys(scheduleIds);
-                // console.log("scheduleKeys", scheduleKeys);
+        //         // 정렬하여 저장
+        //         scheduleIds.sort((a, b) => a.dueDate - b.dueDate);
+        //         setScheduleKeys(scheduleIds);
+        //         // console.log("scheduleKeys", scheduleKeys);
 
-                // console.log("sid : ", scheduleIds);
-            } catch (error) {
-                console.error("Error fetching schedules:", error);
-            }
-        };
+        //         // console.log("sid : ", scheduleIds);
+        //     } catch (error) {
+        //         console.error("Error fetching schedules:", error);
+        //     }
+        // };
 
         // // FIREBASE CODE
         // // Firebase fireStore 유저 데이터 조회
@@ -103,16 +134,18 @@ const CheckPage = () => {
         // };
 
         // fetchData();
+        // fetchSchedules();
 
+        // const fetchAllAttendanceData = async () => {
+        //     const result = await getAllAttendanceData('3');
+        //     console.log(result);
+        // }
         
-        const fetchAllAttendanceData = async () => {
-            const result = await getAllAttendanceData('3');
-            console.log(result);
-        }
-        fetchAllAttendanceData()
-        fetchSchedules();
-    }, []);
+        // fetchAllAttendanceData()
 
+        setUserDatas(userDataMock);
+    }, []);
+    
     // 핸들러 : 출석 정보 업데이트
     const updateFirestore = async () => {
         try {
@@ -152,7 +185,8 @@ const CheckPage = () => {
     const handleEditButtonClick = () => {
         const confirmSave = window.confirm("변경 사항을 저장하시겠습니까?");
         if (confirmSave) {
-            updateFirestore();
+            // updateFirestore();
+            setAddable(true);
         }
     };
 
@@ -196,18 +230,18 @@ const CheckPage = () => {
 
 
     // 변수 : firestore에서 가져온 user 콜렉션 중 'name' 요소가 있는 데이터들 중에서 filter해서 오름차순으로 이름 정렬한 배열을 갖는 배열
-    const sortedUserScores = userDatas
-        .filter((user) => user.name) // name 속성이 정의된 요소만 필터링
-        .sort((a, b) => a.name.localeCompare(b.name));
+    // const sortedUserScores = userDatas
+    //     .filter((user) => user.name) // name 속성이 정의된 요소만 필터링
+    //     .sort((a, b) => a.name.localeCompare(b.name));
 
     // 변수 : selectedOption에 맞춰 유저 점수를 필터해서 보여주는 부분 (운영진과 잔잔파도가 아닌 경우! (현재 활동중인 파디 + 거친파도))
-    const filteredUserScores = selectedOption
-        ? sortedUserScores.filter(
-            (userScore) => userScore.part === selectedOption && userScore.member !== "운영진" && userScore.member !== "잔잔파도"
-        )
-        : sortedUserScores.filter(
-            (userScore) => userScore.member !== "운영진" && userScore.member !== "잔잔파도"
-        );
+    // const filteredUserScores = selectedOption
+    //     ? userDataMock.filter(
+    //         (userScore) => userScore.part === selectedOption && userScore.member !== "운영진" && userScore.member !== "잔잔파도"
+    //     )
+    //     : userDataMock.filter(
+    //         (userScore) => userScore.member !== "운영진" && userScore.member !== "잔잔파도"
+    //     );
 
     
     
@@ -220,22 +254,22 @@ const CheckPage = () => {
         // attendInfo를 List로 변경
         updatedUserDatas[index] = {
             ...updatedUserDatas[index],
-            attendInfo: [...(updatedUserDatas[index].attendInfo || [])]
+            attendances: [...(updatedUserDatas[index].attendances || [])]
         };
 
         // attendInfo 내 해당 인덱스에 새로운 출석 데이터 할당 
-        updatedUserDatas[index].attendInfo[idx] = newData;
+        updatedUserDatas[index].attendances[idx].status = newData;
         
 
 
-        // 로컬 변수 : 변경된 user 정보에서의 attend 정보만 저장하는 배열 선언
-        const updatedAttend = {
-            ...updatedUserDatas[index].attend
-        };
+        // // 로컬 변수 : 변경된 user 정보에서의 attend 정보만 저장하는 배열 선언
+        // const updatedAttend = {
+        //     ...updatedUserDatas[index].attend
+        // };
         
-        // 
-        updatedAttend[scheduleKeys[idx].sid] = newData; // scheduleKeys를 사용하여 업데이트
-        updatedUserDatas[index].attend = updatedAttend;
+        // // 
+        // updatedAttend[scheduleKeys[idx].sid] = newData; // scheduleKeys를 사용하여 업데이트
+        // updatedUserDatas[index].attend = updatedAttend;
         // console.log("읽어온 sid :", scheduleKeys);
         // console.log(updatedAttend);
         // console.log(updatedUserDatas[index])
@@ -342,55 +376,52 @@ const CheckPage = () => {
         border-radius: 4px;
     `;
 
-    const CustomTableCell = ({ value, idx, onUpdate }) => {
-        // state 변수
+    const CustomTableCell = ({ value, onUpdate, addable }) => {
         const [showButtons, setShowButtons] = useState(false);
 
-        // 핸들러 : 토클을 선택시 true <-> false로 변경해주는 핸들러
         const toggleButtons = () => {
-            setShowButtons(!showButtons);
+            if(addable == false)
+                setShowButtons(!showButtons);
         };
 
-        // 핸들러 : 보여질 출석 상태를 선택한 값으로 변경해주는 핸들러
         const updateValue = (newValue) => {
             setShowButtons(false);
-            onUpdate(newValue);
+            if (onUpdate) onUpdate(newValue);
         };
 
         let backgroundColor = "";
         let color = "";
         let displayValue = "";
 
-        const sidValue = value[idx];
-
-        switch (sidValue) {
-            case "지":
+        switch (value) {
+            case "지각":
                 backgroundColor = "#FFE7D9";
                 color = "var(--primary-orange, #FF5C00)";
                 displayValue = "지각";
                 break;
-            case "출":
+            case "출석":
                 backgroundColor = "#E8F6F0";
-                color = "var(--primary-green, var(--primary-green, #64C59A))";
+                color = "var(--primary-green, #64C59A)";
                 displayValue = "출석";
                 break;
-            case "결":
-                color = "var(--error-red, #FF5A5A)";
+            case "결석":
                 backgroundColor = "#FFE6E6";
+                color = "var(--error-red, #FF5A5A)";
                 displayValue = "결석";
                 break;
             default:
-                backgroundColor = "";
-                color = "";
+                backgroundColor = "#F0F0F0";
+                color = "#A0A0A0";
                 displayValue = "  ";
         }
 
         return (
             <CustomTableCellContainer>
                 {
-                    addable
+                    !showButtons
                         ? (
                             <AttendBox
+                                onClick={toggleButtons}
                                 style={{
                                     backgroundColor,
                                     color
@@ -409,35 +440,31 @@ const CheckPage = () => {
                                     {displayValue}
                                 </AttendButton>
 
-                                {
-                                    showButtons && (
-                                        <ImageContainer>
-                                            <Image src={require("../Assets/img/CheckEditBox.png")} alt="Image Alt Text"/>
-                                            <ButtonFlexDiv>
-                                                <Button
-                                                    color={"#64C59A"}
-                                                    background={"#E8F6F0"}
-                                                    onClick={() => updateValue("출")}>
-                                                    출석
-                                                </Button>
-                                                <Button
-                                                    color={"#FF5C00"}
-                                                    background={"#FFE7D9"}
-                                                    left={8}
-                                                    right={8}
-                                                    onClick={() => updateValue("지")}>
-                                                    지각
-                                                </Button>
-                                                <Button
-                                                    color={"#FF5A5A"}
-                                                    background={"#FFE6E6"}
-                                                    onClick={() => updateValue("결")}>
-                                                    결석
-                                                </Button>
-                                            </ButtonFlexDiv>
-                                        </ImageContainer>
-                                    )
-                                }
+                                <ImageContainer>
+                                    <Image src={require("../Assets/img/CheckEditBox.png")} alt="Image Alt Text" />
+                                    <ButtonFlexDiv>
+                                        <Button
+                                            color={"#64C59A"}
+                                            background={"#E8F6F0"}
+                                            onClick={() => updateValue("출석")}>
+                                            출석
+                                        </Button>
+                                        <Button
+                                            color={"#FF5C00"}
+                                            background={"#FFE7D9"}
+                                            left={8}
+                                            right={8}
+                                            onClick={() => updateValue("지각")}>
+                                            지각
+                                        </Button>
+                                        <Button
+                                            color={"#FF5A5A"}
+                                            background={"#FFE6E6"}
+                                            onClick={() => updateValue("결석")}>
+                                            결석
+                                        </Button>
+                                    </ButtonFlexDiv>
+                                </ImageContainer>
                             </div>
                         )
                 }
@@ -487,7 +514,9 @@ const CheckPage = () => {
                 {
                     addable
                         ? (
-                            <EditButton onClick={() => setAddable(false)}>
+                            <EditButton onClick={() => {
+                                setAddable(false)
+                            }}>
                                 <EditIcon src={require("../Assets/img/EditIcon.png")}/>
                                 수정하기
                             </EditButton>
@@ -535,18 +564,34 @@ const CheckPage = () => {
                                 {/* Table - Body */}
                                 <TableBody>
                                     {
-                                        filteredUserScores.map((userData, index) => (
+                                        
+                                        // filteredUserScores.map((userData, index) => (
+                                        // userDataMock.map((userData, index) => (
+                                        //     <TableRow key={index}>
+                                        //         <TableCell color={"#2A2A2A"} width={140}>
+                                        //             {userData.name}
+                                        //             {/* { console.log(userData)} */}
+                                        //         </TableCell>
+                                        //         {
+                                        //             Array.from({
+                                        //                 length: 12
+                                        //             }, (_, idx) => (
+                                        //                 <TableCell key={idx} width={152}>
+                                        //                     <CustomTableCell value={userData.attendances} idx={idx}/>
+                                        //                 </TableCell>
+                                        //             ))
+                                        //         }
+                                        //     </TableRow>
+                                        // ))
+                                        userDatas.map((userData, index) => (
                                             <TableRow key={index}>
                                                 <TableCell color={"#2A2A2A"} width={140}>
                                                     {userData.name}
-                                                    {/* { console.log(userData)} */}
                                                 </TableCell>
                                                 {
-                                                    Array.from({
-                                                        length: 12
-                                                    }, (_, idx) => (
+                                                    Array.from({ length: 12 }, (_, idx) => (
                                                         <TableCell key={idx} width={152}>
-                                                            <CustomTableCell value={userData.attendInfo} idx={idx}/>
+                                                            <CustomTableCell value={userData.attendances[idx]?.status} />
                                                         </TableCell>
                                                     ))
                                                 }
@@ -588,7 +633,7 @@ const CheckPage = () => {
                                 {/* Table - Body */}
                                 <tbody>
                                     {
-                                        filteredUserScores.map((userData, index) => (
+                                        userDatas.map((userData, index) => (
                                             <TableRow key={index}>
                                                 <TableCell color={"#2A2A2A"} width={140}>
                                                     {userData.name}
@@ -599,7 +644,7 @@ const CheckPage = () => {
                                                     }, (_, idx) => (
                                                         <TableCell key={idx} width={152}>
                                                             <CustomTableCell
-                                                                value={userData.attendInfo}
+                                                                value={userData.attendances[idx]?.status}
                                                                 idx={idx}
                                                                 addable={addable}
                                                                 onUpdate={(newData) => updateUser(userDatas.indexOf(userData), idx, newData)}/>
