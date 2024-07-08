@@ -1,10 +1,10 @@
 import axios from "axios";
 
-export const getAllUserData = async () => {
+export const getAllUserData = async (generationId) => {
     try {
         const response = await axios.get(
             //  "https://we-pard.store/v1/users/login",
-            "/v1/users",
+            "/v1/users/"+ generationId,
         );
         console.log(response);
         return response.data;

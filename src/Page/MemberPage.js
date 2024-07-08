@@ -63,7 +63,7 @@ const MemberPage = () => {
     // FIREBASE CODE Firebase fireStore User 데이터 조회
     useEffect(() => {
         const getUsers = async () => {
-            const users = await getAllUserData();
+            const users = await getAllUserData(3);
             setUserDataList(users);
         };
         getUsers();
@@ -183,7 +183,7 @@ const MemberPage = () => {
             if (selectedMembers[index] !== null && selectedPart[index] !== null && nameInputs[index] !== "" && phoneInputs[index] !== "") {
                 const data = {
                     name: nameInputs[index],
-                    email: emailInputs[index],
+                    userEmail: emailInputs[index],
                     part: selectedPart[index],
                     generation: generationInputs[index],
                     phoneNumber: phoneInputs[index],
@@ -894,7 +894,7 @@ const MemberPage = () => {
                                                 {userInfo.name}
                                             </TableHead2Cell >
                                             <TableHead2Cell flex={4}>
-                                                {userInfo.email}
+                                                {userInfo.userEmail}
                                             </TableHead2Cell>
                                             <TableHead2Cell >
                                                 {userInfo.phoneNumber}
