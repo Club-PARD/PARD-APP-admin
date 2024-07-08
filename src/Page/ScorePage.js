@@ -6,6 +6,7 @@ import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
 import { FadeLoader } from "react-spinners";
+import { getAllScoreData } from "../Api/ScoreAPI";
 
 /* 
 - 모달 관련 코드
@@ -49,96 +50,125 @@ const ScorePage = () => {
   const [modals, setModals] = useState([]);
   const [isContentChanged, setContentChanged] = useState(false); // 컨텐츠 변경 확인 state
   const [loading, setLoading] = useState(true);
-
+  
+  const mockData = [
+    {
+      communication: 2,
+      mvp: 0,
+      name: "권채은",
+      part: "웹파트",
+      penalty: -0.5,
+      pid: "권채은uw3wM",
+      retrospection: 0,
+      study: 14,
+      total: 16
+    }, {
+      communication: 3,
+      mvp: 1,
+      name: "김현승",
+      part: "서버파트",
+      penalty: -5,
+      pid: "김현승uw3wM",
+      retrospection: 0,
+      study: 15,
+      total: 20
+    }
+  ]
   // Firebase fireStore 전체 Point 데이터 조회
   useEffect(() => {
     const fetchUserScores = async () => {
       try {
-        // 1. 'users'라는 컬렉션을 참조하는 변수 선언
-        const userQuery = query(collection(dbService, "users"));
+        // // 1. 'users'라는 컬렉션을 참조하는 변수 선언
+        // const userQuery = query(collection(dbService, "users"));
 
-        // 2. userQuery 참조를 바탕으로 전체 유저 정보를 가져온다.
-        const userSnapshot = await getDocs(userQuery);
+        // // 2. userQuery 참조를 바탕으로 전체 유저 정보를 가져온다.
+        // const userSnapshot = await getDocs(userQuery);
 
-        const scores = [];
+        // const scores = [];
 
-        for (const userDoc of userSnapshot.docs) {
-          const userData = userDoc.data();
-          const userId = userDoc.id;
+        // for (const userDoc of userSnapshot.docs) {
+        //   const userData = userDoc.data();
+        //   const userId = userDoc.id;
 
-          // 사용자의 포인트 데이터 가져오기
-          // 1. points'라는 컬렉션을 참조하는 변수 선언 (uid값이 같은 것들만)
-          const pointQuery = query(
-            collection(dbService, "points"),
-            where("uid", "==", userId)
-          );
-          // 2. pointQuery 참조를 바탕으로 전체 점수 정보를 가져온다.
-          const pointSnapshot = await getDocs(pointQuery);
+        //   // 사용자의 포인트 데이터 가져오기
+        //   // 1. points'라는 컬렉션을 참조하는 변수 선언 (uid값이 같은 것들만)
+        //   const pointQuery = query(
+        //     collection(dbService, "points"),
+        //     where("uid", "==", userId)
+        //   );
+        //   // 2. pointQuery 참조를 바탕으로 전체 점수 정보를 가져온다.
+        //   const pointSnapshot = await getDocs(pointQuery);
 
-          // 추가되어야 할 점수 계산을 위한 변수 선언
-          let mvpPoints = 0;
-          let studyPoints = 0;
-          let communicationPoints = 0;
-          let retrospectionPoints = 0;
-          let penaltyPoints = 0; // 벌점 포인트
+        //   // 추가되어야 할 점수 계산을 위한 변수 선언
+        //   let mvpPoints = 0;
+        //   let studyPoints = 0;
+        //   let communicationPoints = 0;
+        //   let retrospectionPoints = 0;
+        //   let penaltyPoints = 0; // 벌점 포인트
           
-          // 3. 가져온 점수를 바탕으로 점수 계산을 위한 변수에 할당
-          pointSnapshot.forEach((pointDoc) => {
-            const pointData = pointDoc.data();
-            pointData.points.forEach((point) => {
-              // 포인트 유형(type)에 따라 각각의 포인트를 계산
-              switch (point.type) {
-                case "MVP":
-                  mvpPoints += point.digit;
-                  break;
-                case "스터디":
-                  studyPoints += point.digit;
-                  break;
-                case "소통":
-                  communicationPoints += point.digit;
-                  break;
-                case "회고":
-                  retrospectionPoints += point.digit;
-                  break;
-                // 다른 포인트 유형에 대한 계산도 추가할 수 있음
-              }
-            });
-            pointData.beePoints.forEach((beePoints) => {
-              // 포인트 유형(type)에 따라 각각의 포인트를 계산
-              penaltyPoints += beePoints.digit;
-            });
-          });
+        //   // 3. 가져온 점수를 바탕으로 점수 계산을 위한 변수에 할당
+        //   pointSnapshot.forEach((pointDoc) => {
+        //     const pointData = pointDoc.data();
+        //     pointData.points.forEach((point) => {
+        //       // 포인트 유형(type)에 따라 각각의 포인트를 계산
+        //       switch (point.type) {
+        //         case "MVP":
+        //           mvpPoints += point.digit;
+        //           break;
+        //         case "스터디":
+        //           studyPoints += point.digit;
+        //           break;
+        //         case "소통":
+        //           communicationPoints += point.digit;
+        //           break;
+        //         case "회고":
+        //           retrospectionPoints += point.digit;
+        //           break;
+        //         // 다른 포인트 유형에 대한 계산도 추가할 수 있음
+        //       }
+        //     });
+        //     pointData.beePoints.forEach((beePoints) => {
+        //       // 포인트 유형(type)에 따라 각각의 포인트를 계산
+        //       penaltyPoints += beePoints.digit;
+        //     });
+        //   });
 
-          // 전체 포인트 합계 계산
-          const totalPoints =
-            mvpPoints + studyPoints + communicationPoints + retrospectionPoints;
+        //   // 전체 포인트 합계 계산
+        //   const totalPoints =
+        //     mvpPoints + studyPoints + communicationPoints + retrospectionPoints;
 
-          if (userData.member !== "운영진" && userData.member !== "잔잔파도") {
-            scores.push({
-              name: userData.name,
-              pid: userData.pid,
-              mvp: mvpPoints,
-              study: studyPoints,
-              communication: communicationPoints,
-              retrospection: retrospectionPoints,
-              penalty: penaltyPoints, // 벌점 포인트
-              total: totalPoints, // 전체 포인트 합계
-              part: userData.part,
-            });
-          }
-        }
+        //   if (userData.member !== "운영진" && userData.member !== "잔잔파도") {
+        //     scores.push({
+        //       name: userData.name,
+        //       pid: userData.pid,
+        //       mvp: mvpPoints,
+        //       study: studyPoints,
+        //       communication: communicationPoints,
+        //       retrospection: retrospectionPoints,
+        //       penalty: penaltyPoints, // 벌점 포인트
+        //       total: totalPoints, // 전체 포인트 합계
+        //       part: userData.part,
+        //     });
+        //   }
+        // }
 
-        console.log("scores", scores);
+        // console.log("scores", scores);
 
 
-        setUserScores(scores);
+        // setUserScores(scores);
+        setUserScores(mockData);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching user scores:", error);
       }
     };
+    const fetchAllScore = async () => {
+      const result = await getAllScoreData();
+      console.log(result);
+    }
 
     fetchUserScores();
+    fetchAllScore();
   }, []);
 
   // 모달 열기
