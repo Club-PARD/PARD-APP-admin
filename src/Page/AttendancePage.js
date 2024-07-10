@@ -12,6 +12,7 @@ import {dbService} from "../fbase";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import React, {useEffect, useState} from "react";
 import { getAllAttendanceData } from "../Api/AttendenceAPI";
+import { getAllUserData } from "../Api/UserAPI";
 
 /*
 - Firebase fireStore 스케쥴 데이터 조회
@@ -25,9 +26,9 @@ import { getAllAttendanceData } from "../Api/AttendenceAPI";
 - Main 화면 코드
 */
 
-const CheckPage = () => {
-    // const [userDatas, setUserDatas] = useState([]);
+const AttendancePage = () => {
     const [userDatas, setUserDatas] = useState([]);
+    const [attendanceData, setAttendanceData] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState(null);
     const [addable, setAddable] = useState(true);
@@ -136,14 +137,22 @@ const CheckPage = () => {
         // fetchData();
         // fetchSchedules();
 
-        // const fetchAllAttendanceData = async () => {
-        //     const result = await getAllAttendanceData('3');
-        //     console.log(result);
-        // }
+        const fetchAllAttendanceData = async () => {
+            const result = await getAllAttendanceData('3');
+            console.log(result);
+            setAttendanceData(result);
+        }
         
-        // fetchAllAttendanceData()
+        const fetchAllUserInfo = async () => {
+            const result = await getAllUserData('3');
+            console.log(result);
+            setUserDatas(result);
+        }
+        
+        fetchAllAttendanceData();
+        fetchAllUserInfo();
 
-        setUserDatas(userDataMock);
+        
     }, []);
     
     // 핸들러 : 출석 정보 업데이트
@@ -152,7 +161,7 @@ const CheckPage = () => {
             const batch = [];
 
             // FIREBASE CODE
-            userDatas.forEach((userData) => {
+            attendanceData.forEach((userData) => {
                 const userDocRef = doc(dbService, "users", userData.uid); // userId 필드가 있다고 가정
                 const updatedAttendInfo = userData.attendInfo;
                 const updatedAttend = userData.attend;
@@ -247,44 +256,27 @@ const CheckPage = () => {
     
     // 핸들러 : 즉시 업데이트 관련 코드 (수정중 즉, 출석, 지각, 결석 중 선택했을 때 선택된 값을 변경해주는 핸들러)
     const updateUser = async (index, idx, newData) => {
-
-        // 로컬 변수 : userDatas를 copy한 변수
-        const updatedUserDatas = [...userDatas];
+        // 로컬 변수 : attendanceData를 copy한 변수
+        const updatedAttendance = [...attendanceData];
 
         // attendInfo를 List로 변경
-        updatedUserDatas[index] = {
-            ...updatedUserDatas[index],
-            attendances: [...(updatedUserDatas[index].attendances || [])]
+        updatedAttendance[index] = {
+            ...updatedAttendance[index],
+            attendances: [...(updatedAttendance[index].attendances || [])]
         };
 
-        // attendInfo 내 해당 인덱스에 새로운 출석 데이터 할당 
-        updatedUserDatas[index].attendances[idx].status = newData;
-        
+        // attendances 배열이 빈 배열인 경우 새로운 항목을 추가
+        if (updatedAttendance[index].attendances.length <= idx) {
+            for (let i = updatedAttendance[index].attendances.length; i <= idx; i++) {
+                updatedAttendance[index].attendances.push({ status: null });
+            }
+        }
 
+        // attendances 내 해당 인덱스에 새로운 출석 데이터 할당
+        updatedAttendance[index].attendances[idx].status = newData;
 
-        // // 로컬 변수 : 변경된 user 정보에서의 attend 정보만 저장하는 배열 선언
-        // const updatedAttend = {
-        //     ...updatedUserDatas[index].attend
-        // };
-        
-        // // 
-        // updatedAttend[scheduleKeys[idx].sid] = newData; // scheduleKeys를 사용하여 업데이트
-        // updatedUserDatas[index].attend = updatedAttend;
-        // console.log("읽어온 sid :", scheduleKeys);
-        // console.log(updatedAttend);
-        // console.log(updatedUserDatas[index])
-
-        // 변경된 user 정보를 저장
-        setUserDatas(updatedUserDatas);
-
-        // // FIREBASE CODE
-        // // Firestore에 업데이트
-        // const userDocRef = doc(dbService, "users", updatedUserDatas[index].uid);
-        // await updateDoc(userDocRef, {
-        //     attendInfo: updatedUserDatas[index].attendInfo,
-        //     attend: updatedAttend, // attend 맵 업데이트
-        // });
-
+        // 변경된 attendance 정보를 저장
+        setAttendanceData(updatedAttendance);
     };
 
     // 출석 결석 지각 버튼
@@ -583,15 +575,15 @@ const CheckPage = () => {
                                         //         }
                                         //     </TableRow>
                                         // ))
-                                        userDatas.map((userData, index) => (
+                                        attendanceData.map((attendanceDataInfo, index) => (
                                             <TableRow key={index}>
                                                 <TableCell color={"#2A2A2A"} width={140}>
-                                                    {userData.name}
+                                                    {userDatas[index].name}
                                                 </TableCell>
                                                 {
                                                     Array.from({ length: 12 }, (_, idx) => (
                                                         <TableCell key={idx} width={152}>
-                                                            <CustomTableCell value={userData.attendances[idx]?.status} />
+                                                            <CustomTableCell value={attendanceDataInfo.attendances[idx]?.status} />
                                                         </TableCell>
                                                     ))
                                                 }
@@ -633,10 +625,11 @@ const CheckPage = () => {
                                 {/* Table - Body */}
                                 <tbody>
                                     {
-                                        userDatas.map((userData, index) => (
+                                        attendanceData.map((attendanceDataInfo, index) => (
                                             <TableRow key={index}>
                                                 <TableCell color={"#2A2A2A"} width={140}>
-                                                    {userData.name}
+                                                    {/* {attendanceDataInfo.name} */}
+                                                     {userDatas[index].name}
                                                 </TableCell>
                                                 {
                                                     Array.from({
@@ -644,10 +637,10 @@ const CheckPage = () => {
                                                     }, (_, idx) => (
                                                         <TableCell key={idx} width={152}>
                                                             <CustomTableCell
-                                                                value={userData.attendances[idx]?.status}
+                                                                value={attendanceDataInfo.attendances[idx]?.status}
                                                                 idx={idx}
                                                                 addable={addable}
-                                                                onUpdate={(newData) => updateUser(userDatas.indexOf(userData), idx, newData)}/>
+                                                                onUpdate={(newData) => updateUser(attendanceData.indexOf(attendanceDataInfo), idx, newData)}/>
                                                         </TableCell>
                                                     ))
                                                 }
@@ -663,7 +656,7 @@ const CheckPage = () => {
     );
 };
 
-export default CheckPage;
+export default AttendancePage;
 
 const DDiv = styled.div `
     background: #fff;

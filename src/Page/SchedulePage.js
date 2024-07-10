@@ -16,7 +16,8 @@ import koLocale from "date-fns/locale/ko";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import style from "../Styles/calendar.module.scss";
-import { deleteScheduleData, getAllSchedulerData, postScheduleData } from "../Api/ScheduleAPI";
+import { deleteScheduleData, getAllScheduleData, postScheduleData } from "../Api/ScheduleAPI";
+import { handleCheckCookie } from "../Api/LoginService";
 
 /* 
 - Firebase fireStore 스케쥴 데이터 조회
@@ -44,16 +45,12 @@ const SchedulePage = () => {
     const fetchSchedules = async () => {
       try {
         // 1. 전체 스케줄 다 가져오기 (type 상관 없이 [false / true])
-        const data = await getAllSchedulerData();
+        const result = await getAllScheduleData();
 
-        
-        // 2. 가져온 데이터를 newData에 저장 (안전성을 위함)
-        // const newData = data.docs.map((doc) => ({ ...doc.data() }));
-
-        // 3. useState 변수에 저장
-        setSchedule(data);
+        // 2. useState 변수에 저장
+        setSchedule(result);
       } catch (error) {
-        console.error("Error fetching schedules:", error);
+        console.error("[Error] getAllScheduleData():", error);
       }
     };
 
@@ -99,11 +96,11 @@ const SchedulePage = () => {
 
     if (userConfirmed) {
       try {
-        deleteScheduleData(scheduleId);
+        const result = await deleteScheduleData(scheduleId);
 
         // 3. 삭제가 성공하면 화면을 새로고침
-        // window.location.reload();
         alert("일정이 삭제되었습니다.");
+        window.location.reload();
       } catch (error) {
         console.error("Error deleting schedule:", error);
       }
@@ -220,7 +217,7 @@ const SchedulePage = () => {
                     <DateDiv>{schedule.title}</DateDiv>
                   </FlextBoxDiv>
                   <DelteButton
-                    onClick={() => handleDeleteSchedule(schedule.sid)}
+                    onClick={() => handleDeleteSchedule(schedule.scheduleId)}
                   >
                     <DeleteIcon src={require("../Assets/img/DeleteIcon.png")} />
                     삭제
@@ -845,7 +842,8 @@ const FirstDiv = styled.div`
             remaingDay: 0,
             pastEvent: false,
           }
-          postScheduleData(addScheduleInfo);
+          const result = await postScheduleData(addScheduleInfo);
+          
           alert("일정이 추가되었습니다.");
           closeModalWidhtUppdate();
           setTimeout(() => {
@@ -853,7 +851,6 @@ const FirstDiv = styled.div`
           }, 1000);
         } catch (error) {
           console.error("일정 추가 실패:", error);
-          alert("일정 추가 중 오류가 발생했습니다.");
         }
       }
     };
@@ -885,7 +882,7 @@ const FirstDiv = styled.div`
             remaingDay: 0,
             pastEvent: false,
           }
-          postScheduleData(addScheduleInfo);
+          const result = await postScheduleData(addScheduleInfo);
           alert("일정이 추가되었습니다.");
           closeModalWidhtUppdate();
           setTimeout(() => {
@@ -893,7 +890,6 @@ const FirstDiv = styled.div`
           }, 1000);
         } catch (error) {
           console.error("일정 추가 실패:", error);
-          alert("일정 추가 중 오류가 발생했습니다.");
         }
       }
     };

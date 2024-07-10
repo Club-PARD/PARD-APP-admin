@@ -11,7 +11,7 @@ import {
     deleteDoc
 } from "firebase/firestore";
 import {dbService} from "../fbase";
-import {getAllUserData, postUserData} from "../Api/UserAPI";
+import {deleteUserData, getAllUserData, postUserData} from "../Api/UserAPI";
 
 /*
 - Firebase fireStore User 데이터 조회
@@ -29,7 +29,7 @@ import {getAllUserData, postUserData} from "../Api/UserAPI";
 - Main 화면 코드
 */
 
-const MemberPage = () => {
+const UserPage = () => {
     const [userDataList, setUserDataList] = useState([]);
     const [addable, setAddable] = useState(true);
     const [isOpen, setIsOpen] = useState(Array(15).fill(false));
@@ -47,11 +47,10 @@ const MemberPage = () => {
     const [isContentChanged, setContentChanged] = useState(false); // 컨텐츠 변경 확인 state
 
     // 변수 : User 정보 조회 후 sort
-    const sortedUserDataList = userDataList
-        .filter(
-            (userDataList) => userDataList.name
-        )
-        .sort((a, b) => a.name.localeCompare(b.name));
+    const sortedUserDataList
+        = userDataList
+            ? userDataList.filter((userDataList) => userDataList.name).sort((a, b) => a.name.localeCompare(b.name))
+            : [];
 
     // 변수 : 파트 구분
     const filteredUserDataList = sortedUserDataList.filter((userDataList) => {
@@ -183,7 +182,7 @@ const MemberPage = () => {
             if (selectedMembers[index] !== null && selectedPart[index] !== null && nameInputs[index] !== "" && phoneInputs[index] !== "") {
                 const data = {
                     name: nameInputs[index],
-                    userEmail: emailInputs[index],
+                    email: emailInputs[index],
                     part: selectedPart[index],
                     generation: generationInputs[index],
                     phoneNumber: phoneInputs[index],
@@ -201,9 +200,7 @@ const MemberPage = () => {
             postUserData(addUserInfo);
             setAddable(true); // 버튼 활성화
             alert("등록 성공!"); // 사용자에게 성공 메시지 표시
-            window
-                .location
-                .reload(); // 페이지 새로고침
+            window.location.reload(); // 페이지 새로고침
         } catch (error) {
             console.error("Error adding document: ", error);
         }
@@ -483,6 +480,7 @@ const MemberPage = () => {
         part,
         uid,
         Num,
+        userEmail,
         role,
         pid,
         generation
@@ -748,7 +746,7 @@ const MemberPage = () => {
                         </ModalContents>
                         {
                             isOpenDeleteConfirmModal && (
-                                <DeleteConfirmModal closeModal={closeDeleteConfirmModal} uid={uid}/>
+                                <DeleteConfirmModal closeModal={closeDeleteConfirmModal} userEmail={userEmail}/>
                             )
                         }
                     </ModalSubTitle>
@@ -788,7 +786,7 @@ const MemberPage = () => {
             return formattedNumber;
         } else {
             // 예외처리: 전화번호가 11글자가 아닌 경우
-            throw new Error('전화번호는 11글자여야 합니다.');
+            alert('전화번호는 11글자여야 합니다.');
         }
     }
 
@@ -931,8 +929,9 @@ const MemberPage = () => {
                                                 closeModalUpdate={() => closeModalUpdate(index)}
                                                 name={userInfo.name}
                                                 part={userInfo.part}
-                                                Num={userInfo.phone}
+                                                Num={userInfo.phoneNumber}
                                                 role={userInfo.role}
+                                                userEmail={userInfo.userEmail}
                                                 generation={userInfo.generation}/>
                                         </TableBody2>
                                     ))
@@ -1067,7 +1066,7 @@ const MemberPage = () => {
     );
 };
 
-export default MemberPage;
+export default UserPage;
 
 const DDiv = styled.div `
   background: #fff;
@@ -1610,16 +1609,14 @@ const Span = styled.span `
   color : #5262F5;
 `
 
-const DeleteConfirmModal = ({closeModal, uid}) => {
+const DeleteConfirmModal = ({closeModal, userEmail}) => {
 
     const handleDeleteUser = async () => {
         // delete the user document in Firestore
         try {
-
+            deleteUserData(userEmail);
             alert("사용자가 삭제되었습니다.");
-            window
-                .location
-                .reload();
+            window.location.reload();
             closeModal();
         } catch (error) {
             console.error("Error deleting user : ", error)
