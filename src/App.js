@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import styled from "styled-components";
 import NavBar from "./Components/NavBar/Navbar";
-import CheckPage from "./Page/CheckPage";
+import AttendancePage from "./Page/AttendancePage";
 import HomePage from "./Page/HomePage";
 import LoginPage from "./Page/LoginPage";
 import UserPage from "./Page/UserPage";
@@ -44,7 +44,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/Score" element={<ScorePage />} />
-            <Route path="/Check" element={<CheckPage />} />
+            <Route path="/Check" element={<AttendancePage />} />
             <Route path="/Schedule" element={<SchedulePage />} />
             <Route path="/Member" element={<UserPage />} />
             <Route path="/Login" element={<LoginPage />} />
