@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
-import { dbService } from "../fbase";
-import { format, fromUnixTime } from "date-fns";
-import koLocale from "date-fns/locale/ko";
 import { FadeLoader } from "react-spinners";
-import { getAllSchedulerData } from "../Api/ScheduleAPI";
+import { getAllScheduleData } from "../Api/ScheduleAPI";
+import { getRankingInfo } from "../Api/ScoreAPI";
 
 /* 
 - Firebase fireStore 스케쥴 데이터 조회
@@ -29,7 +26,7 @@ const HomePage = () => {
     const fetchSchedules = async () => {
       try {
         // 1. 전체 스케줄 다 가져오기 (type 상관 없이 [false / true])
-        const data = await getAllSchedulerData();
+        const data = await getAllScheduleData();
 
         
         // 2. 가져온 데이터를 newData에 저장 (안전성을 위함)
@@ -51,54 +48,9 @@ const HomePage = () => {
     const calculateUserRankings = async () => {
       try {
         // Firebase에서 사용자 데이터 가져오기 (전체 문서)
-        const userData = await getDocs(collection(dbService, "users"));
-  
-        const rankings = [];
-  
-        // 각 사용자에 대한 순위 계산
-        for (const userDoc of userData.docs) {
-          const userData = userDoc.data();
-          
-          // 필요한 조건을 만족하는 사용자인지 확인 
-          if (
-            userData.member !== "운영진" &&
-            userData.member !== "잔잔파도"
-          ) {
-            const pid = userData.pid;
-            // console.log(userData.name,"읽어오기 pid : ",pid);
-  
-            // 해당 사용자의 points 데이터 가져오기 (특정 문서)
-            const pointsDocRef = doc(dbService, "points", pid);
-            const pointsDoc = await getDoc(pointsDocRef);
-            
-            // pointsDoc가 존재한다면, 아래의 구문을 실행한다
-            if (pointsDoc.exists()) {
-              const pointsData = pointsDoc.data(); // .data() : 키-쌍으로 되어 있는 Firestore 문서의 정보를 가져온다.
-              const pointsArray = pointsData.points || []; // points 배열을 넣거나 없으면, 빈 배열을 넣는다.
-  
-              // pointsArray 내부 digit 필드의 값을 합산하여 순위 계산
-              const totalPoints = pointsArray.reduce(
-                (acc, curr) => acc + curr.digit,
-                0
-              );
-  
-              // 계산된 점수를 토대로 rankings 배열에 추가
-              rankings.push({
-                uid: userDoc.id,
-                displayName: userData.name,
-                totalPoints: totalPoints,
-                part: userData.part,
-              });
-            }
-          }
-        }
-        // 해야 할 일이 끝났으므로 loadingd을 false로 지정한다.
-        setLoading(false);
-  
-        // 사용자를 totalPoints로 정렬하여 순위 설정
-        rankings.sort((a, b) => b.totalPoints - a.totalPoints);
+        const result = await getRankingInfo();
         // 순위를 상태에 설정
-        setUserRankings(rankings);
+        setUserRankings(result);
         
       } catch (error) {
         console.error("Error calculating rankings:", error);
@@ -227,10 +179,10 @@ const HomePage = () => {
                         >
                           {index + 1}
                         </RankingNum>
-                        <RankingName>{user.displayName}</RankingName>
+                        <RankingName>{user.name}</RankingName>
                         <RankingPart>{getPartName(user.part)}</RankingPart>
                       </RankingFirstDiv>
-                      <ScoreText>{user.totalPoints}점</ScoreText>
+                      <ScoreText>{user.totalBonus}점</ScoreText>
                     </RankingNumDiv>
                     <RankingHR />
                   </>
