@@ -4,10 +4,11 @@ import NavBar from "./Components/NavBar/Navbar";
 import CheckPage from "./Page/CheckPage";
 import HomePage from "./Page/HomePage";
 import LoginPage from "./Page/LoginPage";
-import MemberPage from "./Page/MemberPage";
+import UserPage from "./Page/UserPage";
 import SchedulePage from "./Page/SchedulePage";
 import ScorePage from "./Page/ScorePage";
 import { useEffect, useState } from "react";
+import { CookieCheck } from "./Api/LoginService";
 
 /* 
 - 개발자 도구 Console 메세지 강제 제거
@@ -32,7 +33,6 @@ function App() {
   return (
     <Router>
       <AppContainer>
-
         {token === "pardo-admin-key" ? (
           <NavBarContainer>
             <NavBar />
@@ -46,7 +46,7 @@ function App() {
             <Route path="/Score" element={<ScorePage />} />
             <Route path="/Check" element={<CheckPage />} />
             <Route path="/Schedule" element={<SchedulePage />} />
-            <Route path="/Member" element={<MemberPage />} />
+            <Route path="/Member" element={<UserPage />} />
             <Route path="/Login" element={<LoginPage />} />
           </Routes>
         </MainContent>
