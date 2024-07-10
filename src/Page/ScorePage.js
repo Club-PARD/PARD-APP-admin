@@ -6,7 +6,9 @@ import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
 import { FadeLoader } from "react-spinners";
-import { getAllScoreData } from "../Api/ScoreAPI";
+import { deleteScoreData, getAllScoreData, postScoreData } from "../Api/ScoreAPI";
+import { getAllUserData } from "../Api/UserAPI";
+import { getSelectedUserScoreData } from "../Api/ScoreAPI";
 
 /* 
 - 모달 관련 코드
@@ -50,125 +52,77 @@ const ScorePage = () => {
   const [modals, setModals] = useState([]);
   const [isContentChanged, setContentChanged] = useState(false); // 컨텐츠 변경 확인 state
   const [loading, setLoading] = useState(true);
+  const [userScoreDetail, setUserCoreDetail] = useState([]);
   
   const mockData = [
     {
-      communication: 2,
-      mvp: 0,
       name: "권채은",
+      email : "user1@gmail.com",
       part: "웹파트",
-      penalty: -0.5,
-      pid: "권채은uw3wM",
-      retrospection: 0,
-      study: 14,
-      total: 16
+      total_bonus : 10,
+      total_minus : 20,
     }, {
-      communication: 3,
-      mvp: 1,
       name: "김현승",
+      email : "user2@gmail.com",
       part: "서버파트",
-      penalty: -5,
-      pid: "김현승uw3wM",
-      retrospection: 0,
-      study: 15,
-      total: 20
+      total_bonus : 10,
+      total_minus : 20,
+
     }
+  ]
+
+  const mockDataDetail =  [
+      {
+        reasonId: 8,
+        point: 5,
+        reason: "MVP",
+        detail: "1차 세미나",
+        createAt: "2024-07-08T12:21:36.405+00:00",
+        bonus: true
+      },
+      {
+        reasonId: 8,
+        point: 3,
+        reason: "회고",
+        detail: "디스콰이엇 회고.",
+        createAt: "2024-07-10T12:21:36.405+00:00",
+        bonus: true
+      },
+            {
+        reasonId: 8,
+        point: 3,
+        reason: "회고",
+        detail: "디스콰이엇 회고.",
+        createAt: "2024-07-10T12:21:36.405+00:00",
+        bonus: true
+    },
+                  {
+        reasonId: 8,
+        point: 3,
+        reason: "회고",
+        detail: "디스콰이엇 회고.",
+        createAt: "2024-07-10T12:21:36.405+00:00",
+        bonus: true
+      },
   ]
   // Firebase fireStore 전체 Point 데이터 조회
   useEffect(() => {
     const fetchUserScores = async () => {
       try {
-        // // 1. 'users'라는 컬렉션을 참조하는 변수 선언
-        // const userQuery = query(collection(dbService, "users"));
-
-        // // 2. userQuery 참조를 바탕으로 전체 유저 정보를 가져온다.
-        // const userSnapshot = await getDocs(userQuery);
-
-        // const scores = [];
-
-        // for (const userDoc of userSnapshot.docs) {
-        //   const userData = userDoc.data();
-        //   const userId = userDoc.id;
-
-        //   // 사용자의 포인트 데이터 가져오기
-        //   // 1. points'라는 컬렉션을 참조하는 변수 선언 (uid값이 같은 것들만)
-        //   const pointQuery = query(
-        //     collection(dbService, "points"),
-        //     where("uid", "==", userId)
-        //   );
-        //   // 2. pointQuery 참조를 바탕으로 전체 점수 정보를 가져온다.
-        //   const pointSnapshot = await getDocs(pointQuery);
-
-        //   // 추가되어야 할 점수 계산을 위한 변수 선언
-        //   let mvpPoints = 0;
-        //   let studyPoints = 0;
-        //   let communicationPoints = 0;
-        //   let retrospectionPoints = 0;
-        //   let penaltyPoints = 0; // 벌점 포인트
-          
-        //   // 3. 가져온 점수를 바탕으로 점수 계산을 위한 변수에 할당
-        //   pointSnapshot.forEach((pointDoc) => {
-        //     const pointData = pointDoc.data();
-        //     pointData.points.forEach((point) => {
-        //       // 포인트 유형(type)에 따라 각각의 포인트를 계산
-        //       switch (point.type) {
-        //         case "MVP":
-        //           mvpPoints += point.digit;
-        //           break;
-        //         case "스터디":
-        //           studyPoints += point.digit;
-        //           break;
-        //         case "소통":
-        //           communicationPoints += point.digit;
-        //           break;
-        //         case "회고":
-        //           retrospectionPoints += point.digit;
-        //           break;
-        //         // 다른 포인트 유형에 대한 계산도 추가할 수 있음
-        //       }
-        //     });
-        //     pointData.beePoints.forEach((beePoints) => {
-        //       // 포인트 유형(type)에 따라 각각의 포인트를 계산
-        //       penaltyPoints += beePoints.digit;
-        //     });
-        //   });
-
-        //   // 전체 포인트 합계 계산
-        //   const totalPoints =
-        //     mvpPoints + studyPoints + communicationPoints + retrospectionPoints;
-
-        //   if (userData.member !== "운영진" && userData.member !== "잔잔파도") {
-        //     scores.push({
-        //       name: userData.name,
-        //       pid: userData.pid,
-        //       mvp: mvpPoints,
-        //       study: studyPoints,
-        //       communication: communicationPoints,
-        //       retrospection: retrospectionPoints,
-        //       penalty: penaltyPoints, // 벌점 포인트
-        //       total: totalPoints, // 전체 포인트 합계
-        //       part: userData.part,
-        //     });
-        //   }
-        // }
-
-        // console.log("scores", scores);
-
-
-        // setUserScores(scores);
-        setUserScores(mockData);
+        const result = await getAllUserData(3);
+        if (result != undefined)
+          setUserScores(result);
+        else
+          setUserScores([]);
+        console.log(result);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching user scores:", error);
       }
     };
-    const fetchAllScore = async () => {
-      const result = await getAllScoreData();
-      console.log(result);
-    }
+
 
     fetchUserScores();
-    fetchAllScore();
   }, []);
 
   // 모달 열기
@@ -176,6 +130,8 @@ const ScorePage = () => {
     const newModals = [...modals];
     newModals[index] = true;
     setModals(newModals);
+
+
   };
 
   // 모달 닫기
@@ -219,7 +175,7 @@ const ScorePage = () => {
   };
 
   // 모달 컴포넌트
-  const Modal = ({isOpen, onClose, name, part, pid, closeModalWidhtUpdate}) => {
+  const Modal = ({isOpen, onClose, name, part, email, closeModalWidhtUpdate}) => {
     const [points, setPoints] = useState([]); // Points 데이터를 저장할 상태 변수
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(true);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -240,30 +196,8 @@ const ScorePage = () => {
     // Firebase fireStore Point 데이터 조회
     const fetchPoints = async () => {
       try {
-        // 해당 사용자의 pid와 일치하는 Points 데이터 조회
-        // 1. 참조 선언
-        const pointsQuery = query(
-          collection(dbService, "points"),
-          where("pid", "==", pid)
-        );
-        
-        // 2. 참조를 이용하여 전체 점수 가져오기
-        const pointsSnapshot = await getDocs(pointsQuery);
-        const pointsData = [];
-        // 3. 전체 점수 중에서 points 영역만 return
-        pointsSnapshot.forEach((pointDoc) => {
-          // "points" 필드 값을 가져옴
-          const pointData = pointDoc.data().points;
-          // 배열로 합쳐서 저장
-          pointsData.push(...pointData);
-        });
-        pointsSnapshot.forEach((beePointDoc) => {
-          // "beePoints" 필드 값을 가져옴
-          const beePointData = beePointDoc.data().beePoints;
-          // 배열로 합쳐서 저장
-          pointsData.push(...beePointData);
-        });
-        setPoints(pointsData);
+        const result = await getSelectedUserScoreData(email);
+        return result;
       } catch (error) {
         console.error("Error fetching Points data:", error);
       }
@@ -325,49 +259,23 @@ const ScorePage = () => {
               break;
           }
 
-          // 현재 시각 Timestamp 형식으로 변환하여 저장
-          const currentDate = Timestamp.now();
-
-          if (selectedType == "벌점 조정")
-            scoreDigit = scoreDigit * (-1);
-
           // data값 생성
           const newPoint = {
-            digit: scoreDigit,
-            reason: inputText,
-            timestamp: currentDate,
-            type: selectedType,
+            email: email,
+            point: scoreDigit,
+            reason: selectedType,
+            detail: inputText,
+            bonus: selectedType == "벌점 조정" ? false : true,  
           };
 
           if (
             inputText === null ||
-            currentDate === null ||
             selectedType === null
           ) {
           } else {
             try {
-              // Points 데이터를 업데이트할 때는 기존 데이터를 가져온 후 새로운 데이터를 추가하고 다시 업데이트
-              const pointsQuery = query(
-                collection(dbService, "points"),
-                where("pid", "==", pid)
-              );
 
-              const pointsSnapshot = await getDocs(pointsQuery);
-              const pointsData = pointsSnapshot.docs.map((doc) => doc.data());
-
-              // 새로운 데이터를 추가
-              if (scoreDigit > 0) {
-                pointsData[0].points.push(newPoint);
-              } else if (scoreDigit < 0) {
-                pointsData[0].beePoints.push(newPoint);
-              }
-
-              const docRefPoint = doc(dbService, "points", pid);
-              // 업데이트된 데이터로 업데이트
-              await updateDoc(docRefPoint, {
-                points: pointsData[0].points,
-                beePoints: pointsData[0].beePoints,
-              });
+              const result = postScoreData(newPoint);
 
               // 창 닫기
               // onClose(); // 점수 로딩이 늦어서 일단 닫았습니다.
@@ -389,46 +297,46 @@ const ScorePage = () => {
 
 
     // 점수 업데이트 실행 버튼
-    const handleDeleteButtonClick = (reasonToDelete) => {
+    const handleDeleteButtonClick = (reasonId) => {
       const result = window.confirm("점수를 삭제하시겠습니까?");
       if (result) {
-          console.log("debug");
-          // 삭제할 데이터의 timestamp를 전달
-          deleteScore(reasonToDelete);
+          deleteScore(reasonId);
           // window.location.reload();
       }
     };
 
     // 데이터 삭제 함수
-    const deleteScore = async (reasonToDelete) => {
+    const deleteScore = async (reasonId) => {
         try {
-            // 기존 데이터를 가져옴
-            const pointsQuery = query(
-                collection(dbService, "points"),
-                where("pid", "==", pid)
-            );
-            const pointsSnapshot = await getDocs(pointsQuery);
-            const pointsData = pointsSnapshot.docs.map((doc) => doc.data());
-            console.log("pi", pointsData[0]);
-            // 삭제할 데이터를 찾아서 필터링
-            const updatedPoints = pointsData[0].points.filter(
-                (point) => point.reason !== reasonToDelete
-            );
-            const updatedBeePoints = pointsData[0].beePoints.filter(
-                (point) => point.reason !== reasonToDelete
-            );
+            // // 기존 데이터를 가져옴
+            // const pointsQuery = query(
+            //     collection(dbService, "points"),
+            //     where("pid", "==", pid)
+            // );
+            // const pointsSnapshot = await getDocs(pointsQuery);
+            // const pointsData = pointsSnapshot.docs.map((doc) => doc.data());
+            // console.log("pi", pointsData[0]);
+            // // 삭제할 데이터를 찾아서 필터링
+            // const updatedPoints = pointsData[0].points.filter(
+            //     (point) => point.reason !== reasonToDelete
+            // );
+            // const updatedBeePoints = pointsData[0].beePoints.filter(
+            //     (point) => point.reason !== reasonToDelete
+            // );
           
 
-            // 업데이트된 데이터로 업데이트
-            const docRefPoint = doc(dbService, "points", pid);
-            await updateDoc(docRefPoint, {
-                points: updatedPoints,
-                beePoints: updatedBeePoints,
-            });
+            // // 업데이트된 데이터로 업데이트
+            // const docRefPoint = doc(dbService, "points", pid);
+            // await updateDoc(docRefPoint, {
+            //     points: updatedPoints,
+            //     beePoints: updatedBeePoints,
+            // });
 
-            // 삭제 성공 알림
+            const result = await deleteScoreData(reasonId);
+            // // 삭제 성공 알림
             alert("점수가 성공적으로 삭제되었습니다.");
             closeModalWidhtUpdate();
+          window.location.reload();
         } catch (error) {
             console.error("Error deleting Points data:", error);
         }
@@ -480,13 +388,72 @@ const ScorePage = () => {
       }
     };
 
-    useEffect(() => {
-      fetchPoints();
-      if (isOpen) {
-        setSelectedScore(null);
-        fetchPoints();
-      }
-    }, [isOpen, pid]);
+    // useEffect(() => {
+    //   fetchPoints();
+    //   if (isOpen) {
+    //     setSelectedScore(null);
+    //     fetchPoints();
+    //   }
+    // },[]);
+    function formatDate(createdAt) {
+      // 날짜 문자열을 Date 객체로 변환
+      const date = new Date(createdAt);
+      
+      // 월과 일을 추출
+      const month = date.getMonth() + 1; // 월은 0부터 시작하므로 1을 더해줍니다.
+      const day = date.getDate();
+      
+      // 원하는 형식으로 변환하여 반환
+      return `${month.toString().padStart(2, '0')}월 ${day.toString().padStart(2, '0')}일`;
+    }
+
+    const ContentDiv2 = ({ userScoreDetail }) => {
+        // 파트너십 종류별로 데이터를 그룹화
+        const groupedData = userScoreDetail.slice().reverse().reduce((acc, point) => {
+          const key = point.reason === "MVP" ? "MVP" : point.reason;
+          if (!acc[key]) {
+            acc[key] = { points: [], total: 0 };
+          }
+          acc[key].points.push(point);
+          acc[key].total += point.point;
+          return acc;
+        }, {});
+      
+        return (
+          <div style={{ overflow: "auto", maxHeight: "200px" }}>
+            {Object.keys(groupedData).map((reason) => (
+              <div key={reason}>
+                <h3 style={{ marginLeft: "50px", marginBottom: "0px" }}>
+                  {reason} (총 점수: {groupedData[reason].total}점)
+                </h3>
+                <hr style={{ margin: "0px 50px" }} />
+                {groupedData[reason].points.map((point, index) => (
+                  <div key={index}>
+                    <RowContentDiv>
+                      <RowContentType right={30} width={60}>
+                        {point.reason === "MVP" ? "MVP" : point.reason}
+                      </RowContentType>
+                      <RowContentDigit right={38} width={45}>
+                        {point.bonus ? `+${point.point}점` : `${point.point}점`}
+                      </RowContentDigit>
+                      <RowContent right={15} width={200}>
+                        {point.detail}
+                      </RowContent>
+                      <RowContent right={0} width={100}>
+                        {formatDate(point.createAt)}
+                      </RowContent>
+                      {/* <RowContent> */}
+                      <RowContent onClick={() => handleDeleteButtonClick(point.reasonId)}>
+                        삭제
+                      </RowContent>
+                    </RowContentDiv>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        );
+      };
 
     return (
       <ModalWrapper isOpen={isOpen}>
@@ -522,41 +489,44 @@ const ScorePage = () => {
             <>
               <HR top={24} />
               <RowTitleDiv>
-                <RowTitle right={40}>파드너십</RowTitle>
+                <RowTitle right={55}>파드너십</RowTitle>
                 <RowTitle right={113}>점수</RowTitle>
-                <RowTitle right={165}>내용</RowTitle>
-                <RowTitle right={20}>날짜</RowTitle>
+                <RowTitle right={120}>내용</RowTitle>
+                <RowTitle right={70}>날짜</RowTitle>
                 <RowTitle right={0}>삭제</RowTitle>
               </RowTitleDiv>
               
               <HR top={8} />
-              <ContentDiv>
-                {points
+              {/* <ContentDiv>
+                {mockDataDetail
                   .slice()
                   .reverse()
                   .map((point, index) => (
                     <div key={index}>
                       <RowContentDiv>
                         <RowContentType right={30} width={60}>
-                          {point.type === "MVP" ? "MVP" : point.type}
+                          {point.reason === "MVP" ? "MVP" : point.reason}
                         </RowContentType>
                         <RowContentDigit right={38} width={45}>
                           {" "}
-                          {point.digit > 0
-                            ? `+${point.digit}점`
-                            : `${point.digit}점`}
+                          {point.bonus == true
+                            ? `+${point.point}점`
+                            : `${point.point}점`}
                         </RowContentDigit>
-                        <RowContent right={40} width={230}>
-                          {point.reason}
+                        <RowContent right={15} width={200}>
+                          {point.detail}
                         </RowContent>
-                        <RowContent right={0} width={50}>
-                          {formatWithErrorHandling(point.reason, point.type, point.timestamp, name)}
+                        <RowContent right={0} width={100}>
+                            {formatDate(point.createAt)}
                         </RowContent>
                         <RowContent onClick={() => handleDeleteButtonClick(point.reason)}>삭제</RowContent>
                       </RowContentDiv>
                     </div>
                   ))}
-              </ContentDiv>
+              </ContentDiv> */}
+              <ContentDiv2 userScoreDetail = {userScoreDetail}>
+                
+              </ContentDiv2>
               <RegisterButton onClick={() => setIsRegisterModalOpen(false)}>
                 점수 추가
               </RegisterButton>
@@ -698,6 +668,19 @@ const ScorePage = () => {
     "디자인파트",
     "기획파트",
   ];
+
+  const fetchUserScoreDetail = async (userEmail, index) => {
+    let result;
+    if (userEmail != undefined) {
+      result = await getSelectedUserScoreData(userEmail);
+      setUserCoreDetail(result);
+      openModal(index);
+    } else {
+      alert("사용자 이메일이 존재하지 않습니다.");
+    }
+    console.log(result);
+    console.log(mockDataDetail);
+  }
   
   // Main 화면 코드
   return (
@@ -740,10 +723,7 @@ const ScorePage = () => {
               <TableHeaderCell width={140} style={{ background: "#F8F8F8" }}>
                 이름
               </TableHeaderCell>
-              <TableHeaderCell width={180}>MVP</TableHeaderCell>
-              <TableHeaderCell width={180}>스터디</TableHeaderCell>
-              <TableHeaderCell width={180}>소통</TableHeaderCell>
-              <TableHeaderCell width={180}>회고</TableHeaderCell>
+              <TableHeaderCell width={180}>파드너십 점수</TableHeaderCell>
               <TableHeaderCell width={180} style={{ background: "#FFEFEF" }}>
                 벌점
               </TableHeaderCell>
@@ -774,36 +754,30 @@ const ScorePage = () => {
               </>
             ) : (
               <>
-                {filteredUserScores.map((userScore, index) => (
+                {filteredUserScores.map((userScoreInfo, index) => (
                   <TableRow key={index}>
                     <TableCell color={"#2A2A2A"} width={140}>
-                      {userScore.name}
+                      {userScoreInfo.name}
                     </TableCell>
                     <TableCell color={"#64C59A"} width={180}>
-                      +{userScore.mvp}점
-                    </TableCell>
-                    <TableCell color={"#64C59A"} width={180}>
-                      +{userScore.study}점
-                    </TableCell>
-                    <TableCell color={"#64C59A"} width={180}>
-                      +{userScore.communication}점
-                    </TableCell>
-                    <TableCell color={"#64C59A"} width={180}>
-                      +{userScore.retrospection}점
+                      +{userScoreInfo.totalBonus}점
                     </TableCell>
                     <TableCell color={"#FF5A5A"} width={180}>
-                      {userScore.penalty}점
+                      {userScoreInfo.totalMinus}점
                     </TableCell>
                     <TableCell width={180}>
-                      <CheckScoreButton onClick={() => openModal(index)}>
+                      <CheckScoreButton onClick={() => {
+                        fetchUserScoreDetail(userScoreInfo.userEmail, index);
+                        
+                      }}>
                         점수 관리
                       </CheckScoreButton>
                       <Modal
                         isOpen={modals[index] || false}
                         onClose={() => closeModal(index)}
-                        name={userScore.name}
-                        part={userScore.part}
-                        pid={userScore.pid}
+                        name={userScoreInfo.name}
+                        part={userScoreInfo.part}
+                        email={userScoreInfo.userEmail}
                         closeModalWidhtUpdate={() =>
                           closeModalWidhtUpdate(index)
                         }
@@ -876,10 +850,10 @@ const BodyDiv = styled.div`
 `;
 
 const Table = styled.table`
-  width: 1200px;
+  width: auto;
   border-collapse: collapse;
   border-spacing: 0;
-  border-radius: 4px;
+  border-radius: 4px;;
 `;
 
 const TableHead = styled.thead`
@@ -1215,7 +1189,7 @@ const CheckScoreButton = styled.button`
     font-style: normal;
     font-weight: 600;
     line-height: 24px;
-    margin-top: 66px;
+    margin-top: 10px;
 
     &:hover {
       box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
