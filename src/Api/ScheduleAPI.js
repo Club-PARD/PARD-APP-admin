@@ -1,6 +1,7 @@
 import axios from "axios";
+import { handleCheckCookie } from "./LoginService";
 
-export const getAllSchedulerData = async () => {
+export const getAllScheduleData = async () => {
     try {
         const response = await axios.get(
             //  "https://we-pard.store/v1/users/login",
@@ -9,7 +10,8 @@ export const getAllSchedulerData = async () => {
         // console.log(response);
         return response.data;
     } catch (error) {
-        console.log("get error");
+        alert("[에러] 전체 일정 정보 불러오기 실패!\n관리자에게 문의하세요!");
+        handleCheckCookie();
         throw error;
     }
 };
@@ -18,24 +20,14 @@ export const getAllSchedulerData = async () => {
 export const postScheduleData = async (addScheduleInfo) => {
     try {
         const data = addScheduleInfo;
-        // const data = {
-        //     title: "3차 과제",
-        //     content: "인스타그 클론코딩 3차",
-        //     part: "웹파트",
-        //     date: "2024-07-20T19:46:39.654Z",
-        //     contentsLocation: "",
-        //     notice: false,
-        //     remaingDay: 0,
-        //     pastEvent: true
-        // }
         const response = await axios.post(
-            //  "https://we-pard.store/v1/users/login",
             "/v1/schedule", data
         );
         // console.log(response);
         return response.data;
     } catch (error) {
-        console.log("get error");
+        alert("[에러] 일정 정보 추가하기 실패!\n관리자에게 문의하세요!");
+        handleCheckCookie();
         throw error;
     }
 };
@@ -43,11 +35,13 @@ export const postScheduleData = async (addScheduleInfo) => {
 export const deleteScheduleData = async (scheduleId) => {
     try {
         console.log("delete id : " + scheduleId);
-        const response = await axios.delete(`/v1/schedule/11`);
+        const response = await axios.delete
+            (`/v1/schedule/${scheduleId}`);
         console.log(response);
         return response.data;
     } catch (error) {
-        console.log("delete schedule error", error);
-        return error;
+        alert("[에러] 일정 정보 삭제하기 실패!\n관리자에게 문의하세요!");
+        handleCheckCookie();
+        // throw error;
     }
 };
