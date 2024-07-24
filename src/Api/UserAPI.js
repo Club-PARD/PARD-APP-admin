@@ -1,5 +1,4 @@
 import axios from "axios";
-import { handleCheckCookie } from "./LoginService";
 
 export const getAllUserData = async (generationId) => {
     try {
@@ -10,7 +9,6 @@ export const getAllUserData = async (generationId) => {
         return response.data;
     } catch (error) {
         alert("[에러] 전체 사용자 정보 불러오기 실패!\n관리자에게 문의하세요!");
-        handleCheckCookie();
     }
 };
 
@@ -25,7 +23,6 @@ export const postUserData = async (addUserInfo) => {
         return response.data;
     } catch (error) {
         alert("[에러] 사용자 정보 추가하기 실패!\n관리자에게 문의하세요!");
-        handleCheckCookie();
     }
 };
 
@@ -42,6 +39,5 @@ export const deleteUserData = async (userEmail) => {
         console.log(response);
     } catch (error) {
         alert("[에러] 사용자 정보 삭제하기 실패!\n관리자에게 문의하세요!");
-        handleCheckCookie();
     }
 }

@@ -486,7 +486,7 @@ const ScorePage = () => {
             </ModalContents>
           </ModalSubTitle>
           {isRegisterModalOpen ? (
-            <>
+            <div>
               <HR top={24} />
               <RowTitleDiv>
                 <RowTitle right={55}>파드너십</RowTitle>
@@ -530,7 +530,7 @@ const ScorePage = () => {
               <RegisterButton onClick={() => setIsRegisterModalOpen(false)}>
                 점수 추가
               </RegisterButton>
-            </>
+            </div>
           ) : (
             <>
               <ModalSubTitle>
@@ -541,10 +541,10 @@ const ScorePage = () => {
                   <DropdownButton1 onClick={ScoreoggleDropdown}>
                     {selectedScoreReason || "선택"}
                     {isDropdownOpen ? (
-                      <ArrowTop1 src={require("../Assets/img/PolygonDown.png")} />
+                      <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
                     ) : (
                       <ArrowTop1
-                        src={require("../Assets/img/Polygon.png")}
+                        src={require("../Assets/img/PolygonDown.png")}
                       />
                     )}
                   </DropdownButton1>
