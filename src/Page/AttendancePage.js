@@ -11,7 +11,7 @@ import {
 import {dbService} from "../fbase";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import React, {useEffect, useState} from "react";
-import { getAllAttendanceData } from "../Api/AttendenceAPI";
+import { getAllAttendanceData, postAttendanceData } from "../Api/AttendenceAPI";
 import { getAllUserData } from "../Api/UserAPI";
 
 /*
@@ -27,15 +27,83 @@ import { getAllUserData } from "../Api/UserAPI";
 */
 
 const AttendancePage = () => {
-    const [userDatas, setUserDatas] = useState([]);
     const [attendanceData, setAttendanceData] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState(null);
     const [addable, setAddable] = useState(true);
-    const [scheduleKeys, setScheduleKeys] = useState([]); // schedules의 sid 값들을 저장할 상태
+    
+    const attendanceTitle = ["OT", "1차 세미나", "2차 세미나", "3차 세미나", "4차 세미나", "5차 세미나", "6차 세미나", "연합세미나 1", "연합세미나 2", "숏커톤", "아이디어 피칭", "종강총회"];
+
+    const seminarMappingShow = {
+        "OT": "seminar_0",
+        "1차 세미나": "seminar_1",
+        "2차 세미나": "seminar_2",
+        "3차 세미나": "seminar_3",
+        "4차 세미나": "seminar_4",
+        "5차 세미나": "seminar_5",
+        "6차 세미나": "seminar_6",
+        "연합세미나 1": "seminar_7",
+        "연합세미나 2": "seminar_8",
+        "숏커톤": "seminar_9",
+        "아이디어 피칭": "seminar_10",
+        "종강총회": "seminar_11"
+    };
+    const seminarMappingSend = {
+        "seminar_0": "OT",
+        "seminar_1": "1차 세미나",
+        "seminar_2": "2차 세미나",
+        "seminar_3": "3차 세미나",
+        "seminar_4": "4차 세미나",
+        "seminar_5": "5차 세미나",
+        "seminar_6": "6차 세미나",
+        "seminar_7": "연합세미나 1",
+        "seminar_8": "연합세미나 2",
+        "seminar_9": "숏커톤",
+        "seminar_10": "아이디어 피칭",
+        "seminar_11": "종강총회"
+    };
+
+    // filteredUserScores 데이터를 seminar 순서에 맞게 정렬하는 함수
+    const getSortedAttendances = (attendances) => {
+        // attendances를 seminar 순서에 맞게 정렬합니다.
+        return Array.from({ length: 12 }, (_, index) => {
+            let seminarKey;
+            if (index == 0) {
+                seminarKey = `OT`;
+            } else 
+                seminarKey = `SEMINAR_${index}`;
+            return attendances.find(att => att.seminar === seminarKey) || { seminar: seminarKey, status: null };
+        });
+    };
+
+    const AttendanceTable = () => (
+        <table>
+            <thead>
+                <tr>
+                    <th>이름</th>
+                    {Object.keys(seminarMappingShow).map((title, index) => (
+                        <th key={index}>{title}</th>
+                    ))}
+                </tr>
+            </thead>
+            <tbody>
+                {filteredUserScores.map((attendanceDataInfo, index) => (
+                    <tr key={index}>
+                        <td>{attendanceDataInfo.name}</td>
+                        {getSortedAttendances(attendanceDataInfo.attendances).map((attendance, idx) => (
+                            <td key={idx}>
+                                <CustomTableCell value={attendance.status} />
+                            </td>
+                        ))}
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    );
     
     const userDataMock = [
         {
+            emai : "user1@gmail.com",
             name: "김광일",
             part : "웹파트",
             attendances: [
@@ -49,6 +117,7 @@ const AttendancePage = () => {
                 }
             ]
         },{
+            emai : "user1@gmail.com",
             name: "천주현",
             part : "서버파트",
             attendances: [
@@ -61,133 +130,40 @@ const AttendancePage = () => {
                     seminar : "1차 세미나"
                 }
             ]
+        },{
+            emai : "user1@gmail.com",
+            name: "김하람",
+            part : "iOS파트",
+            attendances: [
+                {
+                    status: "결석",
+                    seminar: "OT"
+                },
+                {
+                    status: "결석",
+                    seminar : "1차 세미나"
+                }
+            ]
         }
     ];
 
     useEffect(() => {
-        // FIREBASE CODE
-        // Firebase fireStore 스케쥴 데이터 조회
-        // const fetchSchedules = async () => {
-        //     try {
-        //         // 1. 스케줄 전체 데이터 가져오기 schedules라는 이름의 collection을 참조
-        //         const schedulesRef = collection(dbService, "schedules");
-
-        //         // 전체 스케줄 다 가져오기
-        //         const querySnapshot = await getDocs(
-        //             query(schedulesRef, where("type", "==", true))
-        //         );
-
-        //         // 2. 조회된 데이터 중 날짜로 sort 및 sid 저장 정렬된 날짜를 저장할 배열 선언
-        //         const scheduleIds = [];
-
-        //         // schedule의 id를 저장
-        //         querySnapshot.forEach((doc) => {
-        //             const data = doc.data();
-        //             scheduleIds.push({
-        //                 ...data,
-        //                 dueDate: data
-        //                     .dueDate
-        //                     .toDate()
-        //             });
-        //         });
-
-        //         // 정렬하여 저장
-        //         scheduleIds.sort((a, b) => a.dueDate - b.dueDate);
-        //         setScheduleKeys(scheduleIds);
-        //         // console.log("scheduleKeys", scheduleKeys);
-
-        //         // console.log("sid : ", scheduleIds);
-        //     } catch (error) {
-        //         console.error("Error fetching schedules:", error);
-        //     }
-        // };
-
-        // // FIREBASE CODE
-        // // Firebase fireStore 유저 데이터 조회
-        // const fetchData = async () => {
-        //     // 1. 유저 정보 전체 데이터 가져오기 user이라는 이름의 collection을 참조
-        //     const data = await getDocs(collection(dbService, "users"));
-
-        //     // 기존의 유저 정보 전체 데이터 복사본 만들기
-        //     const newData = data
-        //         .docs
-        //         .map((doc) => ({
-        //             ...doc.data()
-        //         }));
-
-        //     // key값과 values값을 저장할 배열 선언
-        //     const keys = [];
-        //     const values = [];
-
-        //     // 복사한 유저 정보 데이터 수정
-        //     newData.forEach((item) => {
-        //         const attend = item.attend || {};
-        //         const itemKeys = Object.keys(attend);
-        //         const itemValues = Object.values(attend);
-        //         keys.push(itemKeys);
-        //         values.push(itemValues);
-        //     });
-        //     const tempUserData = newData.filter((userScore) => userScore.member !== "운영진" && userScore.member !== "잔잔파도");
-        //     // 전체 유저 정보 저장
-        //     setUserDatas(tempUserData);
-        //     // console.log("userDatas", userDatas);
-        //     // console.log(userDatas);
-        // };
-
-        // fetchData();
-        // fetchSchedules();
-
         const fetchAllAttendanceData = async () => {
             const result = await getAllAttendanceData('3');
-            console.log(result);
-            setAttendanceData(result);
-        }
-        
-        const fetchAllUserInfo = async () => {
-            const result = await getAllUserData('3');
-            console.log(result);
-            setUserDatas(result);
+
+            if (result != undefined) {
+                setAttendanceData(result);
+            }
         }
         
         fetchAllAttendanceData();
-        fetchAllUserInfo();
 
         
     }, []);
     
-    // 핸들러 : 출석 정보 업데이트
-    const updateFirestore = async () => {
-        try {
-            const batch = [];
-
-            // FIREBASE CODE
-            attendanceData.forEach((userData) => {
-                const userDocRef = doc(dbService, "users", userData.uid); // userId 필드가 있다고 가정
-                const updatedAttendInfo = userData.attendInfo;
-                const updatedAttend = userData.attend;
-
-                // 사용자 문서가 존재하는지 확인
-                getDoc(userDocRef).then((doc) => {
-                    if (doc.exists()) {
-                        batch.push(updateDoc(userDocRef, { attendInfo: updatedAttendInfo, attend : updatedAttend}));
-                    } else {
-                        console.log("문서를 찾을 수 없습니다:", userData.uid);
-                        console.log("userData", userData);
-                    }
-                }).catch((error) => {
-                    console.error("Firestore 문서 조회 오류:", error);
-                });
-            });
-
-            await Promise.all(batch); // 모든 업데이트 작업이 완료될 때까지 대기
-
-            // 변경사항 저장 후 페이지를 새로 고침
-            alert("변경 사항이 저장되었습니다."); // 성공 시 알림 추가
-            setAddable(true);
-        } catch (error) {
-            console.error("Firestore 문서 업데이트 오류:", error);
-        }
-    };
+    const SaveAttendanceData = async (data) => {
+        // const response = await postAttendanceData();
+    }
 
 
     // 핸들러 : 변경 사항 저장을 묻는 핸들러
@@ -195,6 +171,7 @@ const AttendancePage = () => {
         const confirmSave = window.confirm("변경 사항을 저장하시겠습니까?");
         if (confirmSave) {
             // updateFirestore();
+            SaveAttendanceData();
             setAddable(true);
         }
     };
@@ -244,20 +221,20 @@ const AttendancePage = () => {
     //     .sort((a, b) => a.name.localeCompare(b.name));
 
     // 변수 : selectedOption에 맞춰 유저 점수를 필터해서 보여주는 부분 (운영진과 잔잔파도가 아닌 경우! (현재 활동중인 파디 + 거친파도))
-    // const filteredUserScores = selectedOption
-    //     ? userDataMock.filter(
-    //         (userScore) => userScore.part === selectedOption && userScore.member !== "운영진" && userScore.member !== "잔잔파도"
-    //     )
-    //     : userDataMock.filter(
-    //         (userScore) => userScore.member !== "운영진" && userScore.member !== "잔잔파도"
-    //     );
+    const filteredUserScores = selectedOption
+        ? attendanceData.filter(
+            (userScore) => userScore.part === selectedOption && userScore.role !== "ROLE_ADMIN"
+        )
+        : attendanceData.filter(
+            (userScore) => userScore.role !== "ROLE_ADMIN" 
+        );
 
     
     
     // 핸들러 : 즉시 업데이트 관련 코드 (수정중 즉, 출석, 지각, 결석 중 선택했을 때 선택된 값을 변경해주는 핸들러)
     const updateUser = async (index, idx, newData) => {
         // 로컬 변수 : attendanceData를 copy한 변수
-        const updatedAttendance = [...attendanceData];
+        const updatedAttendance = [...filteredUserScores];
 
         // attendInfo를 List로 변경
         updatedAttendance[index] = {
@@ -275,6 +252,7 @@ const AttendancePage = () => {
         // attendances 내 해당 인덱스에 새로운 출석 데이터 할당
         updatedAttendance[index].attendances[idx].status = newData;
 
+        console.log(updatedAttendance);
         // 변경된 attendance 정보를 저장
         setAttendanceData(updatedAttendance);
     };
@@ -508,6 +486,7 @@ const AttendancePage = () => {
                         ? (
                             <EditButton onClick={() => {
                                 setAddable(false)
+                                console.log(filteredUserScores)
                             }}>
                                 <EditIcon src={require("../Assets/img/EditIcon.png")}/>
                                 수정하기
@@ -527,6 +506,7 @@ const AttendancePage = () => {
                 addable
                     ? (
                         <BodyDiv>
+                            {/* <AttendanceTable /> */}
                             <Table>
                                 {/* Table - Head */}
                                 <TableHead>
@@ -538,18 +518,15 @@ const AttendancePage = () => {
                                             }}>
                                             이름
                                         </TableHeaderCell>
-                                        <TableHeaderCell width={152}>OT</TableHeaderCell>
-                                        <TableHeaderCell width={152}>1차 세미나</TableHeaderCell>
-                                        <TableHeaderCell width={152}>2차 세미나</TableHeaderCell>
-                                        <TableHeaderCell width={152}>3차 세미나</TableHeaderCell>
-                                        <TableHeaderCell width={152}>4차 세미나</TableHeaderCell>
-                                        <TableHeaderCell width={152}>5차 세미나</TableHeaderCell>
-                                        <TableHeaderCell width={152}>6차 세미나</TableHeaderCell>
-                                        <TableHeaderCell width={152}>연합 세미나1</TableHeaderCell>
-                                        <TableHeaderCell width={152}>숏커톤</TableHeaderCell>
-                                        <TableHeaderCell width={152}>연합 세미나2</TableHeaderCell>
-                                        <TableHeaderCell width={152}>아이디어 피칭</TableHeaderCell>
-                                        <TableHeaderCell width={152}>종강총회</TableHeaderCell>
+                                        {
+                                            Object.keys(seminarMappingShow).map((title, index) => (
+                                                <div key = {index}>
+                                                    <TableHeaderCell width={152}>{title}</TableHeaderCell>
+                                                </div>
+                                        ))}
+                                        
+                                        
+                                        
                                     </TableRow>
                                 </TableHead>
 
@@ -575,15 +552,15 @@ const AttendancePage = () => {
                                         //         }
                                         //     </TableRow>
                                         // ))
-                                        attendanceData.map((attendanceDataInfo, index) => (
+                                        filteredUserScores.map((attendanceDataInfo, index) => (
                                             <TableRow key={index}>
                                                 <TableCell color={"#2A2A2A"} width={140}>
-                                                    {userDatas[index].name}
+                                                    {attendanceDataInfo.name}
                                                 </TableCell>
                                                 {
-                                                    Array.from({ length: 12 }, (_, idx) => (
+                                                    getSortedAttendances(attendanceDataInfo.attendances).map((attendance, idx) => (
                                                         <TableCell key={idx} width={152}>
-                                                            <CustomTableCell value={attendanceDataInfo.attendances[idx]?.status} />
+                                                            <CustomTableCell value={attendance.status} />
                                                         </TableCell>
                                                     ))
                                                 }
@@ -592,6 +569,7 @@ const AttendancePage = () => {
                                     }
                                 </TableBody>
                             </Table>
+
                         </BodyDiv>
                     )
                     : (
@@ -607,40 +585,32 @@ const AttendancePage = () => {
                                             }}>
                                             이름
                                         </TableHeaderCell>
-                                        <TableHeaderCell width={152}>OT</TableHeaderCell>
-                                        <TableHeaderCell width={152}>1차 세미나</TableHeaderCell>
-                                        <TableHeaderCell width={152}>2차 세미나</TableHeaderCell>
-                                        <TableHeaderCell width={152}>3차 세미나</TableHeaderCell>
-                                        <TableHeaderCell width={152}>4차 세미나</TableHeaderCell>
-                                        <TableHeaderCell width={152}>5차 세미나</TableHeaderCell>
-                                        <TableHeaderCell width={152}>6차 세미나</TableHeaderCell>
-                                        <TableHeaderCell width={152}>연합 세미나1</TableHeaderCell>
-                                        <TableHeaderCell width={152}>숏커톤</TableHeaderCell>
-                                        <TableHeaderCell width={152}>연합 세미나2</TableHeaderCell>
-                                        <TableHeaderCell width={152}>아이디어 피칭</TableHeaderCell>
-                                        <TableHeaderCell width={152}>종강총회</TableHeaderCell>
+                                        {
+                                            Object.keys(seminarMappingShow).map((title, index) => (
+                                                <div key = {index}>
+                                                    <TableHeaderCell width={152}>{title}</TableHeaderCell>
+                                                </div>
+                                        ))}
                                     </TableRow>
                                 </TableHead>
 
                                 {/* Table - Body */}
                                 <tbody>
                                     {
-                                        attendanceData.map((attendanceDataInfo, index) => (
+                                        filteredUserScores.map((attendanceDataInfo, index) => (
                                             <TableRow key={index}>
                                                 <TableCell color={"#2A2A2A"} width={140}>
                                                     {/* {attendanceDataInfo.name} */}
-                                                     {userDatas[index].name}
+                                                        {attendanceDataInfo.name}
                                                 </TableCell>
                                                 {
-                                                    Array.from({
-                                                        length: 12
-                                                    }, (_, idx) => (
+                                                    getSortedAttendances(attendanceDataInfo.attendances).map((attendance, idx) => (
                                                         <TableCell key={idx} width={152}>
                                                             <CustomTableCell
-                                                                value={attendanceDataInfo.attendances[idx]?.status}
+                                                                value={attendance.status}
                                                                 idx={idx}
                                                                 addable={addable}
-                                                                onUpdate={(newData) => updateUser(attendanceData.indexOf(attendanceDataInfo), idx, newData)}/>
+                                                                onUpdate={(newData) => updateUser(filteredUserScores.indexOf(attendanceDataInfo), idx, newData)}/>
                                                         </TableCell>
                                                     ))
                                                 }
