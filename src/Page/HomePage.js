@@ -23,10 +23,11 @@ const HomePage = () => {
         const fetchSchedules = async () => {
             try {
                 // 1. 전체 스케줄 다 가져오기 (type 상관 없이 [false / true])
-                const data = await getAllScheduleData();
+                const result = await getAllScheduleData();
+                if (result != undefined) {
+                  setSchedule(result);
+                } 
 
-                // 2. useState 변수에 저장
-                setSchedule(data);
             } catch (error) {
                 console.error("Error fetching schedules:", error);
             }
@@ -41,7 +42,9 @@ const HomePage = () => {
                 // Firebase에서 사용자 데이터 가져오기 (전체 문서)
                 const result = await getRankingInfo();
                 // 순위를 상태에 설정
-                setUserRankings(result);
+                if (result != undefined) {
+                  setUserRankings(result);
+                } 
 
             } catch (error) {
                 console.error("Error calculating rankings:", error);

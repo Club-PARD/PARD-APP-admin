@@ -17,7 +17,6 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import style from "../Styles/calendar.module.scss";
 import { deleteScheduleData, getAllScheduleData, postScheduleData } from "../Api/ScheduleAPI";
-import { handleCheckCookie } from "../Api/LoginService";
 
 /* 
 - Firebase fireStore 스케쥴 데이터 조회
@@ -97,7 +96,6 @@ const SchedulePage = () => {
     if (userConfirmed) {
       try {
         const result = await deleteScheduleData(scheduleId);
-
         // 3. 삭제가 성공하면 화면을 새로고침
         alert("일정이 삭제되었습니다.");
         window.location.reload();
