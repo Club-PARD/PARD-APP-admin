@@ -2,7 +2,7 @@ import {GoogleAuthProvider, signInWithPopup} from "firebase/auth";
 import {auth, dbService} from "../fbase";
 import axios from "axios";
 import Cookies from 'js-cookie';
-
+import {useNavigate} from 'react-router-dom';
 
 /*
 - Google 로그인 코드
@@ -46,10 +46,8 @@ const handleLoginAPI = async (email) => {
         const response = await axios.post(
             //  "https://we-pard.store/v1/users/login",
             "/v1/users/login",
-            { email }
-            // , {
-            //     withCredentials: true
-            // }
+            {email}
+            // , {     withCredentials: true }
         );
         return response.data;
     } catch (error) {
@@ -60,9 +58,9 @@ const handleLoginAPI = async (email) => {
 
 export const handleCheckCookie = () => {
     const cookieName = ''
-    const cookieValue = Cookies.get();  
+    const cookieValue = Cookies.get();
     // JSON.parse(cookieValue.replace(new RegExp(/'/g), '"'));
-    console.log(cookieValue);
+    console.log("쿠키 확인", cookieValue);
     if (!cookieValue) {
         alert("[에러] Authorization 정보가 없습니다.\n관리자에게 문의하세요!");
         // deleteLoginInfo();
@@ -76,3 +74,20 @@ const deleteLoginInfo = () => {
 
 }
 
+export const setupAxiosInterceptors = (navigate) => {
+    axios
+        .interceptors
+        .response
+        .use((response) => {
+            // 정상 응답일 경우
+            return response;
+        }, (error) => {
+            // 오류 응답일 경우
+            if (error.response && error.response.status === 401) {
+                // 401 오류 시 로그인 페이지로 이동
+                localStorage.clear();
+                navigate('/login');
+            }
+            return Promise.reject(error);
+        });
+};
