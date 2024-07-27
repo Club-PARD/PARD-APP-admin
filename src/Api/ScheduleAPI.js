@@ -3,8 +3,7 @@ import axios from "axios";
 export const getAllScheduleData = async () => {
     try {
         const response = await axios.get(
-            //  "https://we-pard.store/v1/users/login",
-            "/v1/schedule",
+            `${process.env.REACT_APP_URL}/v1/schedule`,
         );
         // console.log(response);
         return response.data;
@@ -14,12 +13,12 @@ export const getAllScheduleData = async () => {
     }
 };
 
-
 export const postScheduleData = async (addScheduleInfo) => {
     try {
         const data = addScheduleInfo;
         const response = await axios.post(
-            "/v1/schedule", data
+            `${process.env.REACT_APP_URL}/v1/schedule`,
+            data
         );
         // console.log(response);
         return response.data;
@@ -32,8 +31,9 @@ export const postScheduleData = async (addScheduleInfo) => {
 export const deleteScheduleData = async (scheduleId) => {
     try {
         console.log("delete id : " + scheduleId);
-        const response = await axios.delete
-            (`/v1/schedule/${scheduleId}`);
+        const response = await axios.delete(
+            `${process.env.REACT_APP_URL}/v1/schedule/${scheduleId}`
+        );
         console.log(response);
         return response.data;
     } catch (error) {

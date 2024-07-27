@@ -29,9 +29,9 @@ export const handleGoogleLogin = async (navigate) => {
             localStorage.setItem("token", "pardo-admin-key");
             localStorage.setItem("userName", user.displayName);
             navigate("/");
-            window
-                .location
-                .reload();
+            // window
+            //     .location
+            //     .reload();
         } else {
             localStorage.removeItem();
         }
@@ -44,10 +44,11 @@ export const handleGoogleLogin = async (navigate) => {
 const handleLoginAPI = async (email) => {
     try {
         const response = await axios.post(
-            //  "https://we-pard.store/v1/users/login",
-            "/v1/users/login",
-            {email}
-            // , {     withCredentials: true }
+            `${process.env.REACT_APP_URL}/v1/users/login`,
+            {
+                email
+            },
+            {withCredentials: true}
         );
         return response.data;
     } catch (error) {

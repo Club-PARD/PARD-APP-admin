@@ -2,9 +2,7 @@ import axios from "axios";
 
 export const getAllScoreData = async () => {
     try {
-        const response = await axios.get(
-            "/v1/reason"
-        );
+        const response = await axios.get(`${process.env.REACT_APP_URL}/v1/reason`);
         console.log(response.data);
         return response.data;
     } catch (error) {
@@ -12,14 +10,14 @@ export const getAllScoreData = async () => {
     }
 };
 
-
 export const getSelectedUserScoreData = async (email) => {
     try {
         console.log("email", email);
         const response = await axios.get(
-            "/v1/reason/admin", {
+            `${process.env.REACT_APP_URL}/v1/reason/admin`,
+            {
                 params: {
-                    email: email,
+                    email: email
                 }
             }
         );
@@ -30,12 +28,11 @@ export const getSelectedUserScoreData = async (email) => {
     }
 }
 
-
 export const postScoreData = async (addScoreInfo) => {
     try {
         const data = addScoreInfo;
         const response = await axios.post(
-            "/v1/reason",
+            `${process.env.REACT_APP_URL}/v1/reason1`,
             data
         );
         console.log(response);
@@ -45,10 +42,9 @@ export const postScoreData = async (addScoreInfo) => {
     }
 };
 
-
 export const deleteScoreData = async (reasonId) => {
     try {
-        const response = await axios.delete("/v1/reason", {
+        const response = await axios.delete(`${process.env.REACT_APP_URL}/v1/reason`, {
             data: {
                 reasonId: reasonId
             }
@@ -62,9 +58,9 @@ export const deleteScoreData = async (reasonId) => {
 
 export const getRankingInfo = async () => {
     try {
-        const response = await axios.get("/v1/rank/total");
+        const response = await axios.get(`${process.env.REACT_APP_URL}/v1/rank/total`);
         return response.data;
-    }catch (error) {
+    } catch (error) {
         alert("[에러] 전체 랭킹 점수 불러오기 실패!\n관리자에게 문의하세요!");
     }
 }
