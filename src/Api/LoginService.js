@@ -25,6 +25,7 @@ export const handleGoogleLogin = async (navigate) => {
         const response = await handleLoginAPI(userEmail);
         if (response) {
             console.log(user.displayName);
+            console.log(response);
             alert("로그인되었습니다.");
             localStorage.setItem("token", "pardo-admin-key");
             localStorage.setItem("userName", user.displayName);
@@ -44,11 +45,7 @@ export const handleGoogleLogin = async (navigate) => {
 const handleLoginAPI = async (email) => {
     try {
         const response = await axios.post(
-            `${process.env.REACT_APP_URL}/v1/users/login`,
-            {
-                email
-            },
-            {withCredentials: true}
+            `${process.env.REACT_APP_URL}/v1/users/login`,{email}
         );
         return response.data;
     } catch (error) {
