@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import React, { useEffect } from "react";
 import { handleGoogleLogin } from "../Api/LoginService";
 import AxiosTest from "./AxiosTest";
+import { useCookies } from "react-cookie";
 
 /* 
 - 로그인 기능
@@ -12,6 +13,7 @@ import AxiosTest from "./AxiosTest";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const [cookies, setCookie, removeCookie] = useCookies(['Authorization']);
 
   // 로그인 기능
   useEffect(() => {
@@ -43,7 +45,7 @@ const LoginPage = () => {
       <Body3>
         * 본 사이트는 관리자 권한이 있는 사용자만 접근 가능한 사이트 입니다.
       </Body3>
-      <GoogleLoginButton onClick={() => handleGoogleLogin(navigate)}>
+      <GoogleLoginButton onClick={() => handleGoogleLogin(navigate, setCookie)}>
         <img
           src={require("../Assets/img/Login/GoogleLogo.png")}
           alt="GOOGLE LOGO"

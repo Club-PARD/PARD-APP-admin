@@ -2,7 +2,7 @@ import {GoogleAuthProvider, signInWithPopup} from "firebase/auth";
 import {auth, dbService} from "../fbase";
 import axios from "axios";
 import Cookies from 'js-cookie';
-import {useNavigate} from 'react-router-dom';
+
 
 /*
 - Google 로그인 코드
@@ -11,21 +11,27 @@ import {useNavigate} from 'react-router-dom';
   - 운영진 유무 확인
 */
 
-// Google 로그인 코드
-export const handleGoogleLogin = async (navigate) => {
-    const provider = new GoogleAuthProvider();
 
+// Google 로그인 코드
+export const handleGoogleLogin = async (navigate, setCookie) => {
+    const provider = new GoogleAuthProvider();
     try {
         // Google login을 통한 사용자 정보 조회
         const data = await signInWithPopup(auth, provider);
         const user = data.user;
         const userEmail = user.email;
-
+        
         // handleLoginAPI 호출 및 결과 출력
         const response = await handleLoginAPI(userEmail);
         if (response) {
             console.log(user.displayName);
             console.log(response);
+            setCookie('Authorization', response, {
+                path: '/', 
+                maxAge: 60 * 60,
+                domain: 'pard-app-project.web.app'
+                // domain : 'we-pard.store'
+            });
             alert("로그인되었습니다.");
             localStorage.setItem("token", "pardo-admin-key");
             localStorage.setItem("userName", user.displayName);
@@ -45,7 +51,8 @@ export const handleGoogleLogin = async (navigate) => {
 const handleLoginAPI = async (email) => {
     try {
         const response = await axios.post(
-            `${process.env.REACT_APP_URL}/v1/users/login`,{email}
+            `${process.env.REACT_APP_URL}/v1/users/login`, { email },
+            {withCredentials : true}
         );
         return response.data;
     } catch (error) {
