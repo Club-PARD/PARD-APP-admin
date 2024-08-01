@@ -21,7 +21,7 @@ export const postUserData = async (addUserInfo) => {
             data,
             {withCredentials: true}
         );
-        console.log(response);
+        // console.log(response);
         return response.data;
     } catch (error) {
         alert("[에러] 사용자 정보 추가하기 실패!\n관리자에게 문의하세요!");
@@ -36,7 +36,7 @@ export const deleteUserData = async (userEmail) => {
             },
             withCredentials: true
         });
-        console.log(response);
+        // console.log(response);
     } catch (error) {
         alert("[에러] 사용자 정보 삭제하기 실패!\n관리자에게 문의하세요!");
     }

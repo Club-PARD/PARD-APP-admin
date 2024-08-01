@@ -6,7 +6,7 @@ export const getAllAttendanceData = async (generationId) => {
             `${process.env.REACT_APP_URL}/v1/attendance/all/` + generationId,
             {withCredentials: true}
         );
-        console.log(response.data);
+        // console.log(response.data);
         return response.data;
     } catch (error) {
         alert("[에러] 전체 출석 정보 불러오기 실패!\n관리자에게 문의하세요!");
@@ -21,7 +21,7 @@ export const postAttendanceData = async (addUserInfo) => {
             data,
             {withCredentials: true}
         );
-        console.log(response);
+        // console.log(response);
         return response.data;
     } catch (error) {
         alert("[에러] 출석 정보 추가하기 실패!\n관리자에게 문의하세요!");

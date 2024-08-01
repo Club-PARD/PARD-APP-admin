@@ -192,7 +192,7 @@ const UserPage = () => {
                 // addUserInfo 배열에 data를 추가
                 addUserInfo.push(data);
             }
-            console.log(index);
+            // console.log(index);
         }
 
         try {

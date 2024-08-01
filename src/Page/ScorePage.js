@@ -114,7 +114,7 @@ const ScorePage = () => {
           setUserScores(result);
         else
           setUserScores([]);
-        console.log(result);
+        // console.log(result);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching user scores:", error);
@@ -220,7 +220,7 @@ const ScorePage = () => {
         
         if (scoreMatch) {
           let scoreDigit = parseFloat(scoreMatch[1]);
-          console.log("score" + scoreDigit);
+          // console.log("score" + scoreDigit);
           let selectedType;
           switch (selectedScore) {
             case "주요 행사 MVP (+5점)":
@@ -678,8 +678,8 @@ const ScorePage = () => {
     } else {
       alert("사용자 이메일이 존재하지 않습니다.");
     }
-    console.log(result);
-    console.log(mockDataDetail);
+    // console.log(result);
+    // console.log(mockDataDetail);
   }
   
   // Main 화면 코드

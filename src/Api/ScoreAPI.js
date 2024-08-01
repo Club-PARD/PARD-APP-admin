@@ -6,7 +6,7 @@ export const getAllScoreData = async () => {
             `${process.env.REACT_APP_URL}/v1/reason`,
             {withCredentials: true}
         );
-        console.log(response.data);
+        // console.log(response.data);
         return response.data;
     } catch (error) {
         alert("[에러] 전체 점수 불러오기 실패!\n관리자에게 문의하세요!");
@@ -15,7 +15,7 @@ export const getAllScoreData = async () => {
 
 export const getSelectedUserScoreData = async (email) => {
     try {
-        console.log("email", email);
+        // console.log("email", email);
         const response = await axios.get(
             `${process.env.REACT_APP_URL}/v1/reason/admin`,
             {
@@ -25,7 +25,7 @@ export const getSelectedUserScoreData = async (email) => {
                 withCredentials: true
             }
         );
-        console.log(response);
+        // console.log(response);
         return response.data;
     } catch (error) {
         alert("[에러] 선택한 사용자 점수 정보 불러오기 실패!\n관리자에게 문의하세요!");
@@ -40,7 +40,7 @@ export const postScoreData = async (addScoreInfo) => {
             data,
             {withCredentials: true}
         );
-        console.log(response);
+        // console.log(response);
         return response.data;
     } catch (error) {
         alert("[에러] 점수 정보 추가하기 실패!\n관리자에게 문의하세요!");

@@ -252,7 +252,7 @@ const AttendancePage = () => {
         // attendances 내 해당 인덱스에 새로운 출석 데이터 할당
         updatedAttendance[index].attendances[idx].status = newData;
 
-        console.log(updatedAttendance);
+        // console.log(updatedAttendance);
         // 변경된 attendance 정보를 저장
         setAttendanceData(updatedAttendance);
     };
@@ -486,7 +486,7 @@ const AttendancePage = () => {
                         ? (
                             <EditButton onClick={() => {
                                 setAddable(false)
-                                console.log(filteredUserScores)
+                                // console.log(filteredUserScores)
                             }}>
                                 <EditIcon src={require("../Assets/img/EditIcon.png")}/>
                                 수정하기
