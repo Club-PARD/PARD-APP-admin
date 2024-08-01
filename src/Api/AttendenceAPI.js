@@ -4,6 +4,7 @@ export const getAllAttendanceData = async (generationId) => {
     try {
         const response = await axios.get(
             `${process.env.REACT_APP_URL}/v1/attendance/all/` + generationId,
+            {withCredentials: true}
         );
         console.log(response.data);
         return response.data;
@@ -17,7 +18,8 @@ export const postAttendanceData = async (addUserInfo) => {
         const data = addUserInfo;
         const response = await axios.post(
             `${process.env.REACT_APP_URL}/v1/users`,
-            data
+            data,
+            {withCredentials: true}
         );
         console.log(response);
         return response.data;

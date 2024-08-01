@@ -4,6 +4,7 @@ export const getAllScheduleData = async () => {
     try {
         const response = await axios.get(
             `${process.env.REACT_APP_URL}/v1/schedule`,
+            {withCredentials: true}
         );
         // console.log(response);
         return response.data;
@@ -18,7 +19,8 @@ export const postScheduleData = async (addScheduleInfo) => {
         const data = addScheduleInfo;
         const response = await axios.post(
             `${process.env.REACT_APP_URL}/v1/schedule`,
-            data
+            data,
+            {withCredentials: true}
         );
         // console.log(response);
         return response.data;
@@ -32,7 +34,8 @@ export const deleteScheduleData = async (scheduleId) => {
     try {
         console.log("delete id : " + scheduleId);
         const response = await axios.delete(
-            `${process.env.REACT_APP_URL}/v1/schedule/${scheduleId}`
+            `${process.env.REACT_APP_URL}/v1/schedule/${scheduleId}`,
+            {withCredentials: true}
         );
         console.log(response);
         return response.data;

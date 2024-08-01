@@ -4,6 +4,7 @@ export const getAllUserData = async (generationId) => {
     try {
         const response = await axios.get(
             `${process.env.REACT_APP_URL}/v1/users/` + generationId,
+            {withCredentials: true}
         );
         // console.log(response);
         return response.data;
@@ -17,7 +18,8 @@ export const postUserData = async (addUserInfo) => {
         const data = addUserInfo;
         const response = await axios.post(
             `${process.env.REACT_APP_URL}/v1/users`,
-            data
+            data,
+            {withCredentials: true}
         );
         console.log(response);
         return response.data;
@@ -31,7 +33,8 @@ export const deleteUserData = async (userEmail) => {
         const response = await axios.delete(`${process.env.REACT_APP_URL}/v1/users`, {
             params: {
                 email: userEmail
-            }
+            },
+            withCredentials: true
         });
         console.log(response);
     } catch (error) {
