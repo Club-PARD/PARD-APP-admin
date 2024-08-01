@@ -6,7 +6,7 @@ export const getAllUserData = async (generationId) => {
             `${process.env.REACT_APP_URL}/v1/users/` + generationId,
             {withCredentials: true}
         );
-        // console.log(response);
+        console.log(response);
         return response.data;
     } catch (error) {
         alert("[에러] 전체 사용자 정보 불러오기 실패!\n관리자에게 문의하세요!");

@@ -780,13 +780,14 @@ const UserPage = () => {
         const phoneNumber = userInfo.phoneNumber;
 
         // 전화번호가 11글자인지 확인
-        if (phoneNumber.length === 11) {
+        if (phoneNumber.length === 11|| phoneNumber.length > 11) {
             // 포맷 변경
             const formattedNumber = phoneNumber.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
             return formattedNumber;
         } else {
             // 예외처리: 전화번호가 11글자가 아닌 경우
             // alert('전화번호는 11글자여야 합니다.');
+            // console.log(userInfo.phoneNumber);
         }
     }
 
