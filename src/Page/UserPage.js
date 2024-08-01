@@ -786,7 +786,7 @@ const UserPage = () => {
             return formattedNumber;
         } else {
             // 예외처리: 전화번호가 11글자가 아닌 경우
-            alert('전화번호는 11글자여야 합니다.');
+            // alert('전화번호는 11글자여야 합니다.');
         }
     }
 

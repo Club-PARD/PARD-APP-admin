@@ -19,40 +19,40 @@ const HomePage = () => {
     const [schedules, setSchedule] = useState([]);
     const [userRankings, setUserRankings] = useState([]);
 
-    // useEffect(() => {
-    //     const fetchSchedules = async () => {
-    //         try {
-    //             // 1. 전체 스케줄 다 가져오기 (type 상관 없이 [false / true])
-    //             const result = await getAllScheduleData();
-    //             if (result != undefined) {
-    //               setSchedule(result);
-    //             } 
+    useEffect(() => {
+        const fetchSchedules = async () => {
+            try {
+                // 1. 전체 스케줄 다 가져오기 (type 상관 없이 [false / true])
+                const result = await getAllScheduleData();
+                if (result != undefined) {
+                  setSchedule(result);
+                } 
 
-    //         } catch (error) {
-    //             console.error("Error fetching schedules:", error);
-    //         }
-    //     };
+            } catch (error) {
+                console.error("Error fetching schedules:", error);
+            }
+        };
 
-    //     fetchSchedules();
-    // }, []);
+        fetchSchedules();
+    }, []);
 
-    // useEffect(() => {
-    //     const calculateUserRankings = async () => {
-    //         try {
-    //             // Firebase에서 사용자 데이터 가져오기 (전체 문서)
-    //             const result = await getRankingInfo();
-    //             // 순위를 상태에 설정
-    //             if (result != undefined) {
-    //               setUserRankings(result);
-    //             } 
+    useEffect(() => {
+        const calculateUserRankings = async () => {
+            try {
+                // Firebase에서 사용자 데이터 가져오기 (전체 문서)
+                const result = await getRankingInfo('3');
+                // 순위를 상태에 설정
+                if (result != undefined) {
+                  setUserRankings(result);
+                } 
 
-    //         } catch (error) {
-    //             console.error("Error calculating rankings:", error);
-    //         }
-    //     };
+            } catch (error) {
+                console.error("Error calculating rankings:", error);
+            }
+        };
 
-    //     calculateUserRankings();
-    // }, []);
+        calculateUserRankings();
+    }, []);
 
     // 최근 다섯 개의 스케줄 return하는 핸들러
     const getRecentSchedules = () => {
