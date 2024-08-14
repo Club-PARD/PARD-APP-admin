@@ -25,6 +25,7 @@ export const postUserData = async (addUserInfo) => {
         return response.data;
     } catch (error) {
         alert("[에러] 사용자 정보 추가하기 실패!\n관리자에게 문의하세요!");
+        return false;
     }
 };
 
