@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import {
   collection,
@@ -37,6 +37,7 @@ const SchedulePage = () => {
   const [schedules, setSchedule] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   // FIREBASE CODE
   // Firebase fireStore 스케쥴 조회
@@ -181,12 +182,16 @@ const SchedulePage = () => {
                     <PartNameDiv isPastEvent = {schedule.isPastEvent}>{schedule.part}</PartNameDiv>
                     <DateDiv>{schedule.title}</DateDiv>
                   </FlextBoxDiv>
-                  <DelteButton
-                    onClick={() => handleDeleteSchedule(schedule.scheduleId) }
-                  >
-                    <DeleteIcon src={require("../Assets/img/DeleteIcon.png")} />
-                    삭제
-                  </DelteButton>
+                  <div>
+                    <DelteButton onClick={() => handleDeleteSchedule(schedule.scheduleId) }>
+                      <DeleteIcon src={require("../Assets/img/DeleteIcon.png")} />
+                      삭제
+                    </DelteButton>
+                    <DelteButton onClick={() => setIsOpen(true)}>
+                      <DeleteIcon src={require("../Assets/img/EditIcon.png")} />
+                      수정
+                    </DelteButton>
+                  </div>
                 </ScheduleFirstDiv>
                 <ContentText>
                   일시 : {formatDate(schedule.date)}
@@ -214,12 +219,16 @@ const SchedulePage = () => {
                     <PartNameDiv isPastEvent = {schedule.isPastEvent}>{getPartName(schedule.part)}</PartNameDiv>
                     <DateDiv>{schedule.title}</DateDiv>
                   </FlextBoxDiv>
-                  <DelteButton
-                    onClick={() => handleDeleteSchedule(schedule.scheduleId)}
-                  >
-                    <DeleteIcon src={require("../Assets/img/DeleteIcon.png")} />
-                    삭제
-                  </DelteButton>
+                  <div>
+                    <DelteButton onClick={() => handleDeleteSchedule(schedule.scheduleId) }>
+                      <DeleteIcon src={require("../Assets/img/DeleteIcon.png")} />
+                      삭제
+                    </DelteButton>
+                    <DelteButton onClick={openTaskModal}>
+                      <DeleteIcon src={require("../Assets/img/EditIcon.png")} />
+                      수정
+                    </DelteButton>
+                  </div>
                 </ScheduleFirstDiv>
                 <ContentText>
                   설명 : {schedule.content || "내용 없음"}
@@ -232,6 +241,8 @@ const SchedulePage = () => {
             ))}
           </ScheduleDiv>
         </LeftDiv>
+
+        {isOpen}
       </BodyDiv>
 
       {/* 추가하기 모달 Content */}
@@ -339,7 +350,6 @@ const ScheduleFirstDiv = styled.div`
   width: 100%;
   height: 32px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
 `;
 
@@ -393,7 +403,7 @@ const DelteButton = styled.button`
   align-items: center;
   justify-content: center;
   margin-right: 24px;
-  margin-bottom: 3px;
+  margin-bottom: 10px;
   cursor: pointer;
 `;
 

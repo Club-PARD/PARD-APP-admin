@@ -45,12 +45,15 @@ const UserPage = () => {
     const [selectedPartFilter, setSelectedPartFilter] = useState("파트");
     const [isdropdownPart, setIsdropdownPart] = useState(false);
     const [isContentChanged, setContentChanged] = useState(false); // 컨텐츠 변경 확인 state
+    const [selectedGeneration, setSelectedGeneration] = useState(3);
+    const [isDropDownGeneration, setIsDropDownGeneration] = useState(false);
 
     // 변수 : User 정보 조회 후 sort
-    const sortedUserDataList
-        = userDataList
-            ? userDataList.filter((userDataList) => userDataList.name).sort((a, b) => a.name.localeCompare(b.name))
-            : [];
+    const sortedUserDataList = userDataList
+        ? userDataList
+            .filter((userDataList) => userDataList.name)
+            .sort((a, b) => a.name.localeCompare(b.name))
+        : [];
 
     // 변수 : 파트 구분
     const filteredUserDataList = sortedUserDataList.filter((userDataList) => {
@@ -62,11 +65,11 @@ const UserPage = () => {
     // FIREBASE CODE Firebase fireStore User 데이터 조회
     useEffect(() => {
         const getUsers = async () => {
-            const users = await getAllUserData(3);
+            const users = await getAllUserData(selectedGeneration);
             setUserDataList(users);
         };
         getUsers();
-    }, []);
+    }, [selectedGeneration]);
 
     // 토글 코드
     const handleArrowTopClick = () => {
@@ -200,7 +203,9 @@ const UserPage = () => {
             postUserData(addUserInfo);
             setAddable(true); // 버튼 활성화
             alert("등록 성공!"); // 사용자에게 성공 메시지 표시
-            window.location.reload(); // 페이지 새로고침
+            window
+                .location
+                .reload(); // 페이지 새로고침
         } catch (error) {
             console.error("Error adding document: ", error);
         }
@@ -249,227 +254,6 @@ const UserPage = () => {
         newModals[index] = false;
         setModals(newModals);
     };
-
-    // 모달 관련 Style 코드
-    const ModalWrapper = styled.div `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.1);
-    display: ${ (
-        props
-    ) => (
-        props.isModalOpen
-            ? "block"
-            : "none"
-    )};
-  `;
-
-    const ModalContent = styled.div `
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 620px;
-    height: 640px;
-    background-color: white;
-  `;
-
-    const ModalTitleDiv = styled.div `
-    display: flex;
-    margin-left: 56px;
-    margin-top: 40px;
-    margin-bottom: 40px;
-    justify-content: space-between;
-    align-items: flex-start;
-    height: 36px;
-  `;
-
-    const ModalTitle = styled.div `
-    color: var(--black-background, #1a1a1a);
-    font-family: "Pretendard";
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 32px;
-  `;
-
-    const CancelIcon = styled.img `
-    width: 36px;
-    height: 36px;
-    cursor: pointer;
-    margin-right: 32px;
-  `;
-
-    const ModalSubTitle = styled.div `
-    height: 24px;
-    display: flex;
-    margin-left: 56px;
-    align-items: center;
-    margin-top: 24px;
-    margin-top: ${ (
-        props
-    ) => props.top || 46}px;
-  `;
-
-    const ModalContents = styled.div `
-    color: ${ (props) => props.color};
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: ${ (
-        props
-    ) => props.weight};
-    line-height: 24px;
-    margin-right: ${ (props) => props.right}px;
-    margin-top: ${ (
-        props
-    ) => props.top}px;
-  `;
-
-    const Input = styled.input `
-    width: 395px;
-    height: 42px;
-    border-radius: 4px;
-    border: 1px solid var(--Gray10, #e4e4e4);
-    background: var(--White, #fff);
-    color: var(--Gray30, #a3a3a3);
-    font-family: "Pretendard";
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 18px;
-    padding-left: 20px;
-    color: var(--black-background, #1a1a1a);
-
-    &::placeholder {
-      color: var(--Gray30, #a3a3a3);
-      padding-right: 20px;
-    }
-  `;
-    const UpdateButton = styled.button `
-    width: 556px;
-    height: 48px;
-    margin-left: 32px;
-    border-radius: 8px;
-    background: var(--primary-blue, #5262f5);
-    display: flex;
-    width: 556px;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    color: var(--White, #fff);
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 24px;
-    margin-top: 66px;
-    border: none;
-    cursor: ${ (
-        props
-    ) => (
-        props.disabled
-            ? "not-allowed"
-            : "pointer"
-    )};
-    background: ${ (props) => (
-        props.disabled
-            ? "#A3A3A3"
-            : "#5262f5"
-    )};
-    &:hover {
-      box-shadow: ${ (props) => props.disabled
-        ? "none"
-        : "0px 4px 8px 0px #5262f5"};
-    }
-
-    &:active {
-      box-shadow: ${ (
-            props
-        ) => props.disabled
-            ? "none"
-            : "0px 4px 8px 0px #5262f5 inset"};
-    }
-  `;
-
-    const DropdownWrapperModal = styled.div `
-    position: relative;
-    display: inline-block;
-    display: flex;
-    width: 100%;
-    justify-content: center;
-    align-items: center;
-    gap: 24px;
-    width: 125px;
-    border-radius: 2px;
-    border: 1px solid var(--primary-blue, #5262f5);
-    background: var(--White, #fff);
-  `;
-
-    const DropdownButtonModal = styled.button `
-    cursor: pointer;
-    width: 100%;
-    height: 100%;
-    background-color: white;
-    background: ${ (
-        props
-    ) => props.Backcolor};
-    color: var(--black-background, #1a1a1a);
-    font-family: "Pretendard";
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 24px;
-    border: none;
-    padding: 8px 12px;
-    color: ${ (
-        props
-    ) => (
-        props.color
-            ? "#1A1A1A"
-            : "#A3A3A3"
-    )};
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--black-background, #1a1a1a);
-  `;
-
-    const DropdownContentModal = styled.div `
-    display: ${ (props) => (
-        props.isOpen
-            ? "block"
-            : "none"
-    )};
-    position: absolute;
-    background-color: #f1f1f1;
-    width: 125px;
-    z-index: 1;
-    top: 100%;
-    border-radius: 2px 2px 0px 0px;
-    border: 1px solid var(--primary-blue, #5262f5);
-    background: var(--White, #fff);
-    margin-top: 5px;
-  `;
-
-    const DropdownItemModal = styled.div `
-    padding: 10px;
-    cursor: pointer;
-    color: var(--black-background, #1a1a1a);
-    font-family: "Pretendard";
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 18px;
-    border: 0.5px solid var(--primary-blue, #5262f5);
-    text-align: center;
-    &:hover {
-      background: var(--primary-blue-10, #eeeffe);
-    }
-  `;
 
     // Modal 컴포넌트
     const Modal = ({
@@ -572,53 +356,24 @@ const UserPage = () => {
 
             if (confirmUpdate) {
                 try {
-                    const updates = {
+                    const updatedUserInfo = {
                         name: inputName,
-                        phone: inputPhoneNum,
+                        email: userEmail,
                         part: selectedOption,
-                        member: selectedRoleOption
+                        phoneNumber: inputPhoneNum,
+                        role: selectedRoleOption,
+                        generation: inputGeneration
                     };
-
-                    if (selectedRoleOption === "ROLE_ADMIN") {
-                        updates.isAdmin = true;
-                        updates.isMaster = true;
+                    console.log(updatedUserInfo);
+                    const response = await postUserData(updatedUserInfo);
+                    if (response) {
+                        alert("사용자 정보가 업데이트되었습니다.");
+                        closeModalUpdate();
+                        setContentChanged(false); // 정보 수정이 되었으므로 false로 초기화
+                        window
+                            .location
+                            .reload();
                     }
-
-                    if (selectedRoleOption === "ROLE_ADMIN" || selectedRoleOption === "ROLE_OB") {
-                        updates.attend = {};
-                        updates.attendInfo = {};
-                    }
-
-                    const pointsQuery = query(
-                        collection(dbService, "points"),
-                        where("pid", "==", pid)
-                    );
-                    const pointsQuerySnapshot = await getDocs(pointsQuery);
-
-                    if (!pointsQuerySnapshot.empty) {
-                        const pointsDocRef = pointsQuerySnapshot
-                            .docs[0]
-                            .ref;
-                        const pointsUpdates = {
-                            beePoints: [],
-                            pid: pid,
-                            points: [],
-                            uid: uid
-                        };
-
-                        await updateDoc(pointsDocRef, pointsUpdates);
-                    }
-
-                    // Update the user document in Firestore
-                    const userDocRefUp = doc(dbService, "users", uid);
-                    await updateDoc(userDocRefUp, updates);
-
-                    alert("사용자 정보가 업데이트되었습니다.");
-                    closeModalUpdate();
-                    setContentChanged(false); // 정보 수정이 되었으므로 false로 초기화
-                    window
-                        .location
-                        .reload();
                 } catch (error) {
                     console.error("사용자 정보 업데이트 실패:", error);
                     alert("사용자 정보 업데이트 중 오류가 발생했습니다.");
@@ -777,19 +532,28 @@ const UserPage = () => {
     }
 
     const formatPhoneNumber = (userInfo) => {
-        const phoneNumber = userInfo.phoneNumber;
+        const phoneNumber = userInfo
+            ?.phoneNumber || "";
 
         // 전화번호가 11글자인지 확인
-        if (phoneNumber.length === 11|| phoneNumber.length > 11) {
+        if (
+            phoneNumber
+                ?.length === 11 || phoneNumber
+                    ?.length > 11
+        ) {
             // 포맷 변경
-            const formattedNumber = phoneNumber.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+            const formattedNumber = phoneNumber.replace(
+                /(\d{3})(\d{4})(\d{4})/,
+                '$1-$2-$3'
+            );
             return formattedNumber;
         } else {
-            // 예외처리: 전화번호가 11글자가 아닌 경우
-            // alert('전화번호는 11글자여야 합니다.');
+            // 예외처리: 전화번호가 11글자가 아닌 경우 alert('전화번호는 11글자여야 합니다.');
             // console.log(userInfo.phoneNumber);
         }
     }
+
+
 
     // Main 화면 코드
     return (
@@ -805,15 +569,18 @@ const UserPage = () => {
                     ? (
                         <BodyAddDiv>
                             <FirstDiv>
-                                <FlexDiv>
-                                    <MemberNumText color={"#1A1A1A"} right={4}>
-                                        총
-                                    </MemberNumText>
-                                    <MemberNumText color={"#5262F5"}>
-                                        {filteredUserDataList.length}
-                                    </MemberNumText>
-                                    <MemberNumText color={"#1A1A1A"}>명</MemberNumText>
-                                </FlexDiv>
+                                <GenerationDiv>
+                                    <FlexDiv>
+                                        <MemberNumText color={"#1A1A1A"} right={4}>
+                                            총
+                                        </MemberNumText>
+                                        <MemberNumText color={"#5262F5"}>
+                                            {filteredUserDataList.length}
+                                        </MemberNumText>
+                                        <MemberNumText color={"#1A1A1A"}>명</MemberNumText>
+                                    </FlexDiv>
+                                    <GenerationDropDown selectedGeneration={selectedGeneration} isDropDownGeneration={isDropDownGeneration} setIsDropDownGeneration={setIsDropDownGeneration} setSelectedGeneration={setSelectedGeneration} />
+                                </GenerationDiv>
                                 <RegisterButton onClick={() => setAddable(false)}>
                                     <RegisterMemberIcon src={require("../Assets/img/MemberIcon.png")}/>
                                     사용자 추가
@@ -842,12 +609,8 @@ const UserPage = () => {
                                                 {selectedMemberFilter || "구분"}
                                                 {
                                                     !isDropdownOpen
-                                                        ? (
-                                                            <ArrowTop1 src={require("../Assets/img/PolygonDown.png")}/>
-                                                        )
-                                                        : (
-                                                            <ArrowTop1 src={require("../Assets/img/Polygon.png")}/>
-                                                        )
+                                                        ? (<ArrowTop1 src={require("../Assets/img/PolygonDown.png")}/>)
+                                                        : (<ArrowTop1 src={require("../Assets/img/Polygon.png")}/>)
                                                 }
                                             </DropdownButton>
                                             <DropdownContent isOpen={isDropdownOpen} left={-5} width={145}>
@@ -869,12 +632,8 @@ const UserPage = () => {
                                                 {selectedPartFilter || "파트"}
                                                 {
                                                     !isdropdownPart
-                                                        ? (
-                                                            <ArrowTop1 src={require("../Assets/img/PolygonDown.png")}/>
-                                                        )
-                                                        : (
-                                                            <ArrowTop1 src={require("../Assets/img/Polygon.png")}/>
-                                                        )
+                                                        ? (<ArrowTop1 src={require("../Assets/img/PolygonDown.png")}/>)
+                                                        : (<ArrowTop1 src={require("../Assets/img/Polygon.png")}/>)
                                                 }
                                             </DropdownButton>
                                             <DropdownContent isOpen={isdropdownPart} left={-7} width={120}>
@@ -943,9 +702,7 @@ const UserPage = () => {
                     : (
                         <BodyAddDiv>
                             <FirstDiv>
-                                <FlexDiv>
-
-                                </FlexDiv>
+                                <FlexDiv></FlexDiv>
                                 <FlexDiv>
                                     <CancelButton onClick={handleCancelClick}>취소하기</CancelButton>
                                     <RegisterAddButton onClick={handleEditButtonClick}>
@@ -1069,546 +826,586 @@ const UserPage = () => {
 
 export default UserPage;
 
+export const GenerationDropDown = ({ selectedGeneration, isDropDownGeneration, setIsDropDownGeneration, setSelectedGeneration }) => {
+    // 기수 리스트 
+    const GenerationList = [1, 2, 3, 4, 5];
+
+    // 기수 변경 시 실행되는 핸들러
+    const handleSelectGeneration = (generation) => {
+        setSelectedGeneration(generation);
+        setIsDropDownGeneration(false);
+    }
+    return (
+        <DropdownGenerationBox>
+            <SelectedGeneration><strong>{selectedGeneration}기</strong></SelectedGeneration>
+            {
+                isDropDownGeneration
+                    ? <DropdownGenerationImg src={require("../Assets/img/Polygon.png")} onClick={() => setIsDropDownGeneration(false)} />
+                    : <DropdownGenerationImg src={require("../Assets/img/PolygonDown.png")} onClick={() => setIsDropDownGeneration(true)} />
+
+            }
+            {isDropDownGeneration && 
+                <DropdownGenerationListBox>
+                    {
+                        GenerationList.map((generation, index) => (
+                            <DropdownGenerationItemBox key={index} onClick={() => handleSelectGeneration(generation)}>
+                                <span>
+                                    {generation}기
+                                </span>
+                            </DropdownGenerationItemBox>
+                        ))
+
+                    }
+                </DropdownGenerationListBox>
+            }
+        </DropdownGenerationBox>
+    )
+}
 const DDiv = styled.div `
-  background: #fff;
-  margin: 0 auto;
-  height: 100%;
-  overflow-y: hidden;
+    background: #fff;
+    margin: 0 auto;
+    height: 100%;
+    overflow-y: hidden;
 `;
 
 const TitleDiv = styled.div `
-  display: flex;
-  margin-top: 25px;
-  margin-left: 80px;
-  align-items: center;
+    display: flex;
+    margin-top: 25px;
+    margin-left: 80px;
+    align-items: center;
 `;
 
 const HomeTitle = styled.div `
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 32px;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 32px;
 `;
 
 const SubTitle = styled.div `
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 24px;
-  margin-top: 1px;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    margin-top: 1px;
 `;
 
 const BarText = styled.div `
-  width: 2px;
-  height: 24px;
-  margin-top: 1px;
-  margin-left: 12px;
-  margin-right: 14px;
-  background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
+    width: 2px;
+    height: 24px;
+    margin-top: 1px;
+    margin-left: 12px;
+    margin-right: 14px;
+    background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
 `;
 
 const BodyDiv = styled.div `
-  display: flex;
-  flex-direction: column;
-  margin-top: 83px;
-  margin-left: 80px;
-  max-width: 1240px;
-  width: 90%;
-  height: 700px;
+    display: flex;
+    flex-direction: column;
+    margin-top: 83px;
+    margin-left: 80px;
+    max-width: 1240px;
+    width: 90%;
+    height: 700px;
 `;
 
 const TableDiv = styled.div `
-  display: flex;
-  flex-direction: column;
-  width: 1242px;
-  height: 700px;
-  overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    width: 1242px;
+    height: 700px;
+    overflow-y: scroll;
 `;
 
 const BodyAddDiv = styled.div `
-  display: flex;
-  flex-direction: column;
-  margin-top: 83px;
-  margin-left: 80px;
-  width: 77%;
-  height: 744px;
+    display: flex;
+    flex-direction: column;
+    margin-top: 83px;
+    margin-left: 80px;
+    width: 77%;
+    height: 744px;
 `;
 
 const FlexDiv = styled.div `
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 `;
 
 const FirstDiv = styled.div `
-  display: flex;
-  height: 48px;
-  width: 100%;
-  margin-bottom: 16px;
-  justify-content: space-between;
-  align-items: flex-end;
+    display: flex;
+    height: 48px;
+    width: 100%;
+    margin-bottom: 16px;
+    justify-content: space-between;
+    align-items: flex-end;
+`;
+
+export const GenerationDiv = styled.div `
+    display: flex;
+    width: 150px;
 `;
 
 const MemberNumText = styled.div `
-  color: ${ (props) => props.color};
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 24px;
-  margin-right: ${ (
-    props
-) => props.right}px;
-`;
+    color: ${ (props) => props.color};
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    margin-right: ${ (
+        props
+    ) => props.right}px;
+    `;
 
-const RegisterMemberIcon = styled.img `
-  width: 24px;
-  height: 24px;
-  margin-right: 8px;
+    const RegisterMemberIcon = styled.img `
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
 `;
 
 const RegisterButton = styled.button `
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  border-radius: 8px;
-  border: 1px solid var(--primary-blue, #5262f5);
-  background: rgba(82, 98, 245, 0.1);
-  color: var(--primary-blue, #5262f5);
-  font-family: "Pretendard";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  padding: 12px 36px;
-  cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    border-radius: 8px;
+    border: 1px solid var(--primary-blue, #5262f5);
+    background: rgba(82, 98, 245, 0.1);
+    color: var(--primary-blue, #5262f5);
+    font-family: "Pretendard";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 24px;
+    padding: 12px 36px;
+    cursor: pointer;
 
-  &:hover {
+    &:hover {
     box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-  }
-  &:active {
+    }
+    &:active {
     box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-  }
+    }
 `;
 
 const RegisterAddButton = styled.button `
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  border-radius: 8px;
-  background: #5262f5;
-  color: #fff;
-  font-family: "Pretendard";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  padding: 12px 65px;
-  cursor: pointer;
-  border: none;
-  &:hover {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-  }
-  &:active {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-  }
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    border-radius: 8px;
+    background: #5262f5;
+    color: #fff;
+    font-family: "Pretendard";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 24px;
+    padding: 12px 65px;
+    cursor: pointer;
+    border: none;
+    &:hover {
+        box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
+    }
+    &:active {
+        box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
+    }
 `;
 
 const CancelButton = styled.button `
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  border-radius: 8px;
-  background: var(--Gray10, #e4e4e4);
-  color: var(--black-card, #2a2a2a);
-  font-family: "Pretendard";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  padding: 12px 65px;
-  cursor: pointer;
-  border: none;
-  margin-right: 16px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    border-radius: 8px;
+    background: var(--Gray10, #e4e4e4);
+    color: var(--black-card, #2a2a2a);
+    font-family: "Pretendard";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 24px;
+    padding: 12px 65px;
+    cursor: pointer;
+    border: none;
+    margin-right: 16px;
 `;
 
 const Table = styled.table `
-  border-collapse: collapse;
-  border-spacing: 0;
-  border-radius: 4px;
+    border-collapse: collapse;
+    border-spacing: 0;
+    border-radius: 4px;
 `;
 
 const TableHead = styled.thead `
-  background-color: #eee;
-  border-bottom: 1px solid #a3a3a3;
-  position: sticky;
-  top: 0;
+    background-color: #eee;
+    border-bottom: 1px solid #a3a3a3;
+    position: sticky;
+    top: 0;
 `;
 
 const TableBody = styled.tbody `
-  display: block;
-  max-height: calc(100% - 48px);
-  overflow-y: auto;
-  border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
-  &:first-child {
-    border-left: 1px solid var(--Gray30, #a3a3a3);
-  }
+    display: block;
+    max-height: calc(100% - 48px);
+    overflow-y: auto;
+    border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
+    &:first-child {
+        border-left: 1px solid var(--Gray30, #a3a3a3);
+    }
 
-  &:last-child {
-    border-right: 1px solid var(--Gray30, #a3a3a3);
-  }
+    &:last-child {
+        border-right: 1px solid var(--Gray30, #a3a3a3);
+    }
 `;
 
 const TableRow = styled.tr `
-  border-bottom: 1px solid #ddd;
-  display: flex;
+    border-bottom: 1px solid #ddd;
+    display: flex;
 `;
 
 const TableHeaderCell = styled.th `
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
-  display: flex;
-  width: ${ (
-    props
-) => props.width}px;
-  height: 48px;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-  border-top: 1px solid var(--Gray30, #a3a3a3);
-  border-left: 0.5px solid var(--Gray30, #a3a3a3);
-  border-right: 0.5px solid var(--Gray30, #a3a3a3);
-  background: #fff;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    display: flex;
+    width: ${ (
+        props
+    ) => props.width}px;
+    height: 48px;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    border-top: 1px solid var(--Gray30, #a3a3a3);
+    border-left: 0.5px solid var(--Gray30, #a3a3a3);
+    border-right: 0.5px solid var(--Gray30, #a3a3a3);
+    background: #fff;
 
-  &:first-child {
-    border-left: 1px solid var(--Gray30, #a3a3a3);
-    border-radius: 4px 0px 0px 0px;
-  }
+    &:first-child {
+        border-left: 1px solid var(--Gray30, #a3a3a3);
+        border-radius: 4px 0px 0px 0px;
+    }
 
-  &:last-child {
-    border-radius: 0px 4px 0px 0px;
-    border-right: 1px solid var(--Gray30, #a3a3a3);
-  }
+    &:last-child {
+        border-radius: 0px 4px 0px 0px;
+        border-right: 1px solid var(--Gray30, #a3a3a3);
+    }
 `;
 
 const ArrowTop1 = styled.img `
-  width: 14px;
-  height: 14px;
-  margin-left: 16px;
-  margin-bottom: 1px;
-  cursor: pointer;
-`;
+    width: 14px;
+    height: 14px;
+    margin-left: 16px;
+    margin-bottom: 1px;
+    cursor: pointer;
+    `;
 
-const TableCell = styled.td `
-  color: ${ (props) => props.color};
-  font-family: "Pretendard";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 18px;
-  width: ${ (
-    props
-) => props.width}px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 40px;
-  height: auto;
-  border-right: 0.5px solid var(--Gray30, #a3a3a3);
-  border-left: 0.5px solid var(--Gray30, #a3a3a3);
-  padding-right: ${ (
-    props
-) => props.right}px;
+    const TableCell = styled.td `
+    color: ${ (props) => props.color};
+    font-family: "Pretendard";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px;
+    width: ${ (
+        props
+    ) => props.width}px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 40px;
+    height: auto;
+    border-right: 0.5px solid var(--Gray30, #a3a3a3);
+    border-left: 0.5px solid var(--Gray30, #a3a3a3);
+    padding-right: ${ (
+        props
+    ) => props.right}px;
 
-  &:first-child {
-    border-left: 1px solid var(--Gray30, #a3a3a3);
-  }
+    &:first-child {
+        border-left: 1px solid var(--Gray30, #a3a3a3);
+    }
 
-  &:last-child {
-    border-right: 1px solid var(--Gray30, #a3a3a3);
-  }
-  background-color: #fff;
+    &:last-child {
+        border-right: 1px solid var(--Gray30, #a3a3a3);
+    }
+    background-color: #fff;
 `;
 
 const TableMinText = styled.td `
-  color: ${ (props) => props.color};
-  font-family: "Pretendard";
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 16px;
-  width: ${ (
-    props
-) => props.width}px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 40px;
-  height: auto;
-  border-right: 0.5px solid var(--Gray30, #a3a3a3);
-  border-left: 0.5px solid var(--Gray30, #a3a3a3);
+    color: ${ (props) => props.color};
+    font-family: "Pretendard";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+    width: ${ (
+        props
+    ) => props.width}px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 40px;
+    height: auto;
+    border-right: 0.5px solid var(--Gray30, #a3a3a3);
+    border-left: 0.5px solid var(--Gray30, #a3a3a3);
 
-  &:first-child {
-    border-left: 1px solid var(--Gray30, #a3a3a3);
-  }
+    &:first-child {
+        border-left: 1px solid var(--Gray30, #a3a3a3);
+    }
 
-  &:last-child {
-    border-right: 1px solid var(--Gray30, #a3a3a3);
-  }
-  background-color: #fff;
-`;
+    &:last-child {
+        border-right: 1px solid var(--Gray30, #a3a3a3);
+    }
+    background-color: #fff;
+    `;
 
-const CheckScoreButton = styled.button `
-  display: flex;
-  width: ${props => props.width || "100"}px;
-  padding: 6px 16px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  color: var(--primary-blue, #5262f5);
-  font-family: "Pretendard";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 18px;
-  border-radius: 4px;
-  border: 1px solid var(--primary-blue, #5262f5);
-  background: var(--primary-blue-10, #eeeffe);
-  cursor: pointer;
+    const CheckScoreButton = styled.button `
+    display: flex;
+    width: ${props => props.width || "100"}px;
+    padding: 6px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    color: var(--primary-blue, #5262f5);
+    font-family: "Pretendard";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 18px;
+    border-radius: 4px;
+    border: 1px solid var(--primary-blue, #5262f5);
+    background: var(--primary-blue-10, #eeeffe);
+    cursor: pointer;
 
-  &:hover {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-  }
-  &:active {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-  }
+    &:hover {
+        box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
+    }
+    &:active {
+        box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
+    }
 `;
 
 const NameInputBox = styled.input `
-  width: 100%;
-  height: 100%;
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 24px;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: none;
-  ::placeholder {
+    width: 100%;
+    height: 100%;
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
     text-align: center;
-  }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    ::placeholder {
+        text-align: center;
+    }
 `;
 
 const PhoneNumInputBox = styled.input `
-  width: 100%;
-  height: 100%;
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 24px;
-  /* padding-left: 75px; */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: none;
-  text-align: center;
-  ::placeholder {
+    width: 100%;
+    height: 100%;
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    /* padding-left: 75px; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
     text-align: center;
-  }
+    ::placeholder {
+    text-align: center;
+    }
 `;
 
 const DropdownWrapper = styled.div `
-  position: relative;
-  display: inline-block;
-  display: flex;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-  gap: 24px;
-  background: var(--White, #fff);
+    position: relative;
+    display: inline-block;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    background: var(--White, #fff);
 `;
 
 const DropdownButton = styled.button `
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-  background-color: white;
-  background: ${ (
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    background: ${ (
     props
-) => props.Backcolor};
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
-  border: none;
-  padding: 8px 12px;
-  color: ${ (
+    ) => props.Backcolor};
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    border: none;
+    padding: 8px 12px;
+    color: ${ (
     props
-) => (
+    ) => (
     props.color
         ? "#1A1A1A"
         : "#A3A3A3"
-)};
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    )};
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `;
 
 const DropdownContent = styled.div `
-  display: ${ (props) => (
-    props.isOpen
-        ? "block"
-        : "none"
-)};
-  position: absolute;
-  background-color: #f1f1f1;
-  min-width: ${ (props) => props.width}px;
-  z-index: 1;
-  top: 100%;
-  left: 22px;
-  border-radius: 2px 2px 0px 0px;
-  background: var(--White, #fff);
-  border: 1px solid var(--primary-blue, #5262f5);
-  margin-top: ${ (
-    props
-) => props.top || 5}px;
-  margin-left: ${ (props) => props.left}px;
+    display: ${ (props) => (
+        props.isOpen
+            ? "block"
+            : "none"
+    )};
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: ${ (props) => props.width}px;
+    z-index: 1;
+    top: 100%;
+    left: 22px;
+    border-radius: 2px 2px 0px 0px;
+    background: var(--White, #fff);
+    border: 1px solid var(--primary-blue, #5262f5);
+    margin-top: ${ (
+        props
+    ) => props.top || 5}px;
+    margin-left: ${ (props) => props.left}px;
 `;
 
 const DropdownItem = styled.div `
-  padding: 10px;
-  cursor: pointer;
-  background: var(--White, #fff);
-  border: 0.5px solid var(--primary-blue, #5262f5);
-  text-align: center;
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 18px;
-  &:hover {
-    background-color: #eeeffe;
-  }
+    padding: 10px;
+    cursor: pointer;
+    background: var(--White, #fff);
+    border: 0.5px solid var(--primary-blue, #5262f5);
+    text-align: center;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 18px;
+    &:hover {
+        background-color: #eeeffe;
+    }
 `;
 
 const DropdownWrapper1 = styled.div `
-  position: relative;
-  display: inline-block;
-  display: flex;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-  gap: 24px;
-  background: var(--White, #fff);
+    position: relative;
+    display: inline-block;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    background: var(--White, #fff);
 `;
 
 const DropdownButton1 = styled.button `
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-  background-color: white;
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
-  border: none;
-  padding: 8px 12px;
-  color: ${ (
-    props
-) => (
-    props.color
-        ? "#1A1A1A"
-        : "#A3A3A3"
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    border: none;
+    padding: 8px 12px;
+    color: ${ (
+        props
+    ) => (
+        props.color
+            ? "#1A1A1A"
+            : "#A3A3A3"
 )};
 `;
 
 const DropdownContent1 = styled.div `
-  display: ${ (props) => (
-    props.isOpen
-        ? "block"
-        : "none"
-)};
-  position: absolute;
-  background-color: #f1f1f1;
-  min-width: 145px;
-  z-index: 1;
-  top: 100%;
-  left: 22px;
-  margin-top: 1px;
-  border-radius: 2px 2px 0px 0px;
-  border: 1px solid var(--primary-blue, #5262f5);
-  background: var(--White, #fff);
+    display: ${ (props) => (
+        props.isOpen
+            ? "block"
+            : "none"
+    )};
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 145px;
+    z-index: 1;
+    top: 100%;
+    left: 22px;
+    margin-top: 1px;
+    border-radius: 2px 2px 0px 0px;
+    border: 1px solid var(--primary-blue, #5262f5);
+    background: var(--White, #fff);
 `;
 
 const DropdownItem1 = styled.div `
-  padding: 10px;
-  cursor: pointer;
-  background: var(--White, #fff);
-  border: 0.5px solid var(--primary-blue, #5262f5);
-  text-align: center;
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 18px;
-  &:hover {
-    background-color: #eeeffe;
-  }
+    padding: 10px;
+    cursor: pointer;
+    background: var(--White, #fff);
+    border: 0.5px solid var(--primary-blue, #5262f5);
+    text-align: center;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 18px;
+    &:hover {
+        background-color: #eeeffe;
+    }
 `;
 
-const DeleteUserButton = styled.div `
-  width: 124px;
-  height : 40px;
+const DeleteUserButton = styled.div`
+    width: 124px;
+    height : 40px;
 
-  border-radius: 8px;
-  border : 1px solid #5262F5;
+    border-radius: 8px;
+    border : 1px solid #5262F5;
 
-  background-color: #5262F510;
+    background-color: #5262F510;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-  &:hover{
-    background-color: #5262F550;
-  }
-`
+    &:hover{
+        background-color: #5262F550;
+    }
+`;
 
-const Img = styled.img `
-  width: ${props => props.width};
-  height : ${props => props.height};
-`
+const Img = styled.img`
+    width: ${props => props.width};
+    height : ${props => props.height};
+`;
 
-const Span = styled.span `
-  margin-top: 3px;
-  margin-left: 5px;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 20px; 
+const Span = styled.span`
+    margin-top: 3px;
+    margin-left: 5px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px; 
 
-  color : #5262F5;
-`
+    color : #5262F5;
+`;
 
 const DeleteConfirmModal = ({closeModal, userEmail}) => {
 
@@ -1617,7 +1414,9 @@ const DeleteConfirmModal = ({closeModal, userEmail}) => {
         try {
             deleteUserData(userEmail);
             alert("사용자가 삭제되었습니다.");
-            window.location.reload();
+            window
+                .location
+                .reload();
             closeModal();
         } catch (error) {
             console.error("Error deleting user : ", error)
@@ -1687,58 +1486,311 @@ const DeleteConfirmModal = ({closeModal, userEmail}) => {
 }
 
 const SecondDiv = styled.div `
-  width: 100%;
-  height : 744px;
+    width: 100%;
+    height : 744px;
 
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 `;
 
 const TableRow2 = styled.div `
-  width : 100%;
-  height : 48px;
-  display: flex;
+    width : 100%;
+    height : 48px;
+    display: flex;
 `;
 
 const TableHead2 = styled(TableRow2)`
-  background-color: #eee;
-  border-bottom: 1px solid #a3a3a3;
+    background-color: #eee;
+    border-bottom: 1px solid #a3a3a3;
 `;
 const TableBody2 = styled(TableRow2)`
-  background-color: white;
+    background-color: white;
 `;
 
 const TableHead2Cell = styled.div `
-  width: 100%;
-  height : 100%;
-  display: flex;
-  flex : ${props => props.flex || 3};
-  align-items: center;
-  justify-content: center;
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
+    width: 100%;
+    height : 100%;
+    display: flex;
+    flex : ${props => props.flex || 3};
+    align-items: center;
+    justify-content: center;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
 
-  border-top: 1px solid var(--Gray30, #a3a3a3);
-  border-left: 0.5px solid var(--Gray30, #a3a3a3);
-  border-right: 0.5px solid var(--Gray30, #a3a3a3);
+    border-top: 1px solid var(--Gray30, #a3a3a3);
+    border-left: 0.5px solid var(--Gray30, #a3a3a3);
+    border-right: 0.5px solid var(--Gray30, #a3a3a3);
 `;
 
 const InputBox = styled.input `
-  width: 100%;
-  height : 90%;
-  border : none;
-  margin : 3px;
-  outline: none;
-  box-sizing: border-box;
+    width: 100%;
+    height : 90%;
+    border : none;
+    margin : 3px;
+    outline: none;
+    box-sizing: border-box;
 
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 24px;
-  text-align: center;
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    text-align: center;
+`;
+
+// 모달 관련 Style 코드
+const ModalWrapper = styled.div `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.1);
+    display: ${ (props) => (props.isModalOpen? "block": "none")};
+`;
+
+const ModalContent = styled.div `
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 620px;
+    height: 640px;
+    background-color: white;
+`;
+
+const ModalTitleDiv = styled.div `
+    display: flex;
+    margin-left: 56px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 36px;
+`;
+
+const ModalTitle = styled.div `
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 32px;
+`;
+
+const CancelIcon = styled.img `
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    margin-right: 32px;
+`;
+
+const ModalSubTitle = styled.div `
+    height: 24px;
+    display: flex;
+    margin-left: 56px;
+    align-items: center;
+    margin-top: 24px;
+    margin-top: ${ (props) => props.top || 46}px;
+`;
+
+const ModalContents = styled.div `
+    color: ${ (props) => props.color};
+    font-family: "Pretendard";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: ${ (props) => props.weight};
+    line-height: 24px;
+    margin-right: ${ (props) => props.right}px;
+    margin-top: ${ (props) => props.top}px;
+`;
+
+const Input = styled.input `
+    width: 395px;
+    height: 42px;
+    border-radius: 4px;
+    border: 1px solid var(--Gray10, #e4e4e4);
+    background: var(--White, #fff);
+    color: var(--Gray30, #a3a3a3);
+    font-family: "Pretendard";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px;
+    padding-left: 20px;
+    color: var(--black-background, #1a1a1a);
+
+    &::placeholder {
+        color: var(--Gray30, #a3a3a3);
+        padding-right: 20px;
+    }
+`;
+const UpdateButton = styled.button `
+    width: 556px;
+    height: 48px;
+    margin-left: 32px;
+    border-radius: 8px;
+    background: var(--primary-blue, #5262f5);
+    display: flex;
+    width: 556px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    color: var(--White, #fff);
+    font-family: "Pretendard";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    margin-top: 66px;
+    border: none;
+    cursor: ${ (
+        props
+    ) => (
+        props.disabled
+            ? "not-allowed"
+            : "pointer"
+    )};
+    background: ${ (props) => (
+        props.disabled
+            ? "#A3A3A3"
+            : "#5262f5"
+    )};
+    &:hover {
+        box-shadow: ${ (props) => props.disabled
+    ? "none"
+    : "0px 4px 8px 0px #5262f5"};
+    }
+
+    &:active {
+        box-shadow: ${ (
+        props
+    ) => props.disabled
+        ? "none"
+        : "0px 4px 8px 0px #5262f5 inset"};
+    }
+`;
+
+const DropdownWrapperModal = styled.div `
+    position: relative;
+    display: inline-block;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    width: 125px;
+    border-radius: 2px;
+    border: 1px solid var(--primary-blue, #5262f5);
+    background: var(--White, #fff);
+`;
+
+const DropdownButtonModal = styled.button `
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    background: ${ (props) => props.Backcolor};
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    border: none;
+    padding: 8px 12px;
+    color: ${ (props) => (props.color? "#1A1A1A": "#A3A3A3")};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--black-background, #1a1a1a);
+`;
+
+const DropdownContentModal = styled.div `
+    display: ${ (props) => (props.isOpen? "block" : "none")};
+    position: absolute;
+    background-color: #f1f1f1;
+    width: 125px;
+    z-index: 1;
+    top: 100%;
+    border-radius: 2px 2px 0px 0px;
+    border: 1px solid var(--primary-blue, #5262f5);
+    background: var(--White, #fff);
+    margin-top: 5px;
+`;
+
+const DropdownItemModal = styled.div `
+    padding: 10px;
+    cursor: pointer;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 18px;
+    border: 0.5px solid var(--primary-blue, #5262f5);
+    text-align: center;
+    &:hover {
+        background: var(--primary-blue-10, #eeeffe);
+    }
+`;
+
+const DropdownGenerationBox = styled.div`
+    width: 100px;
+    height : 35px;
+    /* background-color: gray; */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin : 0;
+    padding : 0;
+    position: relative;
+    border: 1px solid var(--primary-blue, #5262f5);
+    box-sizing: border-box;
+    margin-left: 10px;
+    background: var(--primary-blue-10, #eeeffe);
+    border-radius: 4px;
+    color: var(--primary-blue, #5262f5);
+    z-index: 1;
+`;
+
+const DropdownGenerationListBox = styled.div`
+    width: 100%;
+    height : auto;
+    top : 40px;
+    position: absolute;
+    background-color: white;
+    color: var(--primary-blue, #5262f5);
+`
+
+const DropdownGenerationItemBox = styled.div`
+    width: 100%;
+    height : 30px;
+    /* background-color: yellow; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--primary-blue, #5262f5);
+    box-sizing: border-box;
+    margin-bottom: 0.5px;
+
+    &:hover {
+        box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
+    }
+    &:active {
+        box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
+    }
+`
+
+const DropdownGenerationImg = styled.img`
+    width: 15px;
+    margin-right: 10px;
+`;
+
+const SelectedGeneration = styled.p`
+    margin-left: 20px;
 `;
