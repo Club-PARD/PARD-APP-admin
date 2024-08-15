@@ -6,7 +6,8 @@ function AxiosTest() {
     const handlePostRequest = async () => {
         try {
             const response = await axios.get(
-                process.env.REACT_APP_URL + "/test"
+                process.env.REACT_APP_URL + "/test",
+                {withCredentials: true}
             );
             setString(response.data);
         } catch (error) {
@@ -28,8 +29,7 @@ function AxiosTest() {
     return (
         <div>
             {string}
-            <br/>
-            {/* <button onClick={() => fetchData2()}>hi/hi</button> */}
+            <br/> {/* <button onClick={() => fetchData2()}>hi/hi</button> */}
         </div>
     );
 }

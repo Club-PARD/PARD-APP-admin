@@ -227,7 +227,7 @@ const MemberPage = () => {
         // 프로미스 배열 추가
         promises.push(promise);
       }
-      console.log(index);
+      // console.log(index);
     }
 
     try {
