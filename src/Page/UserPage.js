@@ -373,8 +373,10 @@ const UserPage = () => {
         };
 
         const isValidPhoneNumber = (phoneNumber) => {
-            const phoneRegex = /^010-\d{4}-\d{4}$/;
-            return phoneRegex.test(phoneNumber);
+            if (phoneNumber.length === 13)
+                return true;
+            else
+                return false;
         };
         
         // user 정보 업데이트 코드
@@ -383,7 +385,7 @@ const UserPage = () => {
 
             if (confirmUpdate) {
                 if (!isValidPhoneNumber(inputPhoneNum)) {
-                    alert("올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)");
+                    alert("전화번호 길이가 알맞지 않습니다. (예: 010-1234-5678)");
                     return;
                 }
 
