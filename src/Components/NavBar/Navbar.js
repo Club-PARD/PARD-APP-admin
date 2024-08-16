@@ -24,14 +24,14 @@ function NavBar() {
         <li>
           <DisplayDiv>
             {/* <DisplayTextDiv bottom={0} active={pathname === "/"}> */}
-                        <DisplayTextDiv bottom={0} active={pathname === "/" ? "true" : undefined}>
+                        <DisplayTextDiv $bottom={0} $active={pathname === "/" ? "true" : undefined}>
               {pathname === "/" ? (
                 <>
                   <Icon
                     src={require("../../Assets/img/HomeIcon.png")}
                     width={24}
                     height={24}
-                    right={14}
+                    $right={14}
                   />
                 </>
               ) : (
@@ -40,12 +40,12 @@ function NavBar() {
                     src={require("../../Assets/img/HomeIcon.png")}
                     width={24}
                     height={24}
-                    right={14}
+                    $right={14}
                   />
                 </>
               )}
               {/* <MenuLink to="/" active={pathname === "/as"}> */}
-            <MenuLink to="/" active={pathname === "/" ? "true" : undefined}>
+            <MenuLink to="/" $active={pathname === "/" ? "true" : undefined}>
                 홈
               </MenuLink>
             </DisplayTextDiv>
@@ -54,14 +54,14 @@ function NavBar() {
         <li>
           <DisplayDiv>
             {/* <DisplayTextDiv bottom={0} active={pathname.startsWith("/Check")}> */}
-            <DisplayTextDiv bottom={0} active={pathname.startsWith("/Check") ? "true" : undefined}>
+            <DisplayTextDiv $bottom={0} $active={pathname.startsWith("/Check") ? "true" : undefined}>
               {pathname.startsWith("/Check") ? (
                 <>
                   <Icon
                     src={require("../../Assets/img/CheckIcon.png")}
                     width={24}
                     height={24}
-                    right={14}
+                    $right={14}
                   />
                 </>
               ) : (
@@ -70,12 +70,12 @@ function NavBar() {
                     src={require("../../Assets/img/CheckIcon.png")}
                     width={24}
                     height={24}
-                    right={14}
+                    $right={14}
                   />
                 </>
               )}
               {/* <MenuLink to="/Check" active={pathname.startsWith("/asd")}> */}
-              <MenuLink to="/Check" active={pathname.startsWith("/Check") ? "true" : undefined}>
+              <MenuLink to="/Check" $active={pathname.startsWith("/Check") ? "true" : undefined}>
                 출결 관리
               </MenuLink>
             </DisplayTextDiv>
@@ -84,14 +84,14 @@ function NavBar() {
         <li>
           <DisplayDiv>
             {/* <DisplayTextDiv bottom={0} active={pathname.startsWith("/Schedule")}> */}
-            <DisplayTextDiv bottom={0} active={pathname.startsWith("/Schedule") ? "true" : undefined}>
+            <DisplayTextDiv $bottom={0} $active={pathname.startsWith("/Schedule") ? "true" : undefined}>
               {pathname.startsWith("/re") ? (
                 <>
                   <Icon
                     src={require("../../Assets/img/CalendarIcon.png")}
                     width={24}
                     height={24}
-                    right={14}
+                    $right={14}
                   />
                 </>
               ) : (
@@ -100,12 +100,12 @@ function NavBar() {
                     src={require("../../Assets/img/CalendarIcon.png")}
                     width={24}
                     height={24}
-                    right={14}
+                    $right={14}
                   />
                 </>
               )}
               {/* <MenuLink to="/Schedule" active={pathname.startsWith("/Scheduasdle")}> */}
-              <MenuLink to="/Schedule" active={pathname.startsWith("/Schedule") ? "true" : undefined}>
+              <MenuLink to="/Schedule" $active={pathname.startsWith("/Schedule") ? "true" : undefined}>
                 일정 관리
               </MenuLink>
             </DisplayTextDiv>
@@ -114,14 +114,14 @@ function NavBar() {
         <li>
           <DisplayDiv>
             {/* <DisplayTextDiv bottom={0} active={pathname.startsWith("/Score")}> */}
-            <DisplayTextDiv bottom={0} active={pathname.startsWith("/Score") ? "true" : undefined}>
+            <DisplayTextDiv $bottom={0} $active={pathname.startsWith("/Score") ? "true" : undefined}>
               {pathname.startsWith("/shopManager") ? (
                 <>
                   <Icon
                     src={require("../../Assets/img/ScoreIcon.png")}
                     width={24}
                     height={24}
-                    right={14}
+                    $right={14}
                   />
                 </>
               ) : (
@@ -130,12 +130,12 @@ function NavBar() {
                     src={require("../../Assets/img/ScoreIcon.png")}
                     width={24}
                     height={24}
-                    right={14}
+                    $right={14}
                   />
                 </>
               )}
               {/* <MenuLink to="/Score" active={pathname.startsWith("/shopManager")}> */}
-              <MenuLink to="/Score" active={pathname.startsWith("/Score") ? "true" : undefined}>
+              <MenuLink to="/Score" $active={pathname.startsWith("/Score") ? "true" : undefined}>
                 점수 관리
               </MenuLink>
             </DisplayTextDiv>
@@ -144,14 +144,14 @@ function NavBar() {
         <li>
           <DisplayDiv>
             {/* <DisplayTextDiv bottom={0} active={pathname.startsWith("/Member")}> */}
-            <DisplayTextDiv bottom={0} active={pathname.startsWith("/Member") ? "true" : undefined}>
+            <DisplayTextDiv $bottom={0} $active={pathname.startsWith("/Member") ? "true" : undefined}>
               {pathname.startsWith("/Member") ? (
                 <>
                   <Icon
                     src={require("../../Assets/img/NavBar_MemberIcon.png")}
                     width={24}
                     height={24}
-                    right={14}
+                    $right={14}
                   />
                 </>
               ) : (
@@ -160,12 +160,12 @@ function NavBar() {
                     src={require("../../Assets/img/NavBar_MemberIcon.png")}
                     width={24}
                     height={24}
-                    right={14}
+                    $right={14}
                   />
                 </>
               )}
               {/* <MenuLink to="/Member" active={pathname.startsWith("/ㅁㄴㅇ")}> */}
-              <MenuLink to="/Member" active={pathname.startsWith("/Member") ? "true" : undefined}>
+              <MenuLink to="/Member" $active={pathname.startsWith("/Member") ? "true" : undefined}>
                 사용자 관리
               </MenuLink>
             </DisplayTextDiv>
@@ -188,7 +188,7 @@ function NavBar() {
                     src={require("../../Assets/img/NotionIcon.png")}
                     width={24}
                     height={24}
-                    right={14}
+                    $right={14}
                   />
                 </>
               ) : (
@@ -197,7 +197,7 @@ function NavBar() {
                     src={require("../../Assets/img/NotionIcon.png")}
                     width={24}
                     height={24}
-                    right={14}
+                    $right={14}
                   />
                 </>
               )}
@@ -276,7 +276,7 @@ const DisplayDiv = styled.div`
 const DisplayTextDiv = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: ${(props) => props.bottom}px;
+  margin-bottom: ${(props) => props.$bottom}px;
   width: 100%;
   height: 58px;
   padding-left: 23px;
@@ -285,7 +285,7 @@ const DisplayTextDiv = styled.div`
     background: #323553;
   }
   background: ${(props) =>
-    props.active
+    props.$active
       ? "var(--grabp, linear-gradient(92deg, #5262F5 0%, #7B3FEF 100%))"
       : "transparent"};
 `;
@@ -293,7 +293,7 @@ const DisplayTextDiv = styled.div`
 const Icon = styled.img`
   width: ${(props) => props.width}px;
   height: ${(props) => props.height}px;
-  margin-right: ${(props) => props.right}px;
+  margin-right: ${(props) => props.$right}px;
 `;
 
 const MenuLink = styled(Link)`
@@ -313,7 +313,7 @@ const MenuLink = styled(Link)`
     background: #323553;
   }
   background: ${(props) =>
-    props.active
+    props.$active
       ? "var(--grabp, linear-gradient(92deg, #5262F5 0%, #7B3FEF 100%))"
       : "transparent"};
 `;

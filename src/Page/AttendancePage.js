@@ -31,148 +31,87 @@ const AttendancePage = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState(null);
     const [addable, setAddable] = useState(true);
+    const [originalAttendanceData, setOriginalAttendanceData] = useState([]);
     
-    const attendanceTitle = ["OT", "1차 세미나", "2차 세미나", "3차 세미나", "4차 세미나", "5차 세미나", "6차 세미나", "연합세미나 1", "연합세미나 2", "숏커톤", "아이디어 피칭", "종강총회"];
-
-    const seminarMappingShow = {
-        "OT": "seminar_0",
-        "1차 세미나": "seminar_1",
-        "2차 세미나": "seminar_2",
-        "3차 세미나": "seminar_3",
-        "4차 세미나": "seminar_4",
-        "5차 세미나": "seminar_5",
-        "6차 세미나": "seminar_6",
-        "연합세미나 1": "seminar_7",
-        "연합세미나 2": "seminar_8",
-        "숏커톤": "seminar_9",
-        "아이디어 피칭": "seminar_10",
-        "종강총회": "seminar_11"
-    };
-    const seminarMappingSend = {
-        "seminar_0": "OT",
-        "seminar_1": "1차 세미나",
-        "seminar_2": "2차 세미나",
-        "seminar_3": "3차 세미나",
-        "seminar_4": "4차 세미나",
-        "seminar_5": "5차 세미나",
-        "seminar_6": "6차 세미나",
-        "seminar_7": "연합세미나 1",
-        "seminar_8": "연합세미나 2",
-        "seminar_9": "숏커톤",
-        "seminar_10": "아이디어 피칭",
-        "seminar_11": "종강총회"
-    };
-
-    // filteredUserScores 데이터를 seminar 순서에 맞게 정렬하는 함수
-    const getSortedAttendances = (attendances) => {
-        // attendances를 seminar 순서에 맞게 정렬합니다.
-        return Array.from({ length: 12 }, (_, index) => {
-            let seminarKey;
-            if (index == 0) {
-                seminarKey = `OT`;
-            } else 
-                seminarKey = `SEMINAR_${index}`;
-            return attendances.find(att => att.seminar === seminarKey) || { seminar: seminarKey, status: null };
-        });
-    };
-
-    const AttendanceTable = () => (
-        <table>
-            <thead>
-                <tr>
-                    <th>이름</th>
-                    {Object.keys(seminarMappingShow).map((title, index) => (
-                        <th key={index}>{title}</th>
-                    ))}
-                </tr>
-            </thead>
-            <tbody>
-                {filteredUserScores.map((attendanceDataInfo, index) => (
-                    <tr key={index}>
-                        <td>{attendanceDataInfo.name}</td>
-                        {getSortedAttendances(attendanceDataInfo.attendances).map((attendance, idx) => (
-                            <td key={idx}>
-                                <CustomTableCell value={attendance.status} />
-                            </td>
-                        ))}
-                    </tr>
-                ))}
-            </tbody>
-        </table>
-    );
-    
-    const userDataMock = [
-        {
-            emai : "user1@gmail.com",
-            name: "김광일",
-            part : "웹파트",
-            attendances: [
-                {
-                    status: "지각",
-                    seminar: "OT"
-                },
-                {
-                    status: "지각",
-                    seminar : "1차 세미나"
-                }
-            ]
-        },{
-            emai : "user1@gmail.com",
-            name: "천주현",
-            part : "서버파트",
-            attendances: [
-                {
-                    status: "출석",
-                    seminar: "OT"
-                },
-                {
-                    status: "결석",
-                    seminar : "1차 세미나"
-                }
-            ]
-        },{
-            emai : "user1@gmail.com",
-            name: "김하람",
-            part : "iOS파트",
-            attendances: [
-                {
-                    status: "결석",
-                    seminar: "OT"
-                },
-                {
-                    status: "결석",
-                    seminar : "1차 세미나"
-                }
-            ]
-        }
+    const attendanceList = [
+        { name: "OT", desc: "OT" },
+        { name: "SEMINAR_1", desc: "1차 세미나" },
+        { name: "SEMINAR_2", desc: "2차 세미나" },
+        { name: "SEMINAR_3", desc: "3차 세미나" },
+        { name: "SEMINAR_4", desc: "4차 세미나" },
+        { name: "SEMINAR_5", desc: "5차 세미나" },
+        { name: "SEMINAR_6", desc: "6차 세미나" },
+        { name: "UNION_SEMINAR_1", desc: "연합세미나 1" },
+        { name: "UNION_SEMINAR_2", desc: "연합세미나 2" },
+        { name: "IDEA_PITCH", desc: "아이디어 피칭" },
+        { name: "FINAL_MEETING", desc: "종강총회" }
     ];
 
+    // 사용자 출석 정보 다 불러오기
     useEffect(() => {
         const fetchAllAttendanceData = async () => {
             const result = await getAllAttendanceData('3');
 
             if (result != undefined) {
                 setAttendanceData(result);
+                setOriginalAttendanceData(JSON.parse(JSON.stringify(result))); // 깊은 복사
             }
         }
         
         fetchAllAttendanceData();
-
-        
     }, []);
-    
-    const SaveAttendanceData = async (data) => {
-        // const response = await postAttendanceData();
-    }
+
+    // filteredUserScores 데이터를 seminar 순서에 맞게 정렬하는 함수
+    const getSortedAttendances = (attendances) => {
+        // attendances를 seminar 순서에 맞게 정렬합니다.
+        const sortedAttendances = Array.from({ length: 11 }, (_, index) => {
+            let seminarKey;
+            if (index === 0) {
+                seminarKey = `OT`;
+            } else {
+                seminarKey = `SEMINAR_${index}`;
+            }
+            return attendances.find(att => att.seminar === seminarKey) || { seminar: seminarKey, status: null };
+        });
+
+        // 정렬된 배열을 콘솔에 출력
+        // console.log(sortedAttendances);
+
+        // 정렬된 배열을 반환
+        return sortedAttendances;
+    };
+
+
+    // 출석 정보를 저장하는 함수
+    const SaveAttendanceData = () => {
+        const changedData = [];
+
+        attendanceData.forEach((user, userIndex) => {
+            user.attendances.forEach((attendance, attendanceIndex) => {
+                const originalAttendance = originalAttendanceData[userIndex]?.attendances[attendanceIndex];
+                if (!originalAttendance || originalAttendance.status !== attendance.status) {
+                    changedData.push({
+                        status: attendance.status,
+                        seminar: attendance.seminar,
+                        email: user.userEmail
+                    });
+                }
+            });
+        });
+
+        if (changedData.length > 0) {
+            postAttendanceData(changedData);
+        }
+    };
 
 
     // 핸들러 : 변경 사항 저장을 묻는 핸들러
     const handleEditButtonClick = () => {
         const confirmSave = window.confirm("변경 사항을 저장하시겠습니까?");
         if (confirmSave) {
-            // updateFirestore();
             SaveAttendanceData();
             setAddable(true);
+            setOriginalAttendanceData(JSON.parse(JSON.stringify(attendanceData))); // 원본 데이터 업데이트
         }
     };
 
@@ -180,22 +119,18 @@ const AttendancePage = () => {
     const handleCancelClick = () => {
         const confirmSave = window.confirm("변경사항이 저장되지 않습니다.\n취소 하시겠습니까?");
         if (confirmSave) {
-            setTimeout(() => {
-                window
-                    .location
-                    .reload();
-            }, 1000);
+            setTimeout(() => {window.location.reload();}, 1000);
         }
     };
 
     // 변수 : 필터 옵션
     const options = [
         "전체",
-        "서버파트",
+        "기획파트",
+        "디자인파트",
         "웹파트",
         "iOS파트",
-        "디자인파트",
-        "기획파트"
+        "서버파트",
     ];
 
     // 핸들러 : DropDown의 토클 역할을 수행하며 변수를 false <-> true로 지정하는 핸들러
@@ -213,13 +148,6 @@ const AttendancePage = () => {
         setIsOpen(false);
     };
 
-
-
-    // 변수 : firestore에서 가져온 user 콜렉션 중 'name' 요소가 있는 데이터들 중에서 filter해서 오름차순으로 이름 정렬한 배열을 갖는 배열
-    // const sortedUserScores = userDatas
-    //     .filter((user) => user.name) // name 속성이 정의된 요소만 필터링
-    //     .sort((a, b) => a.name.localeCompare(b.name));
-
     // 변수 : selectedOption에 맞춰 유저 점수를 필터해서 보여주는 부분 (운영진과 잔잔파도가 아닌 경우! (현재 활동중인 파디 + 거친파도))
     const filteredUserScores = selectedOption
         ? attendanceData.filter(
@@ -233,120 +161,30 @@ const AttendancePage = () => {
     
     // 핸들러 : 즉시 업데이트 관련 코드 (수정중 즉, 출석, 지각, 결석 중 선택했을 때 선택된 값을 변경해주는 핸들러)
     const updateUser = async (index, idx, newData) => {
-        // 로컬 변수 : attendanceData를 copy한 변수
-        const updatedAttendance = [...filteredUserScores];
-
-        // attendInfo를 List로 변경
-        updatedAttendance[index] = {
-            ...updatedAttendance[index],
-            attendances: [...(updatedAttendance[index].attendances || [])]
-        };
-
-        // attendances 배열이 빈 배열인 경우 새로운 항목을 추가
-        if (updatedAttendance[index].attendances.length <= idx) {
-            for (let i = updatedAttendance[index].attendances.length; i <= idx; i++) {
-                updatedAttendance[index].attendances.push({ status: null });
+        setAttendanceData(prevData => {
+            const updatedData = [...prevData];
+            const userIndex = updatedData.findIndex(user => user.name === filteredUserScores[index].name);
+            
+            if (userIndex !== -1) {
+                if (!updatedData[userIndex].attendances) {
+                    updatedData[userIndex].attendances = [];
+                }
+                
+                // 여기 로직 생각하고 수정해보자.
+                if (updatedData[userIndex].attendances.length <= idx) {
+                    for (let i = updatedData[userIndex].attendances.length; i <= idx; i++) {
+                        updatedData[userIndex].attendances.push({ status: null, seminar: "" });
+                    }
+                }
+                
+                updatedData[userIndex].attendances[idx].status = newData;
+                updatedData[userIndex].attendances[idx].seminar = attendanceList[idx].name;
             }
-        }
-
-        // attendances 내 해당 인덱스에 새로운 출석 데이터 할당
-        updatedAttendance[index].attendances[idx].status = newData;
-
-        // console.log(updatedAttendance);
-        // 변경된 attendance 정보를 저장
-        setAttendanceData(updatedAttendance);
+            
+            return updatedData;
+        });
     };
-
-    // 출석 결석 지각 버튼
-    const AttendBox = styled.div `
-        display: flex;
-        padding: 4px 12px;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-        font-family: "Pretendard";
-        font-size: 12px;
-        font-style: normal;
-        font-weight: 600;
-        line-height: 16px;
-        border-radius: 4px;
-    `;
-
-    const AttendButton = styled.button `
-        display: flex;
-        width: 45px;
-        height: 24px;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-        font-family: "Pretendard";
-        font-size: 12px;
-        font-style: normal;
-        font-weight: 600;
-        line-height: 16px;
-        border-radius: 4px;
-        border: none;
-        cursor: pointer;
-        &:hover {
-            box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25);
-        }
-        &:active {
-            box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25) inset;
-        }
-    `;
-
-    const CustomTableCellContainer = styled.div `
-        position: relative;
-    `;
-
-    const ImageContainer = styled.div `
-        position: absolute;
-        top: -60px; 
-        left: -80px; 
-        width: 200px;
-        height: 60px;
-        z-index: 999; 
-    `;
-
-    const Image = styled.img `
-        width: 200px;
-        height: 60px;
-        object-fit: cover; 
-    `;
-
-    const ButtonFlexDiv = styled.div `
-        display: flex;
-        width: 100%;
-        height: 100%;
-        align-items: center;
-        justify-content: center;
-        position: absolute;
-        top: -6%;
-    `;
-
-    const Button = styled.button `
-        border: none;
-        margin-right: ${ (props) => props.right}px;
-        margin-left: ${ (
-            props
-        ) => props.left}px;
-        color: ${ (props) => props.color};
-        background-color: ${ (
-            props
-        ) => props.background};
-        display: flex;
-        padding: 4px 12px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-family: "Pretendard";
-        font-size: 12px;
-        font-style: normal;
-        font-weight: 600;
-        line-height: 16px;
-        border-radius: 4px;
-    `;
-
-    const CustomTableCell = ({ value, onUpdate, addable }) => {
+    const CustomTableCell = ({ value, onUpdate, addable, seminarIndex, userIndex }) => {
         const [showButtons, setShowButtons] = useState(false);
 
         const toggleButtons = () => {
@@ -356,7 +194,7 @@ const AttendancePage = () => {
 
         const updateValue = (newValue) => {
             setShowButtons(false);
-            if (onUpdate) onUpdate(newValue);
+            if (onUpdate) onUpdate(userIndex, seminarIndex, newValue);
         };
 
         let backgroundColor = "";
@@ -470,7 +308,7 @@ const AttendancePage = () => {
                     </DropdownButton>
 
                     {/* isOpen이 true가 되면 보여지는 드롭다운 영역 */}
-                    <DropdownContent isOpen={isOpen}>
+                    <DropdownContent $isOpen={isOpen}>
                         {
                             options.map((option, index) => (
                                 <DropdownItem key={index} onClick={() => handleOptionClick(option)}>
@@ -480,14 +318,12 @@ const AttendancePage = () => {
                         }
                     </DropdownContent>
                 </DropdownWrapper>
-
+            
+                {/* 수정하기 / 취소하기, 저장하기 버튼 */}
                 {
                     addable
                         ? (
-                            <EditButton onClick={() => {
-                                setAddable(false)
-                                // console.log(filteredUserScores)
-                            }}>
+                            <EditButton onClick={() => {setAddable(false)}}>
                                 <EditIcon src={require("../Assets/img/EditIcon.png")}/>
                                 수정하기
                             </EditButton>
@@ -511,18 +347,12 @@ const AttendancePage = () => {
                                 {/* Table - Head */}
                                 <TableHead>
                                     <TableRow>
-                                        <TableHeaderCell
-                                            width={140}
-                                            style={{
-                                                background: "#F8F8F8"
-                                            }}>
+                                        <TableHeaderCell width={140} style={{ background: "#F8F8F8"}}>
                                             이름
                                         </TableHeaderCell>
                                         {
-                                            Object.keys(seminarMappingShow).map((title, index) => (
-                                                <div key = {index}>
-                                                    <TableHeaderCell width={152}>{title}</TableHeaderCell>
-                                                </div>
+                                            attendanceList.map((attendance, index) => (
+                                                <TableHeaderCell width={152} key = {index}>{attendance?.desc}</TableHeaderCell>
                                         ))}
                                         
                                         
@@ -533,30 +363,14 @@ const AttendancePage = () => {
                                 {/* Table - Body */}
                                 <TableBody>
                                     {
-                                        
-                                        // filteredUserScores.map((userData, index) => (
-                                        // userDataMock.map((userData, index) => (
-                                        //     <TableRow key={index}>
-                                        //         <TableCell color={"#2A2A2A"} width={140}>
-                                        //             {userData.name}
-                                        //             {/* { console.log(userData)} */}
-                                        //         </TableCell>
-                                        //         {
-                                        //             Array.from({
-                                        //                 length: 12
-                                        //             }, (_, idx) => (
-                                        //                 <TableCell key={idx} width={152}>
-                                        //                     <CustomTableCell value={userData.attendances} idx={idx}/>
-                                        //                 </TableCell>
-                                        //             ))
-                                        //         }
-                                        //     </TableRow>
-                                        // ))
                                         filteredUserScores.map((attendanceDataInfo, index) => (
                                             <TableRow key={index}>
+                                                {/* 사용자 - 이름 */}
                                                 <TableCell color={"#2A2A2A"} width={140}>
                                                     {attendanceDataInfo.name}
                                                 </TableCell>
+
+                                                {/* 사용자 - 출석 정보 */}
                                                 {
                                                     getSortedAttendances(attendanceDataInfo.attendances).map((attendance, idx) => (
                                                         <TableCell key={idx} width={152}>
@@ -586,10 +400,8 @@ const AttendancePage = () => {
                                             이름
                                         </TableHeaderCell>
                                         {
-                                            Object.keys(seminarMappingShow).map((title, index) => (
-                                                <div key = {index}>
-                                                    <TableHeaderCell width={152}>{title}</TableHeaderCell>
-                                                </div>
+                                            attendanceList.map((attendance, index) => (
+                                                <TableHeaderCell width={152} key = {index}>{attendance?.desc}</TableHeaderCell>
                                         ))}
                                     </TableRow>
                                 </TableHead>
@@ -600,8 +412,7 @@ const AttendancePage = () => {
                                         filteredUserScores.map((attendanceDataInfo, index) => (
                                             <TableRow key={index}>
                                                 <TableCell color={"#2A2A2A"} width={140}>
-                                                    {/* {attendanceDataInfo.name} */}
-                                                        {attendanceDataInfo.name}
+                                                    {attendanceDataInfo.name}
                                                 </TableCell>
                                                 {
                                                     getSortedAttendances(attendanceDataInfo.attendances).map((attendance, idx) => (
@@ -610,7 +421,10 @@ const AttendancePage = () => {
                                                                 value={attendance.status}
                                                                 idx={idx}
                                                                 addable={addable}
-                                                                onUpdate={(newData) => updateUser(filteredUserScores.indexOf(attendanceDataInfo), idx, newData)}/>
+                                                                onUpdate={updateUser}
+                                                                seminarIndex={idx}
+                                                                userIndex={index}
+                                                            />
                                                         </TableCell>
                                                     ))
                                                 }
@@ -631,6 +445,7 @@ export default AttendancePage;
 const DDiv = styled.div `
     background: #fff;
     margin: 0 auto;
+    width: calc(100vw - 200px);
     height: 100%;
     overflow-x: hidden;
 `;
@@ -806,7 +621,7 @@ const DropdownButton = styled.button `
 
 const DropdownContent = styled.div `
     display: ${ (props) => (
-        props.isOpen
+        props.$isOpen
             ? "block"
             : "none"
     )};
@@ -933,4 +748,93 @@ const ArrowTop = styled.img `
     width: 14px;
     height: 14px;
     cursor: pointer;
+`;
+
+// 출석 결석 지각 버튼
+const AttendBox = styled.div `
+    display: flex;
+    padding: 4px 12px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-family: "Pretendard";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px;
+    border-radius: 4px;
+`;
+
+const AttendButton = styled.button `
+    display: flex;
+    width: 45px;
+    height: 24px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-family: "Pretendard";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    &:hover {
+        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25);
+    }
+    &:active {
+        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25) inset;
+    }
+`;
+
+const CustomTableCellContainer = styled.div `
+    position: relative;
+`;
+
+const ImageContainer = styled.div `
+    position: absolute;
+    top: -60px; 
+    left: -80px; 
+    width: 200px;
+    height: 60px;
+    z-index: 999; 
+`;
+
+const Image = styled.img `
+    width: 200px;
+    height: 60px;
+    object-fit: cover; 
+`;
+
+const ButtonFlexDiv = styled.div `
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: -6%;
+`;
+
+const Button = styled.button `
+    border: none;
+    margin-right: ${ (props) => props.right}px;
+    margin-left: ${ (
+        props
+    ) => props.left}px;
+    color: ${ (props) => props.color};
+    background-color: ${ (
+        props
+    ) => props.background};
+    display: flex;
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: "Pretendard";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px;
+    border-radius: 4px;
 `;
