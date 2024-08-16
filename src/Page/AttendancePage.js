@@ -63,14 +63,11 @@ const AttendancePage = () => {
 
     // filteredUserScores 데이터를 seminar 순서에 맞게 정렬하는 함수
     const getSortedAttendances = (attendances) => {
+        console.log("before", attendances);
         // attendances를 seminar 순서에 맞게 정렬합니다.
         const sortedAttendances = Array.from({ length: 11 }, (_, index) => {
             let seminarKey;
-            if (index === 0) {
-                seminarKey = `OT`;
-            } else {
-                seminarKey = `SEMINAR_${index}`;
-            }
+            seminarKey = attendanceList[index].name;
             return attendances.find(att => att.seminar === seminarKey) || { seminar: seminarKey, status: null };
         });
 
@@ -78,6 +75,7 @@ const AttendancePage = () => {
         // console.log(sortedAttendances);
 
         // 정렬된 배열을 반환
+        console.log("sortedAttendances", sortedAttendances); 
         return sortedAttendances;
     };
 
@@ -167,24 +165,37 @@ const AttendancePage = () => {
     const updateUser = async (index, idx, newData) => {
         setAttendanceData(prevData => {
             const updatedData = [...prevData];
+            // console.log("preview data", updatedData);
+
             const userIndex = updatedData.findIndex(user => user.name === filteredUserScores[index].name);
-            
+            let flag = 0;
             if (userIndex !== -1) {
                 if (!updatedData[userIndex].attendances) {
                     updatedData[userIndex].attendances = [];
                 }
                 
                 // 여기 로직 생각하고 수정해보자.
-                if (updatedData[userIndex].attendances.length <= idx) {
-                    for (let i = updatedData[userIndex].attendances.length; i <= idx; i++) {
-                        updatedData[userIndex].attendances.push({ status: null, seminar: "" });
+                // if (updatedData[userIndex].attendances.length <= idx) {
+                //     for (let i = updatedData[userIndex].attendances.length; i <= idx; i++) {
+                //         updatedData[userIndex].attendances.push({ status: null, seminar: "" });
+                //     }
+                // }
+                // console.log( updatedData[userIndex].attendances);
+                for (let i = 0; i < updatedData[userIndex].attendances.length; i++){
+                    if (updatedData[userIndex].attendances[i].seminar === attendanceList[idx].name) {
+                        updatedData[userIndex].attendances[i].status = newData;
+                        updatedData[userIndex].attendances[i].seminar = attendanceList[idx].name;
+                        flag = 1;
+                        break;
                     }
                 }
+                if (flag === 0) {
+                    updatedData[userIndex].attendances.push({ status: newData, seminar: attendanceList[idx].name });
+
+                }
                 
-                updatedData[userIndex].attendances[idx].status = newData;
-                updatedData[userIndex].attendances[idx].seminar = attendanceList[idx].name;
             }
-            
+            console.log("check", updatedData);
             return updatedData;
         });
     };
