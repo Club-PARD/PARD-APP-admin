@@ -51,8 +51,9 @@ const UserPage = () => {
     // 변수 : User 정보 조회 후 sort
     const sortedUserDataList = userDataList
         ? userDataList
-            .filter((userDataList) => userDataList.name)
-            .sort((a, b) => a.name.localeCompare(b.name))
+            .sort((a, b) => {
+                return a?.name?.localeCompare(b.name);
+            })
         : [];
 
     // 변수 : 파트 구분
@@ -365,7 +366,7 @@ const UserPage = () => {
                         generation: inputGeneration
                     };
                     console.log(updatedUserInfo);
-                    const response = await postUserData(updatedUserInfo);
+                    const response = await postUserData([updatedUserInfo]);
                     if (response) {
                         alert("사용자 정보가 업데이트되었습니다.");
                         closeModalUpdate();

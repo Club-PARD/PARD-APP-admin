@@ -645,7 +645,7 @@ const ScorePage = () => {
     // 이름으로 정렬된 유저 정보 변수
     const sortedUserScores = userScores.sort((a, b) => {
       // 이름을 가나다 순으로 비교하여 정렬
-      return a.name.localeCompare(b.name);
+      return a?.name?.localeCompare(b.name);
     });
 
     // 선택한 파트 option에 맞춰서 필터를 거친 유저 정보 변수
