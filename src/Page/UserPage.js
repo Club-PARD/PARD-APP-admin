@@ -1,16 +1,6 @@
 import React, {useEffect, useState} from "react";
 import styled from "styled-components";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
-import {
-    collection,
-    getDocs,
-    updateDoc,
-    doc,
-    query,
-    where,
-    deleteDoc
-} from "firebase/firestore";
-import {dbService} from "../fbase";
 import {deleteUserData, getAllUserData, postUserData} from "../Api/UserAPI";
 
 /*
@@ -168,8 +158,9 @@ const UserPage = () => {
     };
 
     const handlePhoneInputChange = (e, index) => {
+        const formattedPhoneNumber = formatPhoneNumber(e.target.value);
         const updatedPhoneInputs = [...phoneInputs];
-        updatedPhoneInputs[index] = e.target.value;
+        updatedPhoneInputs[index] = formattedPhoneNumber;
         setPhoneInputs(updatedPhoneInputs);
     };
     const handleEmailInputChange = (e, index) => {
@@ -180,23 +171,58 @@ const UserPage = () => {
 
     const handleAddButtonClick = async () => {
         let addUserInfo = [];
+        let missingFields = [];
+        let invalidEmails = [];
+        
         // 최대 처리할 횟수 : 15회
         for (let index = 0; index < 15; index++) {
-            // 선택된 사용자 정보가 모두 유효한 경우만 처리
-            if (selectedMembers[index] !== null && selectedPart[index] !== null && nameInputs[index] !== "" && phoneInputs[index] !== "") {
-                const data = {
-                    name: nameInputs[index],
-                    email: emailInputs[index],
-                    part: selectedPart[index],
-                    generation: generationInputs[index],
-                    phoneNumber: phoneInputs[index],
-                    role: selectedMembers[index]
-                };
-
-                // addUserInfo 배열에 data를 추가
-                addUserInfo.push(data);
+            // 입력된 정보가 있는지 확인
+            if (nameInputs[index] !== "" || phoneInputs[index] !== "" || emailInputs[index] !== "" || generationInputs[index] !== "" || selectedMembers[index] !== null || selectedPart[index] !== null) {
+                let rowMissingFields = [];
+                
+                // 모든 필수 필드 확인
+                if (nameInputs[index] === "") rowMissingFields.push("이름");
+                if (emailInputs[index] === "") {
+                    rowMissingFields.push("이메일");
+                } else if (!isValidEmail(emailInputs[index])) {
+                    invalidEmails.push(`${index + 1}번째 행`);
+                }
+                if (phoneInputs[index] === "") rowMissingFields.push("전화번호");
+                if (generationInputs[index] === "") rowMissingFields.push("기수");
+                if (selectedMembers[index] === null) rowMissingFields.push("구분");
+                if (selectedPart[index] === null) rowMissingFields.push("파트");
+                
+                if (rowMissingFields.length > 0) {
+                    missingFields.push(`${index + 1}번째 행: ${rowMissingFields.join(", ")}`);
+                } else if (!invalidEmails.includes(`${index + 1}번째 행`)) {
+                    const data = {
+                        name: nameInputs[index],
+                        email: emailInputs[index],
+                        part: selectedPart[index],
+                        generation: generationInputs[index],
+                        phoneNumber: phoneInputs[index],
+                        role: selectedMembers[index]
+                    };
+                    addUserInfo.push(data);
+                }
             }
-            // console.log(index);
+        }
+
+        if (missingFields.length > 0 || invalidEmails.length > 0) {
+            let errorMessage = "";
+            if (missingFields.length > 0) {
+                errorMessage += `다음 정보를 입력해주세요:\n${missingFields.join("\n")}\n\n`;
+            }
+            if (invalidEmails.length > 0) {
+                errorMessage += `다음 행의 이메일 형식이 올바르지 않습니다:\n${invalidEmails.join(", ")}`;
+            }
+            alert(errorMessage);
+            return;
+        }
+
+        if (addUserInfo.length === 0) {
+            alert("추가할 사용자 정보가 없습니다.");
+            return;
         }
 
         try {
@@ -204,14 +230,11 @@ const UserPage = () => {
             postUserData(addUserInfo);
             setAddable(true); // 버튼 활성화
             alert("등록 성공!"); // 사용자에게 성공 메시지 표시
-            window
-                .location
-                .reload(); // 페이지 새로고침
+            window.location.reload(); // 페이지 새로고침
         } catch (error) {
             console.error("Error adding document: ", error);
         }
     }
-
     // 취소 버튼
     const handleCancelClick = () => {
         const confirmSave = window.confirm("변경사항이 저장되지 않습니다.\n취소 하시겠습니까?");
@@ -302,11 +325,9 @@ const UserPage = () => {
 
         const handlePhoneNumChange = (e) => {
             setIsEdit(true);
-            const text = e.target.value;
-            if (text.length <= 20) {
-                setInputPhoneNum(text);
-                setContentChanged(true); // 정보 수정이 되었으므로 true로 설정
-            }
+            const formattedPhoneNumber = formatPhoneNumber(e.target.value);
+            setInputPhoneNum(formattedPhoneNumber);
+            setContentChanged(true); // 정보 수정이 되었으므로 true로 설정
         };
 
         const handleGenerationChange = (e) => {
@@ -351,11 +372,21 @@ const UserPage = () => {
             setToggleToRole(!toggleToRole);
         };
 
+        const isValidPhoneNumber = (phoneNumber) => {
+            const phoneRegex = /^010-\d{4}-\d{4}$/;
+            return phoneRegex.test(phoneNumber);
+        };
+        
         // user 정보 업데이트 코드
         const handleUpdateButtonClick = async () => {
             const confirmUpdate = window.confirm("사용자 정보를 수정하시겠습니까?");
 
             if (confirmUpdate) {
+                if (!isValidPhoneNumber(inputPhoneNum)) {
+                    alert("올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)");
+                    return;
+                }
+
                 try {
                     const updatedUserInfo = {
                         name: inputName,
@@ -371,16 +402,13 @@ const UserPage = () => {
                         alert("사용자 정보가 업데이트되었습니다.");
                         closeModalUpdate();
                         setContentChanged(false); // 정보 수정이 되었으므로 false로 초기화
-                        window
-                            .location
-                            .reload();
+                        window.location.reload();
                     }
                 } catch (error) {
                     console.error("사용자 정보 업데이트 실패:", error);
                     alert("사용자 정보 업데이트 중 오류가 발생했습니다.");
                 }
             }
-
         };
 
         const [isOpenDeleteConfirmModal, setIsOpenDeleteConfirmModal] = useState(false);
@@ -418,9 +446,11 @@ const UserPage = () => {
                         </ModalContents>
                         <ModalContents color={"#A3A3A3"} right={0} weight={600}>
                             <Input
-                                value={inputPhoneNum}
+                                value={formatPhoneNumber(inputPhoneNum)}
                                 onChange={handlePhoneNumChange}
-                                placeholder="전화번호를 10자 이내로 작성해주세요."/>
+                                placeholder="전화번호를 입력해주세요."
+                                maxLength={13} // XXX-XXXX-XXXX 형식의 최대 길이
+                            />
                         </ModalContents>
                     </ModalSubTitle>
                     <ModalSubTitle>
@@ -441,7 +471,7 @@ const UserPage = () => {
                         <ModalContents color={"#A3A3A3"} right={0} weight={600}>
                             <DropdownWrapperModal>
                                 <DropdownButtonModal onClick={toggleDropdownRole}>
-                                    {selectedRoleOption || role}
+                                    {handleChangeRoleName(selectedRoleOption || role)}
                                     {
                                         !toggleToRole
                                             ? (<ArrowTop1 src={require("../Assets/img/PolygonDown.png")}/>)
@@ -452,7 +482,7 @@ const UserPage = () => {
                                     {
                                         RoleOption.map((option, index) => (
                                             <DropdownItemModal key={index} onClick={() => handleOptionRoleClick(option)}>
-                                                {option}
+                                                {handleChangeRoleName(option)}
                                             </DropdownItemModal>
                                         ))
                                     }
@@ -526,35 +556,84 @@ const UserPage = () => {
             case "ROLE_OB":
                 return "OB";
                 break;
-
+            case "ALL" :
+                return "전체";
+                break;
             default:
                 break;
         }
     }
 
-    const formatPhoneNumber = (userInfo) => {
-        const phoneNumber = userInfo
-            ?.phoneNumber || "";
+    // const formatPhoneNumber = (userInfo) => {
+    //     const phoneNumber = userInfo
+    //         ?.phoneNumber || "";
 
-        // 전화번호가 11글자인지 확인
-        if (
-            phoneNumber
-                ?.length === 11 || phoneNumber
-                    ?.length > 11
-        ) {
-            // 포맷 변경
-            const formattedNumber = phoneNumber.replace(
-                /(\d{3})(\d{4})(\d{4})/,
-                '$1-$2-$3'
-            );
-            return formattedNumber;
-        } else {
-            // 예외처리: 전화번호가 11글자가 아닌 경우 alert('전화번호는 11글자여야 합니다.');
-            // console.log(userInfo.phoneNumber);
+    //     // 전화번호가 11글자인지 확인
+    //     if (
+    //         phoneNumber
+    //             ?.length === 11 || phoneNumber
+    //                 ?.length > 11
+    //     ) {
+    //         // 포맷 변경
+    //         const formattedNumber = phoneNumber.replace(
+    //             /(\d{3})(\d{4})(\d{4})/,
+    //             '$1-$2-$3'
+    //         );
+    //         return formattedNumber;
+    //     } else {
+    //         // 예외처리: 전화번호가 11글자가 아닌 경우 alert('전화번호는 11글자여야 합니다.');
+    //         // console.log(userInfo.phoneNumber);
+    //     }
+    // }
+
+    const resetRowData = (index) => {
+        setGenerationInputs(prev => {
+            const newInputs = [...prev];
+            newInputs[index] = "";
+            return newInputs;
+        });
+        setNameInputs(prev => {
+            const newInputs = [...prev];
+            newInputs[index] = "";
+            return newInputs;
+        });
+        setEmailInputs(prev => {
+            const newInputs = [...prev];
+            newInputs[index] = "";
+            return newInputs;
+        });
+        setPhoneInputs(prev => {
+            const newInputs = [...prev];
+            newInputs[index] = "";
+            return newInputs;
+        });
+        setSelectedMembers(prev => {
+            const newSelected = [...prev];
+            newSelected[index] = null;
+            return newSelected;
+        });
+        setSelectedPart(prev => {
+            const newSelected = [...prev];
+            newSelected[index] = null;
+            return newSelected;
+        });
+    };
+
+    const isValidEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
+    const formatPhoneNumber = (value) => {
+        if (!value) return value;
+        const phoneNumber = value.replace(/[^\d]/g, '');
+        const phoneNumberLength = phoneNumber.length;
+        if (phoneNumberLength < 4) return phoneNumber;
+        if (phoneNumberLength < 7) {
+            return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3)}`;
         }
-    }
-
-
+        return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 7)}-${phoneNumber.slice(7, 11)}`;
+    };
 
     // Main 화면 코드
     return (
@@ -607,7 +686,7 @@ const UserPage = () => {
                                     <TableHead2Cell flex={2}>
                                         <DropdownWrapper>
                                             <DropdownButton onClick={handleArrowTopClick} color={true} Backcolor={"#eee"}>
-                                                {selectedMemberFilter || "구분"}
+                                                {handleChangeRoleName(selectedMemberFilter) || "구분"}
                                                 {
                                                     !isDropdownOpen
                                                         ? (<ArrowTop1 src={require("../Assets/img/PolygonDown.png")}/>)
@@ -620,7 +699,7 @@ const UserPage = () => {
                                                         <DropdownItem
                                                             key={memberIndex}
                                                             onClick={() => handleMemberItemClick(memberOption)}>
-                                                            {memberOption}
+                                                            {handleChangeRoleName( memberOption )}
                                                         </DropdownItem>
                                                     ))
                                                 }
@@ -670,11 +749,11 @@ const UserPage = () => {
                                                 {userInfo.userEmail}
                                             </TableHead2Cell>
                                             <TableHead2Cell >
-                                                {formatPhoneNumber(userInfo)}
+                                                {formatPhoneNumber(userInfo.phoneNumber)}
                                             </TableHead2Cell>
                                             <TableHead2Cell flex={2}>
-                                                {/* {handleChangeRoleName(userInfo.role)} */}
-                                                {userInfo.role}
+                                                {handleChangeRoleName(userInfo.role)}
+                                                {/* {userInfo.role} */}
                                             </TableHead2Cell>
                                             <TableHead2Cell flex={2}>
                                                 {userInfo.part}
@@ -734,6 +813,9 @@ const UserPage = () => {
                                     <TableHead2Cell flex={2}>
                                         파트
                                     </TableHead2Cell>
+                                    <TableHead2Cell flex={2}>
+                                        초기화
+                                    </TableHead2Cell>
                                 </TableHead2>
                                 {
                                     Array
@@ -748,6 +830,7 @@ const UserPage = () => {
                                                         type="text"
                                                         placeholder="입력"
                                                         value={generationInputs[index] || ""}
+                                                        required
                                                         onChange={(e) => handleGenerationInputChange(e, index)}/>
                                                 </TableHead2Cell >
                                                 <TableHead2Cell flex={2}>
@@ -755,6 +838,7 @@ const UserPage = () => {
                                                         type="text"
                                                         placeholder="입력"
                                                         value={nameInputs[index] || ""}
+                                                        required
                                                         onChange={(e) => handleNameInputChange(e, index)}/>
                                                 </TableHead2Cell >
                                                 <TableHead2Cell flex={4}>
@@ -762,21 +846,25 @@ const UserPage = () => {
                                                         type="text"
                                                         placeholder="입력"
                                                         value={emailInputs[index] || ""}
+                                                        required
                                                         onChange={(e) => handleEmailInputChange(e, index)}/>
                                                 </TableHead2Cell>
                                                 <TableHead2Cell >
-                                                    <InputBox
-                                                        type="text"
-                                                        placeholder="입력"
-                                                        value={phoneInputs[index] || ""}
-                                                        onChange={(e) => handlePhoneInputChange(e, index)}/>
+                                                <InputBox
+                                                    type="text"
+                                                    placeholder="입력"
+                                                    value={phoneInputs[index] || ""}
+                                                    required
+                                                    onChange={(e) => handlePhoneInputChange(e, index)}
+                                                    maxLength={13} // XXX-XXXX-XXXX 형식의 최대 길이
+                                                />
                                                 </TableHead2Cell>
                                                 <TableHead2Cell flex={2}>
                                                     <DropdownWrapper>
                                                         <DropdownButton
                                                             onClick={() => toggleDropdown(index)}
                                                             color={selectedMembers[index] !== null}>
-                                                            {selectedMembers[index] || "선택"}
+                                                            {handleChangeRoleName(selectedMembers[index]) || "선택"}
                                                         </DropdownButton>
                                                         <DropdownContent isOpen={isOpen[index]} left={-7} width={160} top={1}>
                                                             {" "}
@@ -786,7 +874,7 @@ const UserPage = () => {
                                                                     <DropdownItem
                                                                         key={memberIndex}
                                                                         onClick={() => handleMemberClick(memberOption, index)}>
-                                                                        {memberOption}
+                                                                        {handleChangeRoleName(memberOption)}
                                                                     </DropdownItem>
                                                                 ))
                                                             }
@@ -812,6 +900,11 @@ const UserPage = () => {
                                                             }
                                                         </DropdownContent1>
                                                     </DropdownWrapper1>{" "}
+                                                </TableHead2Cell>
+                                                <TableHead2Cell flex={2}>
+                                                    <ResetButton onClick={() => resetRowData(index)}>
+                                                    초기화
+                                                    </ResetButton>
                                                 </TableHead2Cell>
                                             </TableBody2>
                                         ))
@@ -1492,6 +1585,7 @@ const SecondDiv = styled.div `
 
     display: flex;
     flex-direction: column;
+
 `;
 
 const TableRow2 = styled.div `
@@ -1523,6 +1617,7 @@ const TableHead2Cell = styled.div `
     line-height: 24px;
 
     border-top: 1px solid var(--Gray30, #a3a3a3);
+    border-bottom: 1px solid var(--Gray30, #a3a3a3);
     border-left: 0.5px solid var(--Gray30, #a3a3a3);
     border-right: 0.5px solid var(--Gray30, #a3a3a3);
 `;
@@ -1794,4 +1889,17 @@ const DropdownGenerationImg = styled.img`
 
 const SelectedGeneration = styled.p`
     margin-left: 20px;
+`;
+
+const ResetButton = styled.button`
+    background-color: #f0f0f0;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+
+    &:hover {
+        background-color: #e0e0e0;
+    }
 `;
