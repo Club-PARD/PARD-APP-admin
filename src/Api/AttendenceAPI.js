@@ -17,11 +17,10 @@ export const postAttendanceData = async (addUserInfo) => {
     try {
         const data = addUserInfo;
         const response = await axios.post(
-            `${process.env.REACT_APP_URL}/v1/users`,
+            `${process.env.REACT_APP_URL}/v1/attendance/admin`,
             data,
             {withCredentials: true}
         );
-        // console.log(response);
         return response.data;
     } catch (error) {
         alert("[에러] 출석 정보 추가하기 실패!\n관리자에게 문의하세요!");

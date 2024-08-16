@@ -81,7 +81,6 @@ const AttendancePage = () => {
         return sortedAttendances;
     };
 
-
     // 출석 정보를 저장하는 함수
     const SaveAttendanceData = () => {
         const changedData = [];
@@ -89,7 +88,10 @@ const AttendancePage = () => {
         attendanceData.forEach((user, userIndex) => {
             user.attendances.forEach((attendance, attendanceIndex) => {
                 const originalAttendance = originalAttendanceData[userIndex]?.attendances[attendanceIndex];
-                if (!originalAttendance || originalAttendance.status !== attendance.status) {
+                if (
+                    (!originalAttendance || originalAttendance.status !== attendance.status) &&
+                    attendance.status && attendance.seminar
+                ) {
                     changedData.push({
                         status: attendance.status,
                         seminar: attendance.seminar,
@@ -100,6 +102,7 @@ const AttendancePage = () => {
         });
 
         if (changedData.length > 0) {
+            console.log(changedData);
             postAttendanceData(changedData);
         }
     };
@@ -112,6 +115,7 @@ const AttendancePage = () => {
             SaveAttendanceData();
             setAddable(true);
             setOriginalAttendanceData(JSON.parse(JSON.stringify(attendanceData))); // 원본 데이터 업데이트
+            alert("출석 정보가 수정되었습니다.");
         }
     };
 
