@@ -45,12 +45,14 @@ export const handleGoogleLogin = async (navigate) => {
 const handleLoginAPI = async (email) => {
     try {
         const response = await axios.post(
-            `${process.env.REACT_APP_URL}/v1/users/login`, { email },
-            {withCredentials : true}
+        `${process.env.REACT_APP_URL}/v1/users/login`,
+        email,
+        { withCredentials: true }
         );
+        
         return response.data;
     } catch (error) {
-        console.log("get error");
+        console.log("login api error", error);
         throw error;
     }
 };
