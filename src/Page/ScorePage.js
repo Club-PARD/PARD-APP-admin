@@ -85,7 +85,7 @@ const ScorePage = () => {
           } else {
             setUserScores([]);
           }
-          console.log(result);
+          // console.log(result);
           setLoading(false);
         } catch (error) {
           console.error("Error fetching user scores:", error);
@@ -400,16 +400,16 @@ const ScorePage = () => {
                   {groupedData[reason].points.map((point, index) => (
                     <div key={index}>
                       <RowContentDiv>
-                        <RowContentType right={30} width={60}>
+                        <RowContentType $right={30} width={60}>
                           {point.reason === "MVP" ? "MVP" : point.reason}
                         </RowContentType>
-                        <RowContentDigit right={38} width={45}>
+                        <RowContentDigit $right={38} width={45}>
                           {point.bonus ? `+${point.point}점` : `${point.point}점`}
                         </RowContentDigit>
-                        <RowContent right={15} width={200}>
+                        <RowContent $right={15} width={200}>
                           {point.detail}
                         </RowContent>
-                        <RowContent right={0} width={100}>
+                        <RowContent $right={0} width={100}>
                           {formatDate(point.createAt)}
                         </RowContent>
                         {/* <RowContent> */}
@@ -426,7 +426,7 @@ const ScorePage = () => {
         };
 
       return (
-        <ModalWrapper isOpen={isOpen}>
+        <ModalWrapper $isOpen={isOpen}>
           <ModalContent>
             <ModalTitleDiv>
               {isRegisterModalOpen ? (
@@ -440,33 +440,33 @@ const ScorePage = () => {
               />
             </ModalTitleDiv>
             <ModalSubTitle>
-              <ModalContents color={"#111"} right={71} weight={500}>
+              <ModalContents color={"#111"} $right={71} $weight={500}>
                 이름
               </ModalContents>
-              <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+              <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                 {name}
               </ModalContents>
             </ModalSubTitle>
             <ModalSubTitle>
-              <ModalContents color={"#111"} right={71} weight={500}>
+              <ModalContents color={"#111"} $right={71} $weight={500}>
                 파트
               </ModalContents>
-              <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+              <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                 {part}
               </ModalContents>
             </ModalSubTitle>
             {isRegisterModalOpen ? (
               <div>
-                <HR top={24} />
+                <HR $top={24} />
                 <RowTitleDiv>
-                  <RowTitle right={55}>파드너십</RowTitle>
-                  <RowTitle right={113}>점수</RowTitle>
-                  <RowTitle right={120}>내용</RowTitle>
-                  <RowTitle right={70}>날짜</RowTitle>
-                  <RowTitle right={0}>삭제</RowTitle>
+                  <RowTitle $right={55}>파드너십</RowTitle>
+                  <RowTitle $right={113}>점수</RowTitle>
+                  <RowTitle $right={120}>내용</RowTitle>
+                  <RowTitle $right={70}>날짜</RowTitle>
+                  <RowTitle $right={0}>삭제</RowTitle>
                 </RowTitleDiv>
                 
-                <HR top={8} />
+                <HR $top={8} />
                 {/* <ContentDiv>
                   {mockDataDetail
                     .slice()
@@ -474,19 +474,19 @@ const ScorePage = () => {
                     .map((point, index) => (
                       <div key={index}>
                         <RowContentDiv>
-                          <RowContentType right={30} width={60}>
+                          <RowContentType $right={30} width={60}>
                             {point.reason === "MVP" ? "MVP" : point.reason}
                           </RowContentType>
-                          <RowContentDigit right={38} width={45}>
+                          <RowContentDigit $right={38} width={45}>
                             {" "}
                             {point.bonus == true
                               ? `+${point.point}점`
                               : `${point.point}점`}
                           </RowContentDigit>
-                          <RowContent right={15} width={200}>
+                          <RowContent $right={15} width={200}>
                             {point.detail}
                           </RowContent>
-                          <RowContent right={0} width={100}>
+                          <RowContent $right={0} width={100}>
                               {formatDate(point.createAt)}
                           </RowContent>
                           <RowContent onClick={() => handleDeleteButtonClick(point.reason)}>삭제</RowContent>
@@ -504,7 +504,7 @@ const ScorePage = () => {
             ) : (
               <>
                 <ModalSubTitle>
-                  <ModalContents color={"#111"} top={10} weight={500}>
+                  <ModalContents color={"#111"} $top={10} $weight={500}>
                     파드너십
                   </ModalContents>
                   <DropdownWrapper1>
@@ -518,7 +518,7 @@ const ScorePage = () => {
                         />
                       )}
                     </DropdownButton1>
-                    <DropdownContent1 isOpen={isDropdownOpen}>
+                    <DropdownContent1 $isOpen={isDropdownOpen}>
                       {ScoreList.map((option, index) => (
                         <DropdownItem1
                           key={index}
@@ -534,8 +534,8 @@ const ScorePage = () => {
                     </DropdownContent1>
                   </DropdownWrapper1>
                 </ModalSubTitle>
-                <ModalSubTitle top={36}>
-                  <ModalContents color={"#111"} right={71} weight={500}>
+                <ModalSubTitle $top={36}>
+                  <ModalContents color={"#111"} $right={71} $weight={500}>
                     점수
                   </ModalContents>
                   {/* {selectedScore === "벌점 조정" ? ( */}
@@ -573,8 +573,8 @@ const ScorePage = () => {
                       : "* 벌점을 직접 입력할 때 -를 제외하고 양수로 입력해주세요"}
                   </UnitSubText>
                 </ModalSubTitle>
-                <ModalSubTitle top={32}>
-                  <ModalContents color={"#111"} right={71} weight={500}>
+                <ModalSubTitle $top={32}>
+                  <ModalContents color={"#111"} $right={71} $weight={500}>
                     이유
                   </ModalContents>
                   <ReasonInput
@@ -584,8 +584,8 @@ const ScorePage = () => {
                   />
                 </ModalSubTitle>
                 <InputNumNum>{inputText.length}/20</InputNumNum>
-                <ModalSubTitle top={20}>
-                    <ModalContents color={"#111"} top={-35} right={71} weight={500}>
+                <ModalSubTitle $top={20}>
+                    <ModalContents color={"#111"} $top={-35} $right={71} $weight={500}>
                     예시
                   </ModalContents>
                   <ScoreInputExample>
@@ -685,7 +685,7 @@ const ScorePage = () => {
                 <ArrowTop1 src={require("../Assets/img/Polygon.png")} />
               )}
             </DropdownButton>
-            <DropdownContent isOpen={isOpen}>
+            <DropdownContent $isOpen={isOpen}>
               {options.map((option, index) => (
                 <DropdownItem key={index} onClick={() => handleOptionClick(option)}>
                   {option}
@@ -831,33 +831,33 @@ const BodyDiv = styled.div`
   overflow-y: scroll;
 `;
 
-const Table = styled.table`
+const Table = styled.div`
   width: auto;
   border-collapse: collapse;
   border-spacing: 0;
   border-radius: 4px;;
 `;
 
-const TableHead = styled.thead`
+const TableHead = styled.div`
   background-color: #eee;
   border-bottom: 1px solid #a3a3a3;
   position: sticky;
   top: 0;
 `;
 
-const TableBody = styled.tbody`
+const TableBody = styled.div`
   display: block;
   max-height: calc(100% - 48px);
   overflow-y: auto;
   border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
 `;
 
-const TableRow = styled.tr`
+const TableRow = styled.div`
   border-bottom: 1px solid #ddd;
   display: flex;
 `;
 
-const TableHeaderCell = styled.th`
+const TableHeaderCell = styled.div`
   color: var(--black-background, #1a1a1a);
   font-family: "Pretendard";
   font-size: 16px;
@@ -886,7 +886,7 @@ const TableHeaderCell = styled.th`
   }
 `;
 
-const TableCell = styled.td`
+const TableCell = styled.div`
   color: ${(props) => props.color};
   font-family: "Pretendard";
   font-size: 16px;
@@ -945,7 +945,7 @@ const DropdownButton = styled.button`
 `;
 
 const DropdownContent = styled.div`
-  display: ${(props) => (props.isOpen ? "block" : "none")};
+  display: ${(props) => (props.$isOpen ? "block" : "none")};
   position: absolute;
   background-color: #f1f1f1;
   width: 125px;
@@ -1008,7 +1008,7 @@ const CheckScoreButton = styled.button`
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    display: ${(props) => (props.isOpen ? "block" : "none")};
+    display: ${(props) => (props.$isOpen ? "block" : "none")};
     z-index: 2;
   `;
 
@@ -1054,7 +1054,7 @@ const CheckScoreButton = styled.button`
     margin-left: 56px;
     align-items: center;
     margin-top: 24px;
-    margin-top: ${(props) => props.top || 24}px;
+    margin-top: ${(props) => props.$top || 24}px;
   `;
 
   const ModalContents = styled.div`
@@ -1062,10 +1062,10 @@ const CheckScoreButton = styled.button`
     font-family: "Pretendard";
     font-size: 18px;
     font-style: normal;
-    font-weight: ${(props) => props.weight};
+    font-weight: ${(props) => props.$weight};
     line-height: 24px;
-    margin-right: ${(props) => props.right}px;
-    margin-top: ${(props) => props.top}px;
+    margin-right: ${(props) => props.$right}px;
+    margin-top: ${(props) => props.$top}px;
   `;
 
   const HR = styled.hr`
@@ -1073,7 +1073,7 @@ const CheckScoreButton = styled.button`
     height: 0px;
     stroke-width: 1px;
     stroke: var(--Gray30, #a3a3a3);
-    margin-top: ${(props) => props.top}px;
+    margin-top: ${(props) => props.$top}px;
   `;
 
   const RowTitleDiv = styled.div`
@@ -1090,7 +1090,7 @@ const CheckScoreButton = styled.button`
     font-style: normal;
     font-weight: 600;
     line-height: 18px;
-    margin-right: ${(props) => props.right}px;
+    margin-right: ${(props) => props.$right}px;
   `;
 
   const RowContent = styled.div`
@@ -1100,7 +1100,7 @@ const CheckScoreButton = styled.button`
     font-style: normal;
     font-weight: 500;
     line-height: 16px;
-    margin-right: ${(props) => props.right}px;
+    margin-right: ${(props) => props.$right}px;
     width: ${(props) => props.width}px;
     /* background-color: red; */
     display: flex;
@@ -1115,7 +1115,7 @@ const CheckScoreButton = styled.button`
     font-style: normal;
     font-weight: 500;
     line-height: 16px;
-    margin-right: ${(props) => props.right}px;
+    margin-right: ${(props) => props.$right}px;
     width: ${(props) => props.width}px;
     /* background-color: red; */
     display: flex;
@@ -1126,7 +1126,7 @@ const CheckScoreButton = styled.button`
   `;
 
   const RowContentDigit = styled.div`
-    margin-right: ${(props) => props.right}px;
+    margin-right: ${(props) => props.$right}px;
     width: ${(props) => props.width}px;
     /* background-color: red; */
     display: flex;
@@ -1217,7 +1217,7 @@ const CheckScoreButton = styled.button`
   `;
 
   const DropdownContent1 = styled.div`
-    display: ${(props) => (props.isOpen ? "block" : "none")};
+    display: ${(props) => (props.$isOpen ? "block" : "none")};
     position: absolute;
     background-color: #f1f1f1;
     min-width: 218px;
