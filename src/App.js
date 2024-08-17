@@ -7,8 +7,8 @@ import LoginPage from "./Page/LoginPage";
 import UserPage from "./Page/UserPage";
 import SchedulePage from "./Page/SchedulePage";
 import ScorePage from "./Page/ScorePage";
-import {useEffect, useState} from "react";
-import {CookieCheck, setupAxiosInterceptors} from "./Api/LoginService";
+import {useEffect} from "react";
+import {setupAxiosInterceptors} from "./Api/LoginService";
 
 /*
 - 개발자 도구 Console 메세지 강제 제거

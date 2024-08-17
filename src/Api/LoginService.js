@@ -1,7 +1,6 @@
 import {GoogleAuthProvider, signInWithPopup} from "firebase/auth";
-import {auth, dbService} from "../fbase";
+import {auth} from "../fbase";
 import axios from "axios";
-import Cookies from 'js-cookie';
 
 
 /*
@@ -45,26 +44,21 @@ export const handleGoogleLogin = async (navigate) => {
 const handleLoginAPI = async (email) => {
     try {
         const response = await axios.post(
-            `${process.env.REACT_APP_URL}/v1/users/login`, { email },
-            {withCredentials : true}
+        `${process.env.REACT_APP_URL}/v1/users/login`,
+        { email },
+        { withCredentials: true }
         );
+        
         return response.data;
     } catch (error) {
-        console.log("get error");
+        console.log("login api error", error);
+        if (error?.response?.status === 404) {
+            alert("등록되지 않은 사용자 정보입니다.");
+        }
         throw error;
     }
 };
 
-export const handleCheckCookie = () => {
-    const cookieName = ''
-    const cookieValue = Cookies.get();
-    // JSON.parse(cookieValue.replace(new RegExp(/'/g), '"'));
-    // console.log("쿠키 확인", cookieValue);
-    if (!cookieValue) {
-        alert("[에러] Authorization 정보가 없습니다.\n관리자에게 문의하세요!");
-        // deleteLoginInfo();
-    }
-}
 
 const deleteLoginInfo = () => {
 
