@@ -45,13 +45,16 @@ const handleLoginAPI = async (email) => {
     try {
         const response = await axios.post(
         `${process.env.REACT_APP_URL}/v1/users/login`,
-        email,
+        { email },
         { withCredentials: true }
         );
         
         return response.data;
     } catch (error) {
         console.log("login api error", error);
+        if (error?.response?.status === 404) {
+            alert("등록되지 않은 사용자 정보입니다.");
+        }
         throw error;
     }
 };
