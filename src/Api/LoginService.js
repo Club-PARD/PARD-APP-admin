@@ -1,7 +1,6 @@
 import {GoogleAuthProvider, signInWithPopup} from "firebase/auth";
-import {auth, dbService} from "../fbase";
+import {auth} from "../fbase";
 import axios from "axios";
-import Cookies from 'js-cookie';
 
 
 /*
@@ -57,16 +56,6 @@ const handleLoginAPI = async (email) => {
     }
 };
 
-export const handleCheckCookie = () => {
-    const cookieName = ''
-    const cookieValue = Cookies.get();
-    // JSON.parse(cookieValue.replace(new RegExp(/'/g), '"'));
-    // console.log("쿠키 확인", cookieValue);
-    if (!cookieValue) {
-        alert("[에러] Authorization 정보가 없습니다.\n관리자에게 문의하세요!");
-        // deleteLoginInfo();
-    }
-}
 
 const deleteLoginInfo = () => {
 
