@@ -432,10 +432,10 @@ const UserPage = () => {
                             onClick={onModalClose}/>
                     </ModalTitleDiv>{" "}
                     <ModalSubTitle>
-                        <ModalContents color={"#111"} right={71} weight={500}>
+                        <ModalContents color={"#111"} $right={71} $weight={500}>
                             이름
                         </ModalContents>
-                        <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                        <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                             <Input
                                 value={inputName}
                                 onChange={handleNameChange}
@@ -443,10 +443,10 @@ const UserPage = () => {
                         </ModalContents>
                     </ModalSubTitle>
                     <ModalSubTitle>
-                        <ModalContents color={"#111"} right={41} weight={500}>
+                        <ModalContents color={"#111"} $right={41} $weight={500}>
                             전화번호
                         </ModalContents>
-                        <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                        <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                             <Input
                                 value={formatPhoneNumber(inputPhoneNum)}
                                 onChange={handlePhoneNumChange}
@@ -456,10 +456,10 @@ const UserPage = () => {
                         </ModalContents>
                     </ModalSubTitle>
                     <ModalSubTitle>
-                        <ModalContents color={"#111"} right={71} weight={500}>
+                        <ModalContents color={"#111"} $right={71} $weight={500}>
                             기수
                         </ModalContents>
-                        <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                        <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                             <Input
                                 value={inputGeneration}
                                 onChange={handleGenerationChange}
@@ -467,10 +467,10 @@ const UserPage = () => {
                         </ModalContents>
                     </ModalSubTitle>
                     <ModalSubTitle>
-                        <ModalContents color={"#111"} right={71} weight={500}>
+                        <ModalContents color={"#111"} $right={71} $weight={500}>
                             구분
                         </ModalContents>
-                        <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                        <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                             <DropdownWrapperModal>
                                 <DropdownButtonModal onClick={toggleDropdownRole}>
                                     {handleChangeRoleName(selectedRoleOption || role)}
@@ -480,7 +480,7 @@ const UserPage = () => {
                                             : (<ArrowTop1 src={require("../Assets/img/Polygon.png")}/>)
                                     }
                                 </DropdownButtonModal>
-                                <DropdownContentModal isOpen={toggleToRole}>
+                                <DropdownContentModal $isOpen={toggleToRole}>
                                     {
                                         RoleOption.map((option, index) => (
                                             <DropdownItemModal key={index} onClick={() => handleOptionRoleClick(option)}>
@@ -493,10 +493,10 @@ const UserPage = () => {
                         </ModalContents>
                     </ModalSubTitle>
                     <ModalSubTitle>
-                        <ModalContents color={"#111"} right={71} weight={500}>
+                        <ModalContents color={"#111"} $right={71} $weight={500}>
                             파트
                         </ModalContents>
-                        <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                        <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                             <DropdownWrapperModal>
                                 <DropdownButtonModal onClick={toggleDropdownPart}>
                                     {selectedOption || part}
@@ -506,7 +506,7 @@ const UserPage = () => {
                                             : (<ArrowTop1 src={require("../Assets/img/Polygon.png")}/>)
                                     }
                                 </DropdownButtonModal>
-                                <DropdownContentModal isOpen={toggleToPart}>
+                                <DropdownContentModal $isOpen={toggleToPart}>
                                     {
                                         PartOption.map((option, index) => (
                                             <DropdownItemModal key={index} onClick={() => handleOptionClick(option)}>
@@ -519,7 +519,7 @@ const UserPage = () => {
                         </ModalContents>
                     </ModalSubTitle>
                     <ModalSubTitle>
-                        <ModalContents color={"#111"} right={70} weight={500}>
+                        <ModalContents color={"#111"} $right={70} $weight={500}>
                             삭제
                         </ModalContents>
                         <ModalContents>
@@ -653,7 +653,7 @@ const UserPage = () => {
                             <FirstDiv>
                                 <GenerationDiv>
                                     <FlexDiv>
-                                        <MemberNumText color={"#1A1A1A"} right={4}>
+                                        <MemberNumText color={"#1A1A1A"} $right={4}>
                                             총
                                         </MemberNumText>
                                         <MemberNumText color={"#5262F5"}>
@@ -670,24 +670,24 @@ const UserPage = () => {
                             </FirstDiv>
                             <SecondDiv>
                                 <TableHead2>
-                                    <TableHead2Cell flex={1}>
+                                    <TableHead2Cell $flex={1}>
                                         No.
                                     </TableHead2Cell>
-                                    <TableHead2Cell flex={1}>
+                                    <TableHead2Cell $flex={1}>
                                         기수
                                     </TableHead2Cell>
-                                    <TableHead2Cell flex={2}>
+                                    <TableHead2Cell $flex={2}>
                                         이름
                                     </TableHead2Cell >
-                                    <TableHead2Cell flex={4}>
+                                    <TableHead2Cell $flex={4}>
                                         이메일
                                     </TableHead2Cell>
                                     <TableHead2Cell >
                                         전화번호
                                     </TableHead2Cell>
-                                    <TableHead2Cell flex={2}>
+                                    <TableHead2Cell $flex={2}>
                                         <DropdownWrapper>
-                                            <DropdownButton onClick={handleArrowTopClick} color={true} Backcolor={"#eee"}>
+                                            <DropdownButton onClick={handleArrowTopClick} $colorValue={true} $Backcolor={"#eee"}>
                                                 {handleChangeRoleName(selectedMemberFilter) || "구분"}
                                                 {
                                                     !isDropdownOpen
@@ -695,7 +695,7 @@ const UserPage = () => {
                                                         : (<ArrowTop1 src={require("../Assets/img/Polygon.png")}/>)
                                                 }
                                             </DropdownButton>
-                                            <DropdownContent isOpen={isDropdownOpen} left={-5} width={145}>
+                                            <DropdownContent $isOpen={isDropdownOpen} $left={-5} width={145}>
                                                 {
                                                     memberFillter.map((memberOption, memberIndex) => (
                                                         <DropdownItem
@@ -708,9 +708,9 @@ const UserPage = () => {
                                             </DropdownContent>
                                         </DropdownWrapper>
                                     </TableHead2Cell>
-                                    <TableHead2Cell flex={2}>
+                                    <TableHead2Cell $flex={2}>
                                         <DropdownWrapper>
-                                            <DropdownButton onClick={handleArrowPartClick} color={true} Backcolor={"#eee"}>
+                                            <DropdownButton onClick={handleArrowPartClick} $colorValue={true} $Backcolor={"#eee"}>
                                                 {selectedPartFilter || "파트"}
                                                 {
                                                     !isdropdownPart
@@ -718,7 +718,7 @@ const UserPage = () => {
                                                         : (<ArrowTop1 src={require("../Assets/img/Polygon.png")}/>)
                                                 }
                                             </DropdownButton>
-                                            <DropdownContent isOpen={isdropdownPart} left={-7} width={120}>
+                                            <DropdownContent $isOpen={isdropdownPart} $left={-7} width={120}>
                                                 {
                                                     partFillter.map((memberOption, memberIndex) => (
                                                         <DropdownItem
@@ -731,36 +731,36 @@ const UserPage = () => {
                                             </DropdownContent>
                                         </DropdownWrapper>
                                     </TableHead2Cell>
-                                    <TableHead2Cell flex={2}>
+                                    <TableHead2Cell $flex={2}>
                                         관리
                                     </TableHead2Cell >
                                 </TableHead2>
                                 {
                                     filteredUserDataList.map((userInfo, index) => (
-                                        <TableBody2>
-                                            <TableHead2Cell flex={1}>
+                                        <TableBody2 key={index}>
+                                            <TableHead2Cell $flex={1}>
                                                 {index + 1}
                                             </TableHead2Cell>
-                                            <TableHead2Cell flex={1}>
+                                            <TableHead2Cell $flex={1}>
                                                 {userInfo.generation}기
                                             </TableHead2Cell >
-                                            <TableHead2Cell flex={2}>
+                                            <TableHead2Cell $flex={2}>
                                                 {userInfo.name}
                                             </TableHead2Cell >
-                                            <TableHead2Cell flex={4}>
+                                            <TableHead2Cell $flex={4}>
                                                 {userInfo.userEmail}
                                             </TableHead2Cell>
                                             <TableHead2Cell >
                                                 {formatPhoneNumber(userInfo.phoneNumber)}
                                             </TableHead2Cell>
-                                            <TableHead2Cell flex={2}>
+                                            <TableHead2Cell $flex={2}>
                                                 {handleChangeRoleName(userInfo.role)}
                                                 {/* {userInfo.role} */}
                                             </TableHead2Cell>
-                                            <TableHead2Cell flex={2}>
+                                            <TableHead2Cell $flex={2}>
                                                 {userInfo.part}
                                             </TableHead2Cell>
-                                            <TableHead2Cell flex={2}>
+                                            <TableHead2Cell $flex={2}>
                                                 <CheckScoreButton onClick={() => openModal(index)}>
                                                     관리
                                                 </CheckScoreButton>
@@ -794,28 +794,28 @@ const UserPage = () => {
                             </FirstDiv>
                             <SecondDiv>
                                 <TableHead2>
-                                    <TableHead2Cell flex={1}>
+                                    <TableHead2Cell $flex={1}>
                                         No.
                                     </TableHead2Cell>
-                                    <TableHead2Cell flex={1}>
+                                    <TableHead2Cell $flex={1}>
                                         기수
                                     </TableHead2Cell>
-                                    <TableHead2Cell flex={2}>
+                                    <TableHead2Cell $flex={2}>
                                         이름
                                     </TableHead2Cell >
-                                    <TableHead2Cell flex={4}>
+                                    <TableHead2Cell $flex={4}>
                                         이메일
                                     </TableHead2Cell>
                                     <TableHead2Cell >
                                         전화번호
                                     </TableHead2Cell>
-                                    <TableHead2Cell flex={2}>
+                                    <TableHead2Cell $flex={2}>
                                         구분
                                     </TableHead2Cell>
-                                    <TableHead2Cell flex={2}>
+                                    <TableHead2Cell $flex={2}>
                                         파트
                                     </TableHead2Cell>
-                                    <TableHead2Cell flex={2}>
+                                    <TableHead2Cell $flex={2}>
                                         초기화
                                     </TableHead2Cell>
                                 </TableHead2>
@@ -823,11 +823,11 @@ const UserPage = () => {
                                     Array
                                         .from({length: 15})
                                         .map((_, index) => (
-                                            <TableBody2>
-                                                <TableHead2Cell flex={1}>
+                                            <TableBody2 key = {index}>
+                                                <TableHead2Cell $flex={1}>
                                                     {index + 1}
                                                 </TableHead2Cell>
-                                                <TableHead2Cell flex={1}>
+                                                <TableHead2Cell $flex={1}>
                                                     <InputBox
                                                         type="text"
                                                         placeholder="입력"
@@ -835,7 +835,7 @@ const UserPage = () => {
                                                         required
                                                         onChange={(e) => handleGenerationInputChange(e, index)}/>
                                                 </TableHead2Cell >
-                                                <TableHead2Cell flex={2}>
+                                                <TableHead2Cell $flex={2}>
                                                     <InputBox
                                                         type="text"
                                                         placeholder="입력"
@@ -843,7 +843,7 @@ const UserPage = () => {
                                                         required
                                                         onChange={(e) => handleNameInputChange(e, index)}/>
                                                 </TableHead2Cell >
-                                                <TableHead2Cell flex={4}>
+                                                <TableHead2Cell $flex={4}>
                                                     <InputBox
                                                         type="text"
                                                         placeholder="입력"
@@ -861,14 +861,14 @@ const UserPage = () => {
                                                     maxLength={13} // XXX-XXXX-XXXX 형식의 최대 길이
                                                 />
                                                 </TableHead2Cell>
-                                                <TableHead2Cell flex={2}>
+                                                <TableHead2Cell $flex={2}>
                                                     <DropdownWrapper>
                                                         <DropdownButton
                                                             onClick={() => toggleDropdown(index)}
-                                                            color={selectedMembers[index] !== null}>
+                                                            $hasValue={selectedMembers[index] !== null}>
                                                             {handleChangeRoleName(selectedMembers[index]) || "선택"}
                                                         </DropdownButton>
-                                                        <DropdownContent isOpen={isOpen[index]} left={-7} width={160} top={1}>
+                                                        <DropdownContent $isOpen={isOpen[index]} $left={-7} width={160} $top={1}>
                                                             {" "}
                                                             {/* 인덱스에 따라 열림 상태 설정 */}
                                                             {
@@ -883,14 +883,14 @@ const UserPage = () => {
                                                         </DropdownContent>
                                                     </DropdownWrapper>
                                                 </TableHead2Cell>
-                                                <TableHead2Cell flex={2}>
+                                                <TableHead2Cell $flex={2}>
                                                     <DropdownWrapper1>
-                                                        <DropdownButton1
-                                                            onClick={() => toggleDropdownPart(index)}
-                                                            color={selectedPart[index] !== null}>
-                                                            {selectedPart[index] || "선택"}
-                                                        </DropdownButton1>
-                                                        <DropdownContent1 isOpen={isOpenPart[index]}>
+                                                    <DropdownButton1
+                                                        onClick={() => toggleDropdownPart(index)}
+                                                        $hasValue={selectedPart[index] !== null}>
+                                                        {selectedPart[index] || "선택"}
+                                                    </DropdownButton1>
+                                                        <DropdownContent1 $isOpen={isOpenPart[index]}>
                                                             {
                                                                 part.map((partOption, partIndex) => (
                                                                     <DropdownItem1
@@ -903,7 +903,7 @@ const UserPage = () => {
                                                         </DropdownContent1>
                                                     </DropdownWrapper1>{" "}
                                                 </TableHead2Cell>
-                                                <TableHead2Cell flex={2}>
+                                                <TableHead2Cell $flex={2}>
                                                     <ResetButton onClick={() => resetRowData(index)}>
                                                     초기화
                                                     </ResetButton>
@@ -999,23 +999,23 @@ const BarText = styled.div `
     background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
 `;
 
-const BodyDiv = styled.div `
-    display: flex;
-    flex-direction: column;
-    margin-top: 83px;
-    margin-left: 80px;
-    max-width: 1240px;
-    width: 90%;
-    height: 700px;
-`;
+// const BodyDiv = styled.div `
+//     display: flex;
+//     flex-direction: column;
+//     margin-top: 83px;
+//     margin-left: 80px;
+//     max-width: 1240px;
+//     width: 90%;
+//     height: 700px;
+// `;
 
-const TableDiv = styled.div `
-    display: flex;
-    flex-direction: column;
-    width: 1242px;
-    height: 700px;
-    overflow-y: scroll;
-`;
+// const TableDiv = styled.div `
+//     display: flex;
+//     flex-direction: column;
+//     width: 1242px;
+//     height: 700px;
+//     overflow-y: scroll;
+// `;
 
 const BodyAddDiv = styled.div `
     display: flex;
@@ -1054,7 +1054,7 @@ const MemberNumText = styled.div `
     line-height: 24px;
     margin-right: ${ (
         props
-    ) => props.right}px;
+    ) => props.$right}px;
     `;
 
     const RegisterMemberIcon = styled.img `
@@ -1131,68 +1131,68 @@ const CancelButton = styled.button `
     margin-right: 16px;
 `;
 
-const Table = styled.table `
-    border-collapse: collapse;
-    border-spacing: 0;
-    border-radius: 4px;
-`;
+// const Table = styled.table `
+//     border-collapse: collapse;
+//     border-spacing: 0;
+//     border-radius: 4px;
+// `;
 
-const TableHead = styled.thead `
-    background-color: #eee;
-    border-bottom: 1px solid #a3a3a3;
-    position: sticky;
-    top: 0;
-`;
+// const TableHead = styled.thead `
+//     background-color: #eee;
+//     border-bottom: 1px solid #a3a3a3;
+//     position: sticky;
+//     top: 0;
+// `;
 
-const TableBody = styled.tbody `
-    display: block;
-    max-height: calc(100% - 48px);
-    overflow-y: auto;
-    border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
-    &:first-child {
-        border-left: 1px solid var(--Gray30, #a3a3a3);
-    }
+// const TableBody = styled.tbody `
+//     display: block;
+//     max-height: calc(100% - 48px);
+//     overflow-y: auto;
+//     border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
+//     &:first-child {
+//         border-left: 1px solid var(--Gray30, #a3a3a3);
+//     }
 
-    &:last-child {
-        border-right: 1px solid var(--Gray30, #a3a3a3);
-    }
-`;
+//     &:last-child {
+//         border-right: 1px solid var(--Gray30, #a3a3a3);
+//     }
+// `;
 
-const TableRow = styled.tr `
-    border-bottom: 1px solid #ddd;
-    display: flex;
-`;
+// const TableRow = styled.tr `
+//     border-bottom: 1px solid #ddd;
+//     display: flex;
+// `;
 
-const TableHeaderCell = styled.th `
-    color: var(--black-background, #1a1a1a);
-    font-family: "Pretendard";
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 24px;
-    display: flex;
-    width: ${ (
-        props
-    ) => props.width}px;
-    height: 48px;
-    justify-content: center;
-    align-items: center;
-    flex-shrink: 0;
-    border-top: 1px solid var(--Gray30, #a3a3a3);
-    border-left: 0.5px solid var(--Gray30, #a3a3a3);
-    border-right: 0.5px solid var(--Gray30, #a3a3a3);
-    background: #fff;
+// const TableHeaderCell = styled.th `
+//     color: var(--black-background, #1a1a1a);
+//     font-family: "Pretendard";
+//     font-size: 16px;
+//     font-style: normal;
+//     font-weight: 600;
+//     line-height: 24px;
+//     display: flex;
+//     width: ${ (
+//         props
+//     ) => props.width}px;
+//     height: 48px;
+//     justify-content: center;
+//     align-items: center;
+//     flex-shrink: 0;
+//     border-top: 1px solid var(--Gray30, #a3a3a3);
+//     border-left: 0.5px solid var(--Gray30, #a3a3a3);
+//     border-right: 0.5px solid var(--Gray30, #a3a3a3);
+//     background: #fff;
 
-    &:first-child {
-        border-left: 1px solid var(--Gray30, #a3a3a3);
-        border-radius: 4px 0px 0px 0px;
-    }
+//     &:first-child {
+//         border-left: 1px solid var(--Gray30, #a3a3a3);
+//         border-radius: 4px 0px 0px 0px;
+//     }
 
-    &:last-child {
-        border-radius: 0px 4px 0px 0px;
-        border-right: 1px solid var(--Gray30, #a3a3a3);
-    }
-`;
+//     &:last-child {
+//         border-radius: 0px 4px 0px 0px;
+//         border-right: 1px solid var(--Gray30, #a3a3a3);
+//     }
+// `;
 
 const ArrowTop1 = styled.img `
     width: 14px;
@@ -1202,64 +1202,64 @@ const ArrowTop1 = styled.img `
     cursor: pointer;
     `;
 
-    const TableCell = styled.td `
-    color: ${ (props) => props.color};
-    font-family: "Pretendard";
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 18px;
-    width: ${ (
-        props
-    ) => props.width}px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 40px;
-    height: auto;
-    border-right: 0.5px solid var(--Gray30, #a3a3a3);
-    border-left: 0.5px solid var(--Gray30, #a3a3a3);
-    padding-right: ${ (
-        props
-    ) => props.right}px;
+// const TableCell = styled.td `
+//     color: ${ (props) => props.color};
+//     font-family: "Pretendard";
+//     font-size: 14px;
+//     font-style: normal;
+//     font-weight: 500;
+//     line-height: 18px;
+//     width: ${ (
+//         props
+//     ) => props.width}px;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     min-height: 40px;
+//     height: auto;
+//     border-right: 0.5px solid var(--Gray30, #a3a3a3);
+//     border-left: 0.5px solid var(--Gray30, #a3a3a3);
+//     padding-right: ${ (
+//         props
+//     ) => props.right}px;
 
-    &:first-child {
-        border-left: 1px solid var(--Gray30, #a3a3a3);
-    }
+//     &:first-child {
+//         border-left: 1px solid var(--Gray30, #a3a3a3);
+//     }
 
-    &:last-child {
-        border-right: 1px solid var(--Gray30, #a3a3a3);
-    }
-    background-color: #fff;
-`;
+//     &:last-child {
+//         border-right: 1px solid var(--Gray30, #a3a3a3);
+//     }
+//     background-color: #fff;
+// `;
 
-const TableMinText = styled.td `
-    color: ${ (props) => props.color};
-    font-family: "Pretendard";
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 16px;
-    width: ${ (
-        props
-    ) => props.width}px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 40px;
-    height: auto;
-    border-right: 0.5px solid var(--Gray30, #a3a3a3);
-    border-left: 0.5px solid var(--Gray30, #a3a3a3);
+// const TableMinText = styled.td `
+//     color: ${ (props) => props.color};
+//     font-family: "Pretendard";
+//     font-size: 12px;
+//     font-style: normal;
+//     font-weight: 500;
+//     line-height: 16px;
+//     width: ${ (
+//         props
+//     ) => props.width}px;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     min-height: 40px;
+//     height: auto;
+//     border-right: 0.5px solid var(--Gray30, #a3a3a3);
+//     border-left: 0.5px solid var(--Gray30, #a3a3a3);
 
-    &:first-child {
-        border-left: 1px solid var(--Gray30, #a3a3a3);
-    }
+//     &:first-child {
+//         border-left: 1px solid var(--Gray30, #a3a3a3);
+//     }
 
-    &:last-child {
-        border-right: 1px solid var(--Gray30, #a3a3a3);
-    }
-    background-color: #fff;
-    `;
+//     &:last-child {
+//         border-right: 1px solid var(--Gray30, #a3a3a3);
+//     }
+//     background-color: #fff;
+//     `;
 
     const CheckScoreButton = styled.button `
     display: flex;
@@ -1288,42 +1288,42 @@ const TableMinText = styled.td `
     }
 `;
 
-const NameInputBox = styled.input `
-    width: 100%;
-    height: 100%;
-    font-family: "Pretendard";
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 24px;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: none;
-    ::placeholder {
-        text-align: center;
-    }
-`;
+// const NameInputBox = styled.input `
+//     width: 100%;
+//     height: 100%;
+//     font-family: "Pretendard";
+//     font-size: 16px;
+//     font-style: normal;
+//     font-weight: 500;
+//     line-height: 24px;
+//     text-align: center;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     border: none;
+//     ::placeholder {
+//         text-align: center;
+//     }
+// `;
 
-const PhoneNumInputBox = styled.input `
-    width: 100%;
-    height: 100%;
-    font-family: "Pretendard";
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 24px;
-    /* padding-left: 75px; */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: none;
-    text-align: center;
-    ::placeholder {
-    text-align: center;
-    }
-`;
+// const PhoneNumInputBox = styled.input `
+//     width: 100%;
+//     height: 100%;
+//     font-family: "Pretendard";
+//     font-size: 16px;
+//     font-style: normal;
+//     font-weight: 500;
+//     line-height: 24px;
+//     /* padding-left: 75px; */
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     border: none;
+//     text-align: center;
+//     ::placeholder {
+//     text-align: center;
+//     }
+// `;
 
 const DropdownWrapper = styled.div `
     position: relative;
@@ -1343,7 +1343,7 @@ const DropdownButton = styled.button `
     background-color: white;
     background: ${ (
     props
-    ) => props.Backcolor};
+    ) => props.$Backcolor};
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
     font-size: 16px;
@@ -1355,7 +1355,7 @@ const DropdownButton = styled.button `
     color: ${ (
     props
     ) => (
-    props.color
+    props.$colorValue
         ? "#1A1A1A"
         : "#A3A3A3"
     )};
@@ -1366,7 +1366,7 @@ const DropdownButton = styled.button `
 
 const DropdownContent = styled.div `
     display: ${ (props) => (
-        props.isOpen
+        props.$isOpen
             ? "block"
             : "none"
     )};
@@ -1381,8 +1381,8 @@ const DropdownContent = styled.div `
     border: 1px solid var(--primary-blue, #5262f5);
     margin-top: ${ (
         props
-    ) => props.top || 5}px;
-    margin-left: ${ (props) => props.left}px;
+    ) => props.$top || 5}px;
+    margin-left: ${ (props) => props.$left}px;
 `;
 
 const DropdownItem = styled.div `
@@ -1413,12 +1413,11 @@ const DropdownWrapper1 = styled.div `
     background: var(--White, #fff);
 `;
 
-const DropdownButton1 = styled.button `
+const DropdownButton1 = styled.button`
     cursor: pointer;
     width: 100%;
     height: 100%;
     background-color: white;
-    color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
     font-size: 16px;
     font-style: normal;
@@ -1426,18 +1425,12 @@ const DropdownButton1 = styled.button `
     line-height: 24px;
     border: none;
     padding: 8px 12px;
-    color: ${ (
-        props
-    ) => (
-        props.color
-            ? "#1A1A1A"
-            : "#A3A3A3"
-)};
+    color: ${props => props.$hasValue ? "#1A1A1A" : "#A3A3A3"};
 `;
 
 const DropdownContent1 = styled.div `
     display: ${ (props) => (
-        props.isOpen
+        props.$isOpen
             ? "block"
             : "none"
     )};
@@ -1608,7 +1601,7 @@ const TableHead2Cell = styled.div `
     width: 100%;
     height : 100%;
     display: flex;
-    flex : ${props => props.flex || 3};
+    flex : ${props => props.$flex || 3};
     align-items: center;
     justify-content: center;
     color: var(--black-background, #1a1a1a);
@@ -1701,9 +1694,9 @@ const ModalContents = styled.div `
     font-family: "Pretendard";
     font-size: 18px;
     font-style: normal;
-    font-weight: ${ (props) => props.weight};
+    font-weight: ${ (props) => props.$weight};
     line-height: 24px;
-    margin-right: ${ (props) => props.right}px;
+    margin-right: ${ (props) => props.$right}px;
     margin-top: ${ (props) => props.top}px;
 `;
 
@@ -1792,7 +1785,7 @@ const DropdownButtonModal = styled.button `
     width: 100%;
     height: 100%;
     background-color: white;
-    background: ${ (props) => props.Backcolor};
+    background: ${ (props) => props.$Backcolor};
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
     font-size: 16px;
@@ -1801,7 +1794,7 @@ const DropdownButtonModal = styled.button `
     line-height: 24px;
     border: none;
     padding: 8px 12px;
-    color: ${ (props) => (props.color? "#1A1A1A": "#A3A3A3")};
+    /* color: ${ (props) => (props.color? "#1A1A1A": "#A3A3A3")}; */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1809,7 +1802,7 @@ const DropdownButtonModal = styled.button `
 `;
 
 const DropdownContentModal = styled.div `
-    display: ${ (props) => (props.isOpen? "block" : "none")};
+    display: ${ (props) => (props.$isOpen? "block" : "none")};
     position: absolute;
     background-color: #f1f1f1;
     width: 125px;
