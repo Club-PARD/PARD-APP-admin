@@ -553,7 +553,7 @@ const ScorePage = () => {
                     </>
                   ) : (
                     <ScoreDiv
-                      score={
+                      $score={
                         selectedScore && selectedScore.match(/(-?\d+(\.\d+)?)점/)
                           ? parseFloat(
                               selectedScore.match(/(-?\d+(\.\d+)?)점/)[1]
@@ -1271,7 +1271,7 @@ const CheckScoreButton = styled.button`
     line-height: 24px;
     margin-right: 8px;
     background: ${(props) => {
-      const score = props.score;
+      const score = props.$score;
       if (score > 0) {
         return "rgba(100, 197, 154, 0.15)";
       } else if (score < 0) {
