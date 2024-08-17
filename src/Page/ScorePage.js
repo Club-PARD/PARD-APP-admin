@@ -74,56 +74,23 @@ const ScorePage = () => {
       }
     ]
 
-    const mockDataDetail =  [
-        {
-          reasonId: 8,
-          point: 5,
-          reason: "MVP",
-          detail: "1차 세미나",
-          createAt: "2024-07-08T12:21:36.405+00:00",
-          bonus: true
-        },
-        {
-          reasonId: 8,
-          point: 3,
-          reason: "회고",
-          detail: "디스콰이엇 회고.",
-          createAt: "2024-07-10T12:21:36.405+00:00",
-          bonus: true
-        },
-              {
-          reasonId: 8,
-          point: 3,
-          reason: "회고",
-          detail: "디스콰이엇 회고.",
-          createAt: "2024-07-10T12:21:36.405+00:00",
-          bonus: true
-      },
-                    {
-          reasonId: 8,
-          point: 3,
-          reason: "회고",
-          detail: "디스콰이엇 회고.",
-          createAt: "2024-07-10T12:21:36.405+00:00",
-          bonus: true
-        },
-    ]
     // Firebase fireStore 전체 Point 데이터 조회
     useEffect(() => {
       const fetchUserScores = async () => {
         try {
           const result = await getAllUserData(selectedGeneration);
-          if (result != undefined)
-            setUserScores(result);
-          else
+          if (result != undefined) {
+            const filteredResults = result.filter(user => user.role !== "ROLE_ADMIN");
+            setUserScores(filteredResults);
+          } else {
             setUserScores([]);
-          // console.log(result);
+          }
+          console.log(result);
           setLoading(false);
         } catch (error) {
           console.error("Error fetching user scores:", error);
         }
       };
-
 
       fetchUserScores();
     }, [selectedGeneration]);
