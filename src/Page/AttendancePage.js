@@ -63,7 +63,7 @@ const AttendancePage = () => {
 
     // filteredUserScores 데이터를 seminar 순서에 맞게 정렬하는 함수
     const getSortedAttendances = (attendances) => {
-        console.log("before", attendances);
+        // console.log("before", attendances);
         // attendances를 seminar 순서에 맞게 정렬합니다.
         const sortedAttendances = Array.from({ length: 11 }, (_, index) => {
             let seminarKey;
@@ -75,7 +75,7 @@ const AttendancePage = () => {
         // console.log(sortedAttendances);
 
         // 정렬된 배열을 반환
-        console.log("sortedAttendances", sortedAttendances); 
+        // console.log("sortedAttendances", sortedAttendances); 
         return sortedAttendances;
     };
 
@@ -165,7 +165,7 @@ const AttendancePage = () => {
     const updateUser = async (index, idx, newData) => {
         setAttendanceData(prevData => {
             const updatedData = [...prevData];
-            console.log("preview data", updatedData);
+            // console.log("preview data", updatedData);
             const userIndex = updatedData.findIndex(user => user.userEmail === filteredUserScores[index].userEmail);
             let flag = 0;
             if (userIndex !== -1) {
@@ -188,7 +188,7 @@ const AttendancePage = () => {
                 }
                 
             }
-            console.log("check", updatedData);
+            // console.log("check", updatedData);
             return updatedData;
         });
     };

@@ -128,7 +128,7 @@ const HomePage = () => {
                                     {/* 공지타입 : 공지 제목 */}
                                     <ScheduleFirstDiv key={index}>
                                         <FlextBoxDiv>
-                                            <PartNameDiv isPastEvent={schedule.isPastEvent}>{getPartName(schedule.part)}</PartNameDiv>
+                                            <PartNameDiv $isPastEvent={schedule.isPastEvent}>{getPartName(schedule.part)}</PartNameDiv>
                                             <DateDiv>{schedule.title}</DateDiv>
                                         </FlextBoxDiv>
                                     </ScheduleFirstDiv>
@@ -165,7 +165,7 @@ const HomePage = () => {
                     <RankDiv>
                         {
                             userRankings.map((user, index) => (
-                                <div>
+                              <div key={index}>
                                     < RankingNumDiv>
                                         <RankingFirstDiv key={index}>
                                             <RankingNum
@@ -291,7 +291,7 @@ const ScheduleFirstDiv = styled.div `
 const PartNameDiv = styled.div `
   border-radius: 4px;
   border: 1px solid var(--black-background, #1a1a1a);
-  background: ${props => props.isPastEvent
+  background: ${props => props.$isPastEvent
     ? 'pink'
     : 'var(--Gray30, #b0b0b0)'};
   width: 60px;
