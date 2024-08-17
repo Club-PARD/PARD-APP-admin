@@ -165,22 +165,15 @@ const AttendancePage = () => {
     const updateUser = async (index, idx, newData) => {
         setAttendanceData(prevData => {
             const updatedData = [...prevData];
-            // console.log("preview data", updatedData);
-
-            const userIndex = updatedData.findIndex(user => user.name === filteredUserScores[index].name);
+            console.log("preview data", updatedData);
+            const userIndex = updatedData.findIndex(user => user.userEmail === filteredUserScores[index].userEmail);
             let flag = 0;
             if (userIndex !== -1) {
                 if (!updatedData[userIndex].attendances) {
                     updatedData[userIndex].attendances = [];
                 }
                 
-                // 여기 로직 생각하고 수정해보자.
-                // if (updatedData[userIndex].attendances.length <= idx) {
-                //     for (let i = updatedData[userIndex].attendances.length; i <= idx; i++) {
-                //         updatedData[userIndex].attendances.push({ status: null, seminar: "" });
-                //     }
-                // }
-                // console.log( updatedData[userIndex].attendances);
+
                 for (let i = 0; i < updatedData[userIndex].attendances.length; i++){
                     if (updatedData[userIndex].attendances[i].seminar === attendanceList[idx].name) {
                         updatedData[userIndex].attendances[i].status = newData;
