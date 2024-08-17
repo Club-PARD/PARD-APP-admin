@@ -179,7 +179,7 @@ const SchedulePage = () => {
               <ScheduleItem key={index}>
                 <ScheduleFirstDiv key={index}>
                   <FlextBoxDiv>
-                    <PartNameDiv isPastEvent = {schedule.isPastEvent}>{schedule.part}</PartNameDiv>
+                    <PartNameDiv $isPastEvent = {schedule.isPastEvent}>{schedule.part}</PartNameDiv>
                     <DateDiv>{schedule.title}</DateDiv>
                   </FlextBoxDiv>
                   <div>
@@ -216,7 +216,7 @@ const SchedulePage = () => {
               <ScheduleItem key={index}>
                 <ScheduleFirstDiv key={index}>
                   <FlextBoxDiv>
-                    <PartNameDiv isPastEvent = {schedule.isPastEvent}>{getPartName(schedule.part)}</PartNameDiv>
+                    <PartNameDiv $isPastEvent = {schedule.isPastEvent}>{getPartName(schedule.part)}</PartNameDiv>
                     <DateDiv>{schedule.title}</DateDiv>
                   </FlextBoxDiv>
                   <div>
@@ -356,7 +356,7 @@ const ScheduleFirstDiv = styled.div`
 const PartNameDiv = styled.div`
   border-radius: 4px;
   border: 1px solid var(--black-background, #1a1a1a);
-  background: ${props => props.isPastEvent ? 'pink' : 'var(--Gray30, #b0b0b0)'};
+  background: ${props => props.$isPastEvent ? 'pink' : 'var(--Gray30, #b0b0b0)'};
   width: 60px;
   height: 32px;
   display: flex;
@@ -472,7 +472,7 @@ const FirstDiv = styled.div`
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    display: ${(props) => (props.isOpen ? "block" : "none")};
+    display: ${(props) => (props.$isOpen ? "block" : "none")};
   `;
 
   const ModalContent = styled.div`
@@ -517,7 +517,7 @@ const FirstDiv = styled.div`
     margin-left: 56px;
     align-items: center;
     margin-top: 41px;
-    margin-top: ${(props) => props.top || 41}px;
+    margin-top: ${(props) => props.$top || 41}px;
   `;
 
   const ModalContents = styled.div`
@@ -525,10 +525,10 @@ const FirstDiv = styled.div`
     font-family: "Pretendard";
     font-size: 18px;
     font-style: normal;
-    font-weight: ${(props) => props.weight};
+    font-weight: ${(props) => props.$weight};
     line-height: 24px;
-    margin-right: ${(props) => props.right}px;
-    margin-top: ${(props) => props.top}px;
+    margin-right: ${(props) => props.$right}px;
+    margin-top: ${(props) => props.$top}px;
   `;
 
   const DropdownWrapper = styled.div`
@@ -574,7 +574,7 @@ const FirstDiv = styled.div`
   `;
 
   const DropdownContent = styled.div`
-    display: ${(props) => (props.isOpen ? "block" : "none")};
+    display: ${(props) => (props.$isOpen ? "block" : "none")};
     position: absolute;
     background-color: #f1f1f1;
     min-width: 128.5px;
@@ -902,7 +902,8 @@ const FirstDiv = styled.div`
       }
     };
     return (
-      <ModalWrapper isOpen={isOpen}>
+      <ModalWrapper $isOpen={isOpen}>
+
         <ModalContent>
           <ModalTitleDiv>
             {isRegisterModalOpen ? (
@@ -918,10 +919,10 @@ const FirstDiv = styled.div`
           {isRegisterModalOpen ? (
             <>
               <ModalSubTitle>
-                <ModalContents color={"#111"} right={46} weight={500}>
+                <ModalContents color={"#111"} $right={46} $weight={500}>
                   일정 제목
                 </ModalContents>
-                <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                   <ReasonInput
                     value={inputText}
                     onChange={handleInputChange}
@@ -930,11 +931,11 @@ const FirstDiv = styled.div`
                   <InputNumNum>{inputText.length}/10</InputNumNum>
                 </ModalContents>
               </ModalSubTitle>
-              <ModalSubTitle top={54}>
-                <ModalContents color={"#111"} right={81} weight={500}>
+              <ModalSubTitle $top={54}>
+                <ModalContents color={"#111"} $right={81} $weight={500}>
                   일시
                 </ModalContents>
-                <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                   <DatePicker
                     placeholderText="날짜를 선택하세요"
                     className={style.datePicker}
@@ -948,11 +949,11 @@ const FirstDiv = styled.div`
                   />
                 </ModalContents>
               </ModalSubTitle>
-              <ModalSubTitle top={54}>
-                <ModalContents color={"#111"} right={81} weight={500}>
+              <ModalSubTitle $top={54}>
+                <ModalContents color={"#111"} $right={81} $weight={500}>
                   장소
                 </ModalContents>
-                <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                   <ReasonInput
                     value={inputAbout}
                     onChange={handlePlaceChange}
@@ -961,16 +962,16 @@ const FirstDiv = styled.div`
                   <InputNumNum>{inputAbout.length}/10</InputNumNum>
                 </ModalContents>
               </ModalSubTitle>
-              <ModalSubTitle top={50}>
-                <ModalContents color={"#111"} right={46} weight={500}>
+              <ModalSubTitle $top={50}>
+                <ModalContents color={"#111"} $right={46} $weight={500}>
                   예시
                   <SubMessage>* 앱 노출 화면</SubMessage>
                 </ModalContents>
                 <ModalContents
                   color={"#A3A3A3"}
-                  right={0}
-                  weight={600}
-                  top={55}
+                  $right={0}
+                  $weight={600}
+                  $top={55}
                 >
                   <PreView>
                     <PreviewFlexBox>
@@ -992,7 +993,7 @@ const FirstDiv = styled.div`
                   </PreView>
                 </ModalContents>
               </ModalSubTitle>
-              <RegisterButton top={100} onClick={handleRegisterButtonClicked}>
+              <RegisterButton $top={100} onClick={handleRegisterButtonClicked}>
                 추가하기
               </RegisterButton>
             </>
@@ -1000,7 +1001,7 @@ const FirstDiv = styled.div`
             <>
               {/* 파트 선택하기 */}
               <ModalSubTitle>
-                <ModalContents color={"#111"} right={81} weight={500}>
+                <ModalContents color={"#111"} $right={81} $weight={500}>
                   파트
                 </ModalContents>
                 <ModalContents>
@@ -1018,7 +1019,7 @@ const FirstDiv = styled.div`
                         />
                       )}
                     </DropdownButton>
-                    <DropdownContent isOpen={isToggle}>
+                    <DropdownContent $isOpen={isToggle}>
                       {options.map((option, index) => (
                         <DropdownItem
                           key={index}
@@ -1034,10 +1035,10 @@ const FirstDiv = styled.div`
               
               {/* 과제 제목 작성하기 */}
               <ModalSubTitle>
-                <ModalContents color={"#111"} right={46} weight={500}>
+                <ModalContents color={"#111"} $right={46} $weight={500}>
                   과제 제목
                 </ModalContents>
-                <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                   <ReasonInput
                     value={inputText}
                     onChange={handleInputChange}
@@ -1048,11 +1049,11 @@ const FirstDiv = styled.div`
               </ModalSubTitle>
               
               {/* 과제 내용 작성하기 */}
-              <ModalSubTitle top={54}>
-                <ModalContents color={"#111"} right={81} weight={500}>
+              <ModalSubTitle $top={54}>
+                <ModalContents color={"#111"} $right={81} $weight={500}>
                   내용
                 </ModalContents>
-                <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                   <ReasonInput
                     value={inputAbout}
                     onChange={handleAboutChange}
@@ -1063,11 +1064,11 @@ const FirstDiv = styled.div`
               </ModalSubTitle>
               
               {/* 제출 마감 날짜 선택하기 */}
-              <ModalSubTitle top={53}>
-                <ModalContents color={"#111"} right={46} weight={500}>
+              <ModalSubTitle $top={53}>
+                <ModalContents color={"#111"} $right={46} $weight={500}>
                   제출 마감
                 </ModalContents>
-                <ModalContents color={"#A3A3A3"} right={0} weight={600}>
+                <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                   <DatePicker
                     placeholderText="날짜를 선택하세요"
                     className={style.datePicker}
