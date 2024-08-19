@@ -80,3 +80,16 @@ export function getPartName(part) {
             return part;
     }
 }
+
+export const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = {
+        month: '2-digit',
+        day: '2-digit'
+    };
+    return date
+        .toLocaleDateString('ko-KR', options)
+        .replace('.', '월 ')
+        .replace('.', '일')
+        .replace(' ', '');
+};

@@ -506,9 +506,7 @@ const TableHeaderCell = styled.th `
     font-weight: 600;
     line-height: 24px;
     display: flex;
-    width: ${ (
-        props
-    ) => props.width}px;
+    width: ${(props) => props.width}px;
     height: 48px;
     justify-content: center;
     align-items: center;
@@ -536,9 +534,7 @@ const TableCell = styled.td `
     font-style: normal;
     font-weight: 600;
     line-height: 24px;
-    width: ${ (
-        props
-    ) => props.width}px;
+    width: ${(props) => props.width}px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -589,11 +585,7 @@ const DropdownButton = styled.button `
 `;
 
 const DropdownContent = styled.div `
-    display: ${ (props) => (
-        props.$isOpen
-            ? "block"
-            : "none"
-    )};
+    display: ${ (props) => (props.$isOpen? "block" : "none")};
     position: absolute;
     background-color: #f1f1f1;
     z-index: 999;
@@ -789,13 +781,9 @@ const ButtonFlexDiv = styled.div `
 const Button = styled.button `
     border: none;
     margin-right: ${ (props) => props.right}px;
-    margin-left: ${ (
-        props
-    ) => props.left}px;
-    color: ${ (props) => props.color};
-    background-color: ${ (
-        props
-    ) => props.background};
+    margin-left: ${ (props) => props.left}px;
+    color: ${(props) => props.color};
+    background-color: ${(props) => props.background};
     display: flex;
     padding: 4px 12px;
     border-radius: 4px;

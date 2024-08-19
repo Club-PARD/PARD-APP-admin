@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import style from "../Styles/calendar.module.scss";
 import { deleteScheduleData, getAllScheduleData, patchScheduleData, postScheduleData } from "../Api/ScheduleAPI";
-import { getPartName, options } from "../Components/Common/Variables";
+import { formatDate, getPartName, options} from "../Components/Common/Variables";
 
 /* 
 - Firebase fireStore 스케쥴 데이터 조회
@@ -76,20 +76,6 @@ const SchedulePage = () => {
         );
 
         return filteredSchedules;
-    };
-
-    // 날짜 형식을 'MM월 DD일'로 변환하는 함수
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const options = {
-            month: '2-digit',
-            day: '2-digit'
-        };
-        return date
-            .toLocaleDateString('ko-KR', options)
-            .replace('.', '월 ')
-            .replace('.', '일')
-            .replace(' ', '');
     };
 
     // 핸들러 : 문서 삭제 기능 (sid값을 받아서 이를 토대로 삭제 진행)
@@ -654,14 +640,13 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
                                     </ModalContents>
                                 </ModalSubTitle>
                                 {
-                                    selectedSchedule
-                                        ?.scheduleId
-                                            ? <RegisterButton onClick={handleUpdateSchedule}>
-                                                    수정하기
-                                                </RegisterButton>
-                                            : <RegisterButton $top={100} onClick={handleRegisterButtonClicked}>
-                                                    추가하기
-                                                </RegisterButton>
+                                    selectedSchedule?.scheduleId
+                                        ?   <RegisterButton onClick={handleUpdateSchedule}>
+                                                수정하기
+                                            </RegisterButton>
+                                        :   <RegisterButton $top={100} onClick={handleRegisterButtonClicked}>
+                                                추가하기
+                                            </RegisterButton>
                                 }
                             </div>
                         )
@@ -751,16 +736,14 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
                                 </ModalSubTitle>
 
                                 {/* 추가하기 버튼 */}
-                                {console.log(selectedSchedule)}
                                 {
-                                    selectedSchedule
-                                        ?.scheduleId
-                                            ? <RegisterButton onClick={handleUpdateTask}>
-                                                    수정하기
-                                                </RegisterButton>
-                                            : <RegisterButton onClick={handleRegisterTaskButtonClicked}>
-                                                    추가하기
-                                                </RegisterButton>
+                                    selectedSchedule?.scheduleId
+                                        ?   <RegisterButton onClick={handleUpdateTask}>
+                                                수정하기
+                                            </RegisterButton>
+                                        :   <RegisterButton onClick={handleRegisterTaskButtonClicked}>
+                                                추가하기
+                                            </RegisterButton>
                                 }
                             </div>
                         )
@@ -869,9 +852,7 @@ const ScheduleFirstDiv = styled.div `
 const PartNameDiv = styled.div `
     border-radius: 4px;
     border: 1px solid var(--black-background, #1a1a1a);
-    background: ${props => props.$isPastEvent
-    ? 'pink'
-    : 'var(--Gray30, #b0b0b0)'};
+    background: ${props => props.$isPastEvent ? 'pink': 'var(--Gray30, #b0b0b0)'};
     width: 60px;
     height: 32px;
     display: flex;
@@ -920,13 +901,13 @@ const DelteButton = styled.button `
     margin-right: 24px;
     margin-bottom: 10px;
     cursor: pointer;
-    `;
+`;
 
 const DeleteIcon = styled.img `
     width: 18px;
     height: 16px;
     margin-right: 2px;
-    `;
+`;
 
 const ContentText = styled.div `
     color: var(--black-background, #1a1a1a);
@@ -937,7 +918,7 @@ const ContentText = styled.div `
     line-height: 12px;
     margin-left: 24px;
     margin-top: 8px;
-    `;
+`;
 
 const EditButton = styled.button `
     display: inline-flex;
@@ -962,13 +943,13 @@ const EditButton = styled.button `
     &:active {
         box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
     }
-    `;
+`;
 
 const EditIcon = styled.img `
     width: 24px;
     height: 24px;
     margin-right: 8px;
-    `;
+`;
 
 const FirstDiv = styled.div `
     display: flex;
@@ -977,7 +958,7 @@ const FirstDiv = styled.div `
     margin-bottom: 16px;
     justify-content: space-between;
     align-items: flex-end;
-    `;
+`;
 
 // 모달 관련 Style 코드
 const ModalWrapper = styled.div `
@@ -987,14 +968,8 @@ const ModalWrapper = styled.div `
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    display: ${ (
-    props
-) => (
-    props.$isOpen
-        ? "block"
-        : "none"
-)};
-    `;
+    display: ${(props) => (props.$isOpen? "block": "none")};
+`;
 
 const ModalContent = styled.div `
     position: absolute;
@@ -1038,25 +1013,19 @@ const ModalSubTitle = styled.div `
     margin-left: 56px;
     align-items: center;
     margin-top: 41px;
-    margin-top: ${ (
-    props
-) => props.$top || 41}px;
-    `;
+    margin-top: ${(props) => props.$top || 41}px;
+`;
 
 const ModalContents = styled.div `
     color: ${ (props) => props.color};
     font-family: "Pretendard";
     font-size: 18px;
     font-style: normal;
-    font-weight: ${ (
-    props
-) => props.$weight};
+    font-weight: ${(props) => props.$weight};
     line-height: 24px;
     margin-right: ${ (props) => props.$right}px;
-    margin-top: ${ (
-    props
-) => props.$top}px;
-    `;
+    margin-top: ${(props) => props.$top}px;
+`;
 
 const DropdownWrapper = styled.div `
     position: relative;
@@ -1070,16 +1039,14 @@ const DropdownWrapper = styled.div `
     border-radius: 2px;
     border: 1px solid var(--primary-blue, #5262f5);
     background: var(--White, #fff);
-    `;
+`;
 
 const DropdownButton = styled.button `
     cursor: pointer;
     width: 100%;
     height: 100%;
     background-color: white;
-    background: ${ (
-    props
-) => props.Backcolor};
+    background: ${ (props) => props.Backcolor};
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
     font-size: 16px;
@@ -1088,17 +1055,11 @@ const DropdownButton = styled.button `
     line-height: 24px;
     border: none;
     padding: 8px 8px;
-    color: ${ (
-    props
-) => (
-    props.color
-        ? "#1A1A1A"
-        : "#A3A3A3"
-)};
+    color: ${(props) => (props.color? "#1A1A1A": "#A3A3A3")};
     display: flex;
     align-items: center;
     justify-content: space-between;
-    `;
+`;
 
 const ArrowTop1 = styled.img `
     width: 14px;
@@ -1106,14 +1067,10 @@ const ArrowTop1 = styled.img `
     margin-left: 16px;
     margin-bottom: 1px;
     cursor: pointer;
-    `;
+`;
 
 const DropdownContent = styled.div `
-    display: ${ (props) => (
-    props.$isOpen
-        ? "block"
-        : "none"
-)};
+    display: ${ (props) => (props.$isOpen? "block": "none")};
     position: absolute;
     background-color: #f1f1f1;
     min-width: 128.5px;
@@ -1122,7 +1079,7 @@ const DropdownContent = styled.div `
     left: 0;
     margin-top: 5px;
     border: 1px solid var(--primary-blue, #5262f5);
-    `;
+`;
 
 const DropdownItem = styled.div `
     padding: 10px;
@@ -1139,7 +1096,7 @@ const DropdownItem = styled.div `
     &:hover {
         background-color: #eeeffe;
     }
-    `;
+`;
 
 const ReasonInput = styled.input `
     width: 395px;
@@ -1161,7 +1118,7 @@ const ReasonInput = styled.input `
         color: var(--Gray30, #a3a3a3);
         padding-right: 20px;
     }
-    `;
+`;
 
 const InputNumNum = styled.div `
     color: var(--Gray30, #a3a3a3);
@@ -1193,9 +1150,7 @@ const RegisterButton = styled.button `
     font-style: normal;
     font-weight: 600;
     line-height: 24px;
-    margin-top: ${ (
-    props
-) => props.top || 66}px;
+    margin-top: ${(props) => props.top || 66}px;
     cursor: pointer;
 
     &:hover {
@@ -1204,7 +1159,7 @@ const RegisterButton = styled.button `
     &:active {
         box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
     }
-    `;
+`;
 
 const PreView = styled.div `
     padding: 15px 18px;
@@ -1214,7 +1169,7 @@ const PreView = styled.div `
     height: 70px;
     border-radius: 6px;
     background: var(--black-card, #2a2a2a);
-    `;
+`;
 
 const PreviewFlexBox = styled.div `
     display: flex;
@@ -1222,13 +1177,13 @@ const PreviewFlexBox = styled.div `
     justify-content: space-between;
     height: auto;
     margin-bottom: 13px;
-    `;
+`;
 
 const FlexBox = styled.div `
     display: flex;
     align-items: center;
     flex-direction: row;
-    `;
+`;
 
 const AboutText = styled.div `
     color: var(--White, #fff);
@@ -1239,7 +1194,7 @@ const AboutText = styled.div `
     line-height: 15px;
     margin-bottom: 7px;
     margin-left: 2px;
-    `;
+`;
 
 const PreViewBox = styled.div `
     border-radius: 3px;
@@ -1253,7 +1208,7 @@ const PreViewBox = styled.div `
     line-height: 10.5px;
     padding: 3px 9px;
     margin-right: 6px;
-    `;
+`;
 
 const TitleText = styled.div `
     color: var(--White, #fff);
@@ -1262,7 +1217,7 @@ const TitleText = styled.div `
     font-style: normal;
     font-weight: 700;
     line-height: 15px;
-    `;
+`;
 
 const DDayText = styled.div `
     color: var(--Gray10, #e4e4e4);
@@ -1271,7 +1226,7 @@ const DDayText = styled.div `
     font-style: normal;
     font-weight: 600;
     line-height: 12px;
-    `;
+`;
 
 const SubMessage = styled.div `
     color: var(--Gray30, #a3a3a3);
@@ -1280,10 +1235,10 @@ const SubMessage = styled.div `
     font-style: normal;
     font-weight: 500;
     line-height: 16px;
-    `;
+`;
 
 const DeleteButton = styled.button `
     margin-left: 20px;
     padding : 5px 10px;
     box-sizing: border-box;
-    `;
+`;

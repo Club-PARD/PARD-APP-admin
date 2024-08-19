@@ -4,7 +4,7 @@ import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import {FadeLoader} from "react-spinners";
 import {getAllScheduleData} from "../Api/ScheduleAPI";
 import {getRankingInfo} from "../Api/ScoreAPI";
-import { getPartName } from "../Components/Common/Variables";
+import { formatDate, getPartName } from "../Components/Common/Variables";
 
 /*
 - Firebase fireStore 스케쥴 데이터 조회
@@ -61,20 +61,6 @@ const HomePage = () => {
             (a, b) => new Date(b.date) - new Date(a.date)
         );
         return sortedSchedules.slice(0, 5);
-    };
-
-    // 날짜 형식을 'MM월 DD일'로 변환하는 함수
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const options = {
-            month: '2-digit',
-            day: '2-digit'
-        };
-        return date
-            .toLocaleDateString('ko-KR', options)
-            .replace('.', '월 ')
-            .replace('.', '일')
-            .replace(' ', '');
     };
 
     // Main 화면 코드
@@ -139,7 +125,7 @@ const HomePage = () => {
                         {
                             userRankings.map((user, index) => (
                                 <div key={index}>
-                                    < RankingNumDiv>
+                                    <RankingNumDiv>
                                         <RankingFirstDiv key={index}>
                                             <RankingNum
                                                 style={{
@@ -265,9 +251,7 @@ const ScheduleFirstDiv = styled.div `
 const PartNameDiv = styled.div `
     border-radius: 4px;
     border: 1px solid var(--black-background, #1a1a1a);
-    background: ${props => props.$isPastEvent
-    ? 'pink'
-    : 'var(--Gray30, #b0b0b0)'};
+    background: ${props => props.$isPastEvent? 'pink': 'var(--Gray30, #b0b0b0)'};
     width: 60px;
     height: 32px;
     display: flex;
@@ -376,6 +360,7 @@ const RankingPart = styled.div `
 const RankingFirstDiv = styled.div `
     display: flex;
     align-items: center;
+    justify-content: center;
 `;
 
 const RankingHR = styled.hr `
