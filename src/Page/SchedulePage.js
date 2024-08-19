@@ -999,7 +999,7 @@ const FirstDiv = styled.div`
             title: inputText,
             content: inputAbout,
             part: selectedOption,
-            date: selectedTime,
+            date: new Date(selectedTime.getTime() + 9 * 60 * 60 * 1000).toISOString(),
             contentsLocation: "",
             notice: false,
             remaingDay: 0,
@@ -1027,14 +1027,14 @@ const FirstDiv = styled.div`
             title: inputText,
             content: inputAbout,
             part: selectedOption,
-            date: selectedTime,
+            date: new Date(selectedTime.getTime() + 9 * 60 * 60 * 1000).toISOString(),
             contentsLocation: "",
             notice: false,
             remaingDay: 0,
             pastEvent: false,
           }
           const result = await patchScheduleData(addScheduleInfo, selectedSchedule?.scheduleId);
-          alert("과제 일정이 수정되었습니다1.");
+          alert("과제 일정이 수정되었습니다.");
           closeModalWidhtUppdate();
           setTimeout(() => {
             window.location.reload();
