@@ -2,20 +2,22 @@ import React, {useEffect, useState} from "react";
 import styled from "styled-components";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import {deleteUserData, getAllUserData, postUserData} from "../Api/UserAPI";
+import {handleChangeRoleName, member, memberFillter, options, PartList } from "../Components/Common/Variables";
+import GenerationDropDown from "../Components/Common/GenerationDropDown";
 
 /*
 - Firebase fireStore User 데이터 조회
-  - User 정보 조회 후 sort
-  - 파트 구분
+    - User 정보 조회 후 sort
+    - 파트 구분
 - 토글 코드
-  - 선택 관련 코드
+    - 선택 관련 코드
 - 사용자 추가 코드
-  - 사용자 Firebass firestore에 등록
-  - 취소 버튼
+    - 사용자 Firebass firestore에 등록
+    - 취소 버튼
 - 모달 관련 코드
-  - 모달 관련 Style 코드
-  - Modal 컴포넌트
-  - user 정보 업데이트 코드
+    - 모달 관련 Style 코드
+    - Modal 컴포넌트
+    - user 정보 업데이트 코드
 - Main 화면 코드
 */
 
@@ -86,20 +88,6 @@ const UserPage = () => {
         setSelectedPartFilter(memberOption);
     };
 
-    // 선택 관련 코드 const member = ["파디", "거친파도", "운영진", "잔잔파도"];
-    const member = ["ROLE_YB", "ROLE_OB", "ROLE_ADMIN"];
-    const memberFillter = ["ALL", "ROLE_YB", "ROLE_OB", "ROLE_ADMIN"];
-
-    // const part = ["기획파트", "디자인파트", "웹파트", "iOS파트", "서버파트"];
-    const part = ["기획파트", "디자인파트", "웹파트", "iOS파트", "서버파트"];
-    const partFillter = [
-        "전체",
-        "기획파트",
-        "디자인파트",
-        "웹파트",
-        "iOS파트",
-        "서버파트"
-    ];
 
     const toggleDropdown = (index) => {
         const updatedIsOpen = [...isOpen];
@@ -152,6 +140,7 @@ const UserPage = () => {
         updatedGenerationInputs[index] = e.target.value;
         setGenerationInputs(updatedGenerationInputs);
     };
+
     const handleNameInputChange = (e, index) => {
         const updatedNameInputs = [...nameInputs];
         updatedNameInputs[index] = e.target.value;
@@ -164,6 +153,7 @@ const UserPage = () => {
         updatedPhoneInputs[index] = formattedPhoneNumber;
         setPhoneInputs(updatedPhoneInputs);
     };
+
     const handleEmailInputChange = (e, index) => {
         const updatedEmailInputs = [...emailInputs];
         updatedEmailInputs[index] = e.target.value;
@@ -171,8 +161,9 @@ const UserPage = () => {
     };
 
     const formatPhoneNumberRemoveHipen = (phoneNumber) => {
-    return phoneNumber.replace(/-/g, '');
+        return phoneNumber.replace(/-/g, '');
     };
+
     const handleAddButtonClick = async () => {
         let addUserInfo = [];
         let missingFields = [];
@@ -240,6 +231,7 @@ const UserPage = () => {
             console.error("Error adding document: ", error);
         }
     }
+
     // 취소 버튼
     const handleCancelClick = () => {
         const confirmSave = window.confirm("변경사항이 저장되지 않습니다.\n취소 하시겠습니까?");
@@ -291,11 +283,9 @@ const UserPage = () => {
         closeModalUpdate,
         name,
         part,
-        uid,
         Num,
         userEmail,
         role,
-        pid,
         generation
     }) => {
         const [inputName, setInputName] = useState(name);
@@ -309,15 +299,6 @@ const UserPage = () => {
 
         const [isDeleteUser, setIsDeleteUser] = useState(false);
         const [isDeleteUserModal, setIsDeleteUserModal] = useState(false)
-
-        const handleDeleteUserCancle = () => {
-            setIsDeleteUser(false);
-        };
-
-        const handleDeleteUserConfirm = () => {
-            // 여기서 사용자 정보를 삭제하는 작업을 수행합니다.
-            setIsDeleteUser(false);
-        };
 
         const handleNameChange = (e) => {
             const text = e.target.value;
@@ -344,8 +325,6 @@ const UserPage = () => {
                 setContentChanged(true); // 정보 수정이 되었으므로 true로 설정
             }
         }
-
-        const PartOption = ["서버파트", "웹파트", "iOS파트", "디자인파트", "기획파트"];
 
         const RoleOption = ["ROLE_YB", "ROLE_OB", "ROLE_ADMIN"];
 
@@ -513,7 +492,7 @@ const UserPage = () => {
                                 </DropdownButtonModal>
                                 <DropdownContentModal $isOpen={toggleToPart}>
                                     {
-                                        PartOption.map((option, index) => (
+                                        PartList.map((option, index) => (
                                             <DropdownItemModal key={index} onClick={() => handleOptionClick(option)}>
                                                 {option}
                                             </DropdownItemModal>
@@ -552,24 +531,7 @@ const UserPage = () => {
         );
     };
 
-    const handleChangeRoleName = (role) => {
-        switch (role) {
-            case "ROLE_ADMIN":
-                return "운영진";
-                break;
-            case "ROLE_YB":
-                return "파디";
-                break;
-            case "ROLE_OB":
-                return "파도";
-                break;
-            case "ALL" :
-                return "전체";
-                break;
-            default:
-                break;
-        }
-    }
+
 
 
 
@@ -705,7 +667,7 @@ const UserPage = () => {
                                             </DropdownButton>
                                             <DropdownContent $isOpen={isdropdownPart} $left={-7} width={120}>
                                                 {
-                                                    partFillter.map((memberOption, memberIndex) => (
+                                                    options.map((memberOption, memberIndex) => (
                                                         <DropdownItem
                                                             key={memberIndex}
                                                             onClick={() => handlePartItemClick(memberOption)}>
@@ -878,7 +840,7 @@ const UserPage = () => {
                                                     </DropdownButton1>
                                                         <DropdownContent1 $isOpen={isOpenPart[index]}>
                                                             {
-                                                                part.map((partOption, partIndex) => (
+                                                                PartList.map((partOption, partIndex) => (
                                                                     <DropdownItem1
                                                                         key={partIndex}
                                                                         onClick={() => handlePartClick(partOption, index)}>
@@ -908,52 +870,20 @@ const UserPage = () => {
 
 export default UserPage;
 
-export const GenerationDropDown = ({ selectedGeneration, isDropDownGeneration, setIsDropDownGeneration, setSelectedGeneration }) => {
-    // 기수 리스트 
-    const GenerationList = [1, 2, 3, 4, 5];
 
-    // 기수 변경 시 실행되는 핸들러
-    const handleSelectGeneration = (generation) => {
-        setSelectedGeneration(generation);
-        setIsDropDownGeneration(false);
-    }
-    return (
-        <DropdownGenerationBox>
-            <SelectedGeneration><strong>{selectedGeneration}기</strong></SelectedGeneration>
-            {
-                isDropDownGeneration
-                    ? <DropdownGenerationImg src={require("../Assets/img/Polygon.png")} onClick={() => setIsDropDownGeneration(false)} />
-                    : <DropdownGenerationImg src={require("../Assets/img/PolygonDown.png")} onClick={() => setIsDropDownGeneration(true)} />
 
-            }
-            {isDropDownGeneration && 
-                <DropdownGenerationListBox>
-                    {
-                        GenerationList.map((generation, index) => (
-                            <DropdownGenerationItemBox key={index} onClick={() => handleSelectGeneration(generation)}>
-                                <span>
-                                    {generation}기
-                                </span>
-                            </DropdownGenerationItemBox>
-                        ))
-
-                    }
-                </DropdownGenerationListBox>
-            }
-        </DropdownGenerationBox>
-    )
-}
 const DDiv = styled.div `
     background: #fff;
     margin: 0 auto;
     height: 100%;
     overflow-y: hidden;
+    width: calc(100vw - 200px);
 `;
 
 const TitleDiv = styled.div `
     display: flex;
     margin-top: 25px;
-    margin-left: 80px;
+    margin-left: 80px;;
     align-items: center;
 `;
 
@@ -984,24 +914,6 @@ const BarText = styled.div `
     margin-right: 14px;
     background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
 `;
-
-// const BodyDiv = styled.div `
-//     display: flex;
-//     flex-direction: column;
-//     margin-top: 83px;
-//     margin-left: 80px;
-//     max-width: 1240px;
-//     width: 90%;
-//     height: 700px;
-// `;
-
-// const TableDiv = styled.div `
-//     display: flex;
-//     flex-direction: column;
-//     width: 1242px;
-//     height: 700px;
-//     overflow-y: scroll;
-// `;
 
 const BodyAddDiv = styled.div `
     display: flex;
@@ -1117,69 +1029,6 @@ const CancelButton = styled.button `
     margin-right: 16px;
 `;
 
-// const Table = styled.table `
-//     border-collapse: collapse;
-//     border-spacing: 0;
-//     border-radius: 4px;
-// `;
-
-// const TableHead = styled.thead `
-//     background-color: #eee;
-//     border-bottom: 1px solid #a3a3a3;
-//     position: sticky;
-//     top: 0;
-// `;
-
-// const TableBody = styled.tbody `
-//     display: block;
-//     max-height: calc(100% - 48px);
-//     overflow-y: auto;
-//     border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
-//     &:first-child {
-//         border-left: 1px solid var(--Gray30, #a3a3a3);
-//     }
-
-//     &:last-child {
-//         border-right: 1px solid var(--Gray30, #a3a3a3);
-//     }
-// `;
-
-// const TableRow = styled.tr `
-//     border-bottom: 1px solid #ddd;
-//     display: flex;
-// `;
-
-// const TableHeaderCell = styled.th `
-//     color: var(--black-background, #1a1a1a);
-//     font-family: "Pretendard";
-//     font-size: 16px;
-//     font-style: normal;
-//     font-weight: 600;
-//     line-height: 24px;
-//     display: flex;
-//     width: ${ (
-//         props
-//     ) => props.width}px;
-//     height: 48px;
-//     justify-content: center;
-//     align-items: center;
-//     flex-shrink: 0;
-//     border-top: 1px solid var(--Gray30, #a3a3a3);
-//     border-left: 0.5px solid var(--Gray30, #a3a3a3);
-//     border-right: 0.5px solid var(--Gray30, #a3a3a3);
-//     background: #fff;
-
-//     &:first-child {
-//         border-left: 1px solid var(--Gray30, #a3a3a3);
-//         border-radius: 4px 0px 0px 0px;
-//     }
-
-//     &:last-child {
-//         border-radius: 0px 4px 0px 0px;
-//         border-right: 1px solid var(--Gray30, #a3a3a3);
-//     }
-// `;
-
 const ArrowTop1 = styled.img `
     width: 14px;
     height: 14px;
@@ -1188,66 +1037,7 @@ const ArrowTop1 = styled.img `
     cursor: pointer;
     `;
 
-// const TableCell = styled.td `
-//     color: ${ (props) => props.color};
-//     font-family: "Pretendard";
-//     font-size: 14px;
-//     font-style: normal;
-//     font-weight: 500;
-//     line-height: 18px;
-//     width: ${ (
-//         props
-//     ) => props.width}px;
-//     display: flex;
-//     justify-content: center;
-//     align-items: center;
-//     min-height: 40px;
-//     height: auto;
-//     border-right: 0.5px solid var(--Gray30, #a3a3a3);
-//     border-left: 0.5px solid var(--Gray30, #a3a3a3);
-//     padding-right: ${ (
-//         props
-//     ) => props.right}px;
-
-//     &:first-child {
-//         border-left: 1px solid var(--Gray30, #a3a3a3);
-//     }
-
-//     &:last-child {
-//         border-right: 1px solid var(--Gray30, #a3a3a3);
-//     }
-//     background-color: #fff;
-// `;
-
-// const TableMinText = styled.td `
-//     color: ${ (props) => props.color};
-//     font-family: "Pretendard";
-//     font-size: 12px;
-//     font-style: normal;
-//     font-weight: 500;
-//     line-height: 16px;
-//     width: ${ (
-//         props
-//     ) => props.width}px;
-//     display: flex;
-//     justify-content: center;
-//     align-items: center;
-//     min-height: 40px;
-//     height: auto;
-//     border-right: 0.5px solid var(--Gray30, #a3a3a3);
-//     border-left: 0.5px solid var(--Gray30, #a3a3a3);
-
-//     &:first-child {
-//         border-left: 1px solid var(--Gray30, #a3a3a3);
-//     }
-
-//     &:last-child {
-//         border-right: 1px solid var(--Gray30, #a3a3a3);
-//     }
-//     background-color: #fff;
-//     `;
-
-    const CheckScoreButton = styled.button `
+const CheckScoreButton = styled.button `
     display: flex;
     width: ${props => props.width || "100"}px;
     padding: 6px 16px;
@@ -1273,43 +1063,6 @@ const ArrowTop1 = styled.img `
         box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
     }
 `;
-
-// const NameInputBox = styled.input `
-//     width: 100%;
-//     height: 100%;
-//     font-family: "Pretendard";
-//     font-size: 16px;
-//     font-style: normal;
-//     font-weight: 500;
-//     line-height: 24px;
-//     text-align: center;
-//     display: flex;
-//     justify-content: center;
-//     align-items: center;
-//     border: none;
-//     ::placeholder {
-//         text-align: center;
-//     }
-// `;
-
-// const PhoneNumInputBox = styled.input `
-//     width: 100%;
-//     height: 100%;
-//     font-family: "Pretendard";
-//     font-size: 16px;
-//     font-style: normal;
-//     font-weight: 500;
-//     line-height: 24px;
-//     /* padding-left: 75px; */
-//     display: flex;
-//     justify-content: center;
-//     align-items: center;
-//     border: none;
-//     text-align: center;
-//     ::placeholder {
-//     text-align: center;
-//     }
-// `;
 
 const DropdownWrapper = styled.div `
     position: relative;
@@ -1481,84 +1234,6 @@ const Span = styled.span`
 
     color : #5262F5;
 `;
-
-const DeleteConfirmModal = ({closeModal, userEmail}) => {
-
-    const handleDeleteUser = async () => {
-        // delete the user document in Firestore
-        try {
-            deleteUserData(userEmail);
-            alert("사용자가 삭제되었습니다.");
-            window
-                .location
-                .reload();
-            closeModal();
-        } catch (error) {
-            console.error("Error deleting user : ", error)
-        }
-
-    }
-    const ContainerDeleteConfirmModal = styled.div `
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 424px;
-    height : 150px;
-    border-radius: 4px;
-
-    border : 1px solid black;
-
-    background-color: #fefefe;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  `;
-
-    const ContainerContent = styled.span `
-    width : 80%;
-    font-weight: 600;
-    font-size: 18px;
-    line-height: 24px;
-    text-align: center;
-  
-    margin-top: 10px;
-    margin-bottom: 15px;
-  `
-
-    const ContainerBottom = styled.div `
-    width : 80%;
-    display: flex;
-    justify-content: end;
-  `
-
-    const Button = styled.span `
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 24px;
-
-    &:first-child {
-      margin-right: 30px;
-    }
-
-    &:hover{
-      color : #5262F5;
-    }
-  `
-    return (
-        <ContainerDeleteConfirmModal>
-            <ContainerContent>
-                사용자 정보를 삭제하시겠습니까?<br/>삭제 후 정보가 복구되지 않습니다.
-            </ContainerContent>
-            <ContainerBottom>
-                <Button onClick={closeModal}>취소</Button>
-                <Button onClick={handleDeleteUser}>확인</Button>
-            </ContainerBottom>
-        </ContainerDeleteConfirmModal>
-    );
-}
 
 const SecondDiv = styled.div `
     width: 100%;
@@ -1816,61 +1491,6 @@ const DropdownItemModal = styled.div `
     }
 `;
 
-const DropdownGenerationBox = styled.div`
-    width: 100px;
-    height : 35px;
-    /* background-color: gray; */
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin : 0;
-    padding : 0;
-    position: relative;
-    border: 1px solid var(--primary-blue, #5262f5);
-    box-sizing: border-box;
-    margin-left: 10px;
-    background: var(--primary-blue-10, #eeeffe);
-    border-radius: 4px;
-    color: var(--primary-blue, #5262f5);
-    z-index: 1;
-`;
-
-const DropdownGenerationListBox = styled.div`
-    width: 100%;
-    height : auto;
-    top : 40px;
-    position: absolute;
-    background-color: white;
-    color: var(--primary-blue, #5262f5);
-`
-
-const DropdownGenerationItemBox = styled.div`
-    width: 100%;
-    height : 30px;
-    /* background-color: yellow; */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid var(--primary-blue, #5262f5);
-    box-sizing: border-box;
-    margin-bottom: 0.5px;
-
-    &:hover {
-        box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-    }
-    &:active {
-        box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-    }
-`
-
-const DropdownGenerationImg = styled.img`
-    width: 15px;
-    margin-right: 10px;
-`;
-
-const SelectedGeneration = styled.p`
-    margin-left: 20px;
-`;
 
 const ResetButton = styled.button`
     background-color: #f0f0f0;
@@ -1884,3 +1504,81 @@ const ResetButton = styled.button`
         background-color: #e0e0e0;
     }
 `;
+
+const DeleteConfirmModal = ({closeModal, userEmail}) => {
+
+    const handleDeleteUser = async () => {
+        // delete the user document in Firestore
+        try {
+            deleteUserData(userEmail);
+            alert("사용자가 삭제되었습니다.");
+            window
+                .location
+                .reload();
+            closeModal();
+        } catch (error) {
+            console.error("Error deleting user : ", error)
+        }
+
+    }
+    const ContainerDeleteConfirmModal = styled.div `
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 424px;
+    height : 150px;
+    border-radius: 4px;
+
+    border : 1px solid black;
+
+    background-color: #fefefe;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+`;
+
+    const ContainerContent = styled.span `
+        width : 80%;
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 24px;
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 15px;
+    `;
+
+    const ContainerBottom = styled.div`
+        width : 80%;
+        display: flex;
+        justify-content: end;
+    `;
+
+    const Button = styled.span`
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 24px;
+
+        &:first-child {
+        margin-right: 30px;
+        }
+
+        &:hover{
+        color : #5262F5;
+        }
+    `;
+    
+    return (
+        <ContainerDeleteConfirmModal>
+            <ContainerContent>
+                사용자 정보를 삭제하시겠습니까?<br/>삭제 후 정보가 복구되지 않습니다.
+            </ContainerContent>
+            <ContainerBottom>
+                <Button onClick={closeModal}>취소</Button>
+                <Button onClick={handleDeleteUser}>확인</Button>
+            </ContainerBottom>
+        </ContainerDeleteConfirmModal>
+    );
+}

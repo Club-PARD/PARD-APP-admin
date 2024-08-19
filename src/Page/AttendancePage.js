@@ -1,18 +1,8 @@
 import styled from "styled-components";
-import {
-    collection,
-    getDocs,
-    query,
-    where,
-    updateDoc,
-    doc,
-    getDoc
-} from "firebase/firestore";
-import {dbService} from "../fbase";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import React, {useEffect, useState} from "react";
 import { getAllAttendanceData, postAttendanceData } from "../Api/AttendenceAPI";
-import { getAllUserData } from "../Api/UserAPI";
+import { attendanceList, options } from "../Components/Common/Variables";
 
 /*
 - Firebase fireStore 스케쥴 데이터 조회
@@ -32,20 +22,6 @@ const AttendancePage = () => {
     const [selectedOption, setSelectedOption] = useState(null);
     const [addable, setAddable] = useState(true);
     const [originalAttendanceData, setOriginalAttendanceData] = useState([]);
-    
-    const attendanceList = [
-        { name: "OT", desc: "OT" },
-        { name: "SEMINAR_1", desc: "1차 세미나" },
-        { name: "SEMINAR_2", desc: "2차 세미나" },
-        { name: "SEMINAR_3", desc: "3차 세미나" },
-        { name: "SEMINAR_4", desc: "4차 세미나" },
-        { name: "SEMINAR_5", desc: "5차 세미나" },
-        { name: "SEMINAR_6", desc: "6차 세미나" },
-        { name: "UNION_SEMINAR_1", desc: "연합세미나 1" },
-        { name: "UNION_SEMINAR_2", desc: "연합세미나 2" },
-        { name: "IDEA_PITCH", desc: "아이디어 피칭" },
-        { name: "FINAL_MEETING", desc: "종강총회" }
-    ];
 
     // 사용자 출석 정보 다 불러오기
     useEffect(() => {
@@ -63,19 +39,12 @@ const AttendancePage = () => {
 
     // filteredUserScores 데이터를 seminar 순서에 맞게 정렬하는 함수
     const getSortedAttendances = (attendances) => {
-        // console.log("before", attendances);
         // attendances를 seminar 순서에 맞게 정렬합니다.
         const sortedAttendances = Array.from({ length: 11 }, (_, index) => {
             let seminarKey;
             seminarKey = attendanceList[index].name;
             return attendances.find(att => att.seminar === seminarKey) || { seminar: seminarKey, status: null };
         });
-
-        // 정렬된 배열을 콘솔에 출력
-        // console.log(sortedAttendances);
-
-        // 정렬된 배열을 반환
-        // console.log("sortedAttendances", sortedAttendances); 
         return sortedAttendances;
     };
 
@@ -125,15 +94,7 @@ const AttendancePage = () => {
         }
     };
 
-    // 변수 : 필터 옵션
-    const options = [
-        "전체",
-        "기획파트",
-        "디자인파트",
-        "웹파트",
-        "iOS파트",
-        "서버파트",
-    ];
+
 
     // 핸들러 : DropDown의 토클 역할을 수행하며 변수를 false <-> true로 지정하는 핸들러
     const toggleDropdown = () => {
@@ -545,9 +506,7 @@ const TableHeaderCell = styled.th `
     font-weight: 600;
     line-height: 24px;
     display: flex;
-    width: ${ (
-        props
-    ) => props.width}px;
+    width: ${(props) => props.width}px;
     height: 48px;
     justify-content: center;
     align-items: center;
@@ -575,9 +534,7 @@ const TableCell = styled.td `
     font-style: normal;
     font-weight: 600;
     line-height: 24px;
-    width: ${ (
-        props
-    ) => props.width}px;
+    width: ${(props) => props.width}px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -628,11 +585,7 @@ const DropdownButton = styled.button `
 `;
 
 const DropdownContent = styled.div `
-    display: ${ (props) => (
-        props.$isOpen
-            ? "block"
-            : "none"
-    )};
+    display: ${ (props) => (props.$isOpen? "block" : "none")};
     position: absolute;
     background-color: #f1f1f1;
     z-index: 999;
@@ -828,13 +781,9 @@ const ButtonFlexDiv = styled.div `
 const Button = styled.button `
     border: none;
     margin-right: ${ (props) => props.right}px;
-    margin-left: ${ (
-        props
-    ) => props.left}px;
-    color: ${ (props) => props.color};
-    background-color: ${ (
-        props
-    ) => props.background};
+    margin-left: ${ (props) => props.left}px;
+    color: ${(props) => props.color};
+    background-color: ${(props) => props.background};
     display: flex;
     padding: 4px 12px;
     border-radius: 4px;
