@@ -759,14 +759,15 @@ const DDiv = styled.div `
     margin: 0 auto;
     height: 100%;
     overflow-y: hidden;
-    `;
+    width: calc(100vw - 200px);
+`;
 
 const TitleDiv = styled.div `
     display: flex;
     margin-top: 25px;
     margin-left: 80px;
     align-items: center;
-    `;
+`;
 
 const HomeTitle = styled.div `
     color: var(--black-background, #1a1a1a);

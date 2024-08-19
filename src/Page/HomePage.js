@@ -160,6 +160,7 @@ const DDiv = styled.div `
     background: #fff;
     margin: 0 auto;
     height: 100%;
+    width: calc(100vw - 200px);
     overflow-y: hidden;
 `;
 

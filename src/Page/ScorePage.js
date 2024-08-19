@@ -672,6 +672,7 @@ const DDiv = styled.div `
     height: 100%;
     overflow-y: hidden;
     margin: 0 auto;
+    width: calc(100vw - 200px);
 `;
 
 const TitleDiv = styled.div `
