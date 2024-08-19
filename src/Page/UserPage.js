@@ -356,22 +356,22 @@ const UserPage = () => {
             setToggleToRole(!toggleToRole);
         };
 
-        const isValidPhoneNumber = (phoneNumber) => {
-            if (phoneNumber.length === 13)
-                return true;
-            else
-                return false;
-        };
+        // const isValidPhoneNumber = (phoneNumber) => {
+        //     if (phoneNumber.length === 13)
+        //         return true;
+        //     else
+        //         return false;
+        // };
         
         // user 정보 업데이트 코드
         const handleUpdateButtonClick = async () => {
             const confirmUpdate = window.confirm("사용자 정보를 수정하시겠습니까?");
 
             if (confirmUpdate) {
-                if (!isValidPhoneNumber(inputPhoneNum)) {
-                    alert("전화번호 길이가 알맞지 않습니다. (예: 010-1234-5678)");
-                    return;
-                }
+                // if (!isValidPhoneNumber(inputPhoneNum)) {
+                //     alert("전화번호 길이가 알맞지 않습니다. (예: 010-1234-5678)");
+                //     return;
+                // }
 
                 try {
                     const updatedUserInfo = {
