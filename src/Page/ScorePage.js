@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
-import {collection, getDocs, query, where, updateDoc, doc, Timestamp} from "firebase/firestore";
-import { dbService } from "../fbase";
 import { format, fromUnixTime } from "date-fns";
 import koLocale from "date-fns/locale/ko";
 import { FadeLoader } from "react-spinners";
-import { deleteScoreData, getAllScoreData, postScoreData } from "../Api/ScoreAPI";
+import { deleteScoreData, postScoreData } from "../Api/ScoreAPI";
 import { getAllUserData } from "../Api/UserAPI";
 import { getSelectedUserScoreData } from "../Api/ScoreAPI";
-import { GenerationDiv, GenerationDropDown } from "./UserPage";
+import { options } from "../Components/Common/Variables";
+import GenerationDropDown from "../Components/Common/GenerationDropDown";
 
 /* 
 - 모달 관련 코드
@@ -56,92 +55,74 @@ const ScorePage = () => {
     const [userScoreDetail, setUserCoreDetail] = useState([]);
     const [selectedGeneration, setSelectedGeneration] = useState(3);
     const [isDropDownGeneration, setIsDropDownGeneration] = useState(false);
-  
-    const mockData = [
-      {
-        name: "권채은",
-        email : "user1@gmail.com",
-        part: "웹파트",
-        total_bonus : 10,
-        total_minus : 20,
-      }, {
-        name: "김현승",
-        email : "user2@gmail.com",
-        part: "서버파트",
-        total_bonus : 10,
-        total_minus : 20,
-
-      }
-    ]
 
     // Firebase fireStore 전체 Point 데이터 조회
     useEffect(() => {
-      const fetchUserScores = async () => {
-        try {
-          const result = await getAllUserData(selectedGeneration);
-          if (result != undefined) {
-            const filteredResults = result.filter(user => user.role !== "ROLE_ADMIN");
-            setUserScores(filteredResults);
-          } else {
-            setUserScores([]);
-          }
-          // console.log(result);
-          setLoading(false);
-        } catch (error) {
-          console.error("Error fetching user scores:", error);
-        }
-      };
+        const fetchUserScores = async () => {
+            try {
+                const result = await getAllUserData(selectedGeneration);
+                if (result != undefined) {
+                    const filteredResults = result.filter(user => user.role !== "ROLE_ADMIN");
+                    setUserScores(filteredResults);
+                } else {
+                    setUserScores([]);
+                }
+                // console.log(result);
+                setLoading(false);
+            } catch (error) {
+                console.error("Error fetching user scores:", error);
+            }
+        };
 
-      fetchUserScores();
+        fetchUserScores();
     }, [selectedGeneration]);
 
     // 모달 열기
     const openModal = (index) => {
-      const newModals = [...modals];
-      newModals[index] = true;
-      setModals(newModals);
-
+        const newModals = [...modals];
+        newModals[index] = true;
+        setModals(newModals);
 
     };
 
     // 모달 닫기
     const closeModal = (index) => {
-      if (!isContentChanged) {  // 내용이 변경되지 않았을 때의 처리
-        const newModals = [...modals];
-        newModals[index] = false;
-        setModals(newModals);
-        return;
-      }
+        if (!isContentChanged) { // 내용이 변경되지 않았을 때의 처리
+            const newModals = [...modals];
+            newModals[index] = false;
+            setModals(newModals);
+            return;
+        }
 
-      const result = window.confirm("변경사항을 저장하지 않고 나가시겠습니까?");
-      
-      if (result) {
-        const newModals = [...modals];
-        newModals[index] = false;
-        setModals(newModals);
-        setContentChanged(false);
-      }
+        const result = window.confirm("변경사항을 저장하지 않고 나가시겠습니까?");
+
+        if (result) {
+            const newModals = [...modals];
+            newModals[index] = false;
+            setModals(newModals);
+            setContentChanged(false);
+        }
     };
 
     const closeModalWidhtUpdate = (index) => {
-      const newModals = [...modals];
-      newModals[index] = false;
-      setModals(newModals);
+        const newModals = [...modals];
+        newModals[index] = false;
+        setModals(newModals);
     };
 
     // 핸들러 : 파트 filter 토글 열기
     const toggleDropdown = () => {
-      setIsOpen(!isOpen);
+        setIsOpen(!isOpen);
     };
 
     // 핸들러 : 파트 filter 토글 선택
     const handleOptionClick = (option) => {
-      if (option === "전체") {
-        setSelectedOption(null);
-      } else {
-        setSelectedOption(option);
-      }
-      setIsOpen(false);
+        if (option === "전체") {
+            setSelectedOption(null);
+        } else {
+            setSelectedOption(option);
+        }
+        setIsOpen(false);
     };
 
     // 모달 컴포넌트
@@ -271,37 +252,12 @@ const ScorePage = () => {
         const result = window.confirm("점수를 삭제하시겠습니까?");
         if (result) {
             deleteScore(reasonId);
-            // window.location.reload();
         }
       };
 
       // 데이터 삭제 함수
       const deleteScore = async (reasonId) => {
           try {
-              // // 기존 데이터를 가져옴
-              // const pointsQuery = query(
-              //     collection(dbService, "points"),
-              //     where("pid", "==", pid)
-              // );
-              // const pointsSnapshot = await getDocs(pointsQuery);
-              // const pointsData = pointsSnapshot.docs.map((doc) => doc.data());
-              // console.log("pi", pointsData[0]);
-              // // 삭제할 데이터를 찾아서 필터링
-              // const updatedPoints = pointsData[0].points.filter(
-              //     (point) => point.reason !== reasonToDelete
-              // );
-              // const updatedBeePoints = pointsData[0].beePoints.filter(
-              //     (point) => point.reason !== reasonToDelete
-              // );
-            
-
-              // // 업데이트된 데이터로 업데이트
-              // const docRefPoint = doc(dbService, "points", pid);
-              // await updateDoc(docRefPoint, {
-              //     points: updatedPoints,
-              //     beePoints: updatedBeePoints,
-              // });
-
               const result = await deleteScoreData(reasonId);
               // // 삭제 성공 알림
               alert("점수가 성공적으로 삭제되었습니다.");
@@ -346,25 +302,6 @@ const ScorePage = () => {
         setIsDropdownOpen(false);
       };
 
-      // 예외 처리를 포함한 format 함수
-      const formatWithErrorHandling = (reason, type, timestamp, name) => {
-        try {
-          return format(fromUnixTime(timestamp), "MM.dd", {
-            locale: koLocale,
-          });
-        } catch (error) {
-          console.error("name : "+ name +", error index : " + reason + ", type : " + type + ", 날짜 형식 변환 오류:", error);
-          return "Invalid Date"; // 또는 다른 기본값을 반환할 수 있습니다.
-        }
-      };
-
-      // useEffect(() => {
-      //   fetchPoints();
-      //   if (isOpen) {
-      //     setSelectedScore(null);
-      //     fetchPoints();
-      //   }
-      // },[]);
       function formatDate(createdAt) {
         // 날짜 문자열을 Date 객체로 변환
         const date = new Date(createdAt);
@@ -467,33 +404,6 @@ const ScorePage = () => {
                 </RowTitleDiv>
                 
                 <HR $top={8} />
-                {/* <ContentDiv>
-                  {mockDataDetail
-                    .slice()
-                    .reverse()
-                    .map((point, index) => (
-                      <div key={index}>
-                        <RowContentDiv>
-                          <RowContentType $right={30} width={60}>
-                            {point.reason === "MVP" ? "MVP" : point.reason}
-                          </RowContentType>
-                          <RowContentDigit $right={38} width={45}>
-                            {" "}
-                            {point.bonus == true
-                              ? `+${point.point}점`
-                              : `${point.point}점`}
-                          </RowContentDigit>
-                          <RowContent $right={15} width={200}>
-                            {point.detail}
-                          </RowContent>
-                          <RowContent $right={0} width={100}>
-                              {formatDate(point.createAt)}
-                          </RowContent>
-                          <RowContent onClick={() => handleDeleteButtonClick(point.reason)}>삭제</RowContent>
-                        </RowContentDiv>
-                      </div>
-                    ))}
-                </ContentDiv> */}
                 <ContentDiv2 userScoreDetail = {userScoreDetail}>
                   
                 </ContentDiv2>
@@ -502,7 +412,7 @@ const ScorePage = () => {
                 </RegisterButton>
               </div>
             ) : (
-              <>
+              <div>
                 <ModalSubTitle>
                   <ModalContents color={"#111"} $top={10} $weight={500}>
                     파드너십
@@ -602,7 +512,7 @@ const ScorePage = () => {
                 >
                   추가하기
                 </RegisterAddButton>
-              </>
+              </div>
             )}
           </ModalContent>
         </ModalWrapper>
@@ -611,55 +521,34 @@ const ScorePage = () => {
 
     // 이름으로 정렬된 유저 정보 변수
     const sortedUserScores = userScores.sort((a, b) => {
-      // 이름을 가나다 순으로 비교하여 정렬
-      return a?.name?.localeCompare(b.name);
+        // 이름을 가나다 순으로 비교하여 정렬
+        return a?.name?.localeCompare(b.name);
     });
 
     // 선택한 파트 option에 맞춰서 필터를 거친 유저 정보 변수
     const filteredUserScores = selectedOption
-      ? sortedUserScores.filter((userScore) => userScore.part === selectedOption)
-      : sortedUserScores;
+        ? sortedUserScores.filter((userScore) => userScore.part === selectedOption)
+        : sortedUserScores;
 
-      // 로딩 관련 코드
+    // 로딩 관련 코드
     const override = {
-      display: "flex",
-      margin: "0 auto",
-      marginTop: "300px",
-      borderColor: "#5262F5",
-      textAlign: "center",
+        display: "flex",
+        margin: "0 auto",
+        marginTop: "300px",
+        borderColor: "#5262F5",
+        textAlign: "center"
     };
 
-    // 파트별 토글 버튼
-    const options = [
-      "전체",
-      "서버파트",
-      "웹파트",
-      "iOS파트",
-      "디자인파트",
-      "기획파트",
-    ];
-
     const fetchUserScoreDetail = async (userEmail, index) => {
-      let result;
-      if (userEmail != undefined) {
-        result = await getSelectedUserScoreData(userEmail);
-        setUserCoreDetail(result);
-        openModal(index);
-      } else {
-        alert("사용자 이메일이 존재하지 않습니다.");
-      }
-      // console.log(result);
-      // console.log(mockDataDetail);
+        let result;
+        if (userEmail != undefined) {
+            result = await getSelectedUserScoreData(userEmail);
+            setUserCoreDetail(result);
+            openModal(index);
+        } else {
+            alert("사용자 이메일이 존재하지 않습니다.");
+        }
     }
-  
-    const GenerationList = [1, 2, 3, 4, 5];
-
-    // 기수 변경 시 실행되는 핸들러
-    const handleSelectGeneration = (generation) => {
-        setSelectedGeneration(generation);
-        setIsDropDownGeneration(false);
-    }
-
     
     // Main 화면 코드
     return (
@@ -735,7 +624,7 @@ const ScorePage = () => {
                   ></div>
                 </>
               ) : (
-                <>
+                <div>
                   {filteredUserScores.map((userScoreInfo, index) => (
                     <TableRow key={index}>
                       <TableCell color={"#2A2A2A"} width={140}>
@@ -767,7 +656,7 @@ const ScorePage = () => {
                       </TableCell>
                     </TableRow>
                   ))}
-                </>
+                </div>
               )}
             </TableBody>
           </Table>
@@ -778,241 +667,255 @@ const ScorePage = () => {
 
 export default ScorePage;
 
-const DDiv = styled.div`
-  background: #fff;
-  height: 100%;
-  overflow-y: hidden;
-  margin: 0 auto;
+const DDiv = styled.div `
+    background: #fff;
+    height: 100%;
+    overflow-y: hidden;
+    margin: 0 auto;
 `;
 
-const TitleDiv = styled.div`
-  display: flex;
-  margin-top: 25px;
-  margin-left: 80px;
-  align-items: center;
+const TitleDiv = styled.div `
+    display: flex;
+    margin-top: 25px;
+    margin-left: 80px;
+    align-items: center;
 `;
 
-const HomeTitle = styled.div`
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 32px;
+const HomeTitle = styled.div `
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 32px;
 `;
 
-const SubTitle = styled.div`
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 24px;
-  margin-top: 1px;
+const SubTitle = styled.div `
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    margin-top: 1px;
 `;
 
-const BarText = styled.div`
-  width: 2px;
-  height: 24px;
-  margin-top: 1px;
-  margin-left: 12px;
-  margin-right: 14px;
-  background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
+const BarText = styled.div `
+    width: 2px;
+    height: 24px;
+    margin-top: 1px;
+    margin-left: 12px;
+    margin-right: 14px;
+    background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
 `;
 
-const BodyDiv = styled.div`
-  display: flex;
-  margin-top: 16px;
-  margin-left: 80px;
-  max-width: 1300px;
-  width: 90%;
-  height: 700px;
-  margin-bottom: 10px;
-  overflow-y: scroll;
+const BodyDiv = styled.div `
+    display: flex;
+    margin-top: 16px;
+    margin-left: 80px;
+    max-width: 1300px;
+    width: 90%;
+    height: 700px;
+    margin-bottom: 10px;
+    overflow-y: scroll;
 `;
 
-const Table = styled.div`
-  width: auto;
-  border-collapse: collapse;
-  border-spacing: 0;
-  border-radius: 4px;;
+const Table = styled.div `
+    width: auto;
+    border-collapse: collapse;
+    border-spacing: 0;
+    border-radius: 4px;
 `;
 
-const TableHead = styled.div`
-  background-color: #eee;
-  border-bottom: 1px solid #a3a3a3;
-  position: sticky;
-  top: 0;
+const TableHead = styled.div `
+    background-color: #eee;
+    border-bottom: 1px solid #a3a3a3;
+    position: sticky;
+    top: 0;
 `;
 
-const TableBody = styled.div`
-  display: block;
-  max-height: calc(100% - 48px);
-  overflow-y: auto;
-  border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
+const TableBody = styled.div `
+    display: block;
+    max-height: calc(100% - 48px);
+    overflow-y: auto;
+    border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
 `;
 
-const TableRow = styled.div`
-  border-bottom: 1px solid #ddd;
-  display: flex;
+const TableRow = styled.div `
+    border-bottom: 1px solid #ddd;
+    display: flex;
 `;
 
-const TableHeaderCell = styled.div`
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
-  display: flex;
-  width: ${(props) => props.width}px;
-  height: 48px;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-  border-top: 1px solid var(--Gray30, #a3a3a3);
-  border-left: 0.5px solid var(--Gray30, #a3a3a3);
-  border-right: 0.5px solid var(--Gray30, #a3a3a3);
-  background: #f0f9f5;
+const TableHeaderCell = styled.div `
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    display: flex;
+    width: ${ (
+    props
+) => props.width}px;
+    height: 48px;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    border-top: 1px solid var(--Gray30, #a3a3a3);
+    border-left: 0.5px solid var(--Gray30, #a3a3a3);
+    border-right: 0.5px solid var(--Gray30, #a3a3a3);
+    background: #f0f9f5;
 
-  &:first-child {
-    border-radius: 4px 0px 0px 0px;
-    border-left: 1px solid var(--Gray30, #a3a3a3);
-  }
+    &:first-child {
+      border-radius: 4px 0px 0px 0px;
+      border-left: 1px solid var(--Gray30, #a3a3a3);
+    }
 
-  &:last-child {
-    border-radius: 0px 4px 0px 0px;
-    border-right: 1px solid var(--Gray30, #a3a3a3);
-  }
+    &:last-child {
+      border-radius: 0px 4px 0px 0px;
+      border-right: 1px solid var(--Gray30, #a3a3a3);
+    }
 `;
 
-const TableCell = styled.div`
-  color: ${(props) => props.color};
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
-  width: ${(props) => props.width}px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 40px;
-  border-right: 0.5px solid var(--Gray30, #a3a3a3);
-  border-left: 0.5px solid var(--Gray30, #a3a3a3);
+const TableCell = styled.div `
+    color: ${ (props) => props.color};
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    width: ${ (
+    props
+) => props.width}px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    border-right: 0.5px solid var(--Gray30, #a3a3a3);
+    border-left: 0.5px solid var(--Gray30, #a3a3a3);
 
-  &:first-child {
-    border-left: 1px solid var(--Gray30, #a3a3a3);
-  }
+    &:first-child {
+      border-left: 1px solid var(--Gray30, #a3a3a3);
+    }
 
-  &:last-child {
-    border-right: 1px solid var(--Gray30, #a3a3a3);
-  }
+    &:last-child {
+      border-right: 1px solid var(--Gray30, #a3a3a3);
+    }
 `;
 
-const DropdownWrapper = styled.div`
-  position: relative;
-  display: inline-block;
-  margin-left: 83px;
-  display: flex;
-  width: 125px;
-  height : 35px;
-  justify-content: center;
-  align-items: center;
-  gap: 24px;
-  box-sizing: border-box;
-  border-radius: 2px;
-  border: 1px solid var(--primary-blue, #5262f5);
-  background: var(--White, #fff);
+const DropdownWrapper = styled.div `
+    position: relative;
+    display: inline-block;
+    margin-left: 83px;
+    display: flex;
+    width: 125px;
+    height : 35px;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    box-sizing: border-box;
+    border-radius: 2px;
+    border: 1px solid var(--primary-blue, #5262f5);
+    background: var(--White, #fff);
 `;
 
-const DropdownButton = styled.button`
-  cursor: pointer;
-  width: 100%;
-  height : 100%;
-  background-color: white;
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
-  border: none;
-  padding: 8px 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+const DropdownButton = styled.button `
+    cursor: pointer;
+    width: 100%;
+    height : 100%;
+    background-color: white;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    border: none;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 `;
 
-const DropdownContent = styled.div`
-  display: ${(props) => (props.$isOpen ? "block" : "none")};
-  position: absolute;
-  background-color: #f1f1f1;
-  width: 125px;
-  z-index: 1;
-  top: 100%;
-  left: 0;
-  margin-top: 5px;
-  border: 1px solid var(--primary-blue, #5262f5);
+const DropdownContent = styled.div `
+    display: ${ (props) => (
+    props.$isOpen
+        ? "block"
+        : "none"
+)};
+    position: absolute;
+    background-color: #f1f1f1;
+    width: 125px;
+    z-index: 1;
+    top: 100%;
+    left: 0;
+    margin-top: 5px;
+    border: 1px solid var(--primary-blue, #5262f5);
+  `;
+
+const DropdownItem = styled.div `
+    padding: 10px;
+    cursor: pointer;
+    background: var(--White, #fff);
+    border: 0.5px solid var(--primary-blue, #5262f5);
+    text-align: center;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 18px;
+    &:hover {
+      background-color: #eeeffe;
+    }
 `;
 
-const DropdownItem = styled.div`
-  padding: 10px;
-  cursor: pointer;
-  background: var(--White, #fff);
-  border: 0.5px solid var(--primary-blue, #5262f5);
-  text-align: center;
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 18px;
-  &:hover {
-    background-color: #eeeffe;
-  }
-`;
+const CheckScoreButton = styled.button `
+    display: flex;
+    width: 140px;
+    padding: 6px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    color: var(--primary-blue, #5262f5);
+    font-family: "Pretendard";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 18px;
+    border-radius: 4px;
+    border: 1px solid var(--primary-blue, #5262f5);
+    background: var(--primary-blue-10, #eeeffe);
+    cursor: pointer;
 
-const CheckScoreButton = styled.button`
-  display: flex;
-  width: 140px;
-  padding: 6px 16px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  color: var(--primary-blue, #5262f5);
-  font-family: "Pretendard";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 18px;
-  border-radius: 4px;
-  border: 1px solid var(--primary-blue, #5262f5);
-  background: var(--primary-blue-10, #eeeffe);
-  cursor: pointer;
-
-  &:hover {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-  }
-  &:active {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-  }
+    &:hover {
+      box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
+    }
+    &:active {
+      box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
+    }
 `;
 
 // 모달 관련 Style 코드
-  const ModalWrapper = styled.div`
+const ModalWrapper = styled.div `
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    display: ${(props) => (props.$isOpen ? "block" : "none")};
+    display: ${ (
+    props
+) => (
+    props.$isOpen
+        ? "block"
+        : "none"
+)};
     z-index: 2;
   `;
 
-  const ModalContent = styled.div`
+const ModalContent = styled.div `
     position: absolute;
     top: 50%;
     left: 50%;
@@ -1022,7 +925,7 @@ const CheckScoreButton = styled.button`
     background-color: white;
   `;
 
-  const ModalTitleDiv = styled.div`
+const ModalTitleDiv = styled.div `
     display: flex;
     margin-left: 56px;
     margin-top: 40px;
@@ -1032,7 +935,7 @@ const CheckScoreButton = styled.button`
     height: 36px;
   `;
 
-  const ModalTitle = styled.div`
+const ModalTitle = styled.div `
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
     font-size: 24px;
@@ -1041,82 +944,96 @@ const CheckScoreButton = styled.button`
     line-height: 32px;
   `;
 
-  const CancelIcon = styled.img`
+const CancelIcon = styled.img `
     width: 36px;
     height: 36px;
     cursor: pointer;
     margin-right: 32px;
   `;
 
-  const ModalSubTitle = styled.div`
+const ModalSubTitle = styled.div `
     height: 24px;
     display: flex;
     margin-left: 56px;
     align-items: center;
     margin-top: 24px;
-    margin-top: ${(props) => props.$top || 24}px;
+    margin-top: ${ (
+    props
+) => props.$top || 24}px;
   `;
 
-  const ModalContents = styled.div`
-    color: ${(props) => props.color};
+const ModalContents = styled.div `
+    color: ${ (props) => props.color};
     font-family: "Pretendard";
     font-size: 18px;
     font-style: normal;
-    font-weight: ${(props) => props.$weight};
+    font-weight: ${ (
+    props
+) => props.$weight};
     line-height: 24px;
-    margin-right: ${(props) => props.$right}px;
-    margin-top: ${(props) => props.$top}px;
+    margin-right: ${ (props) => props.$right}px;
+    margin-top: ${ (
+    props
+) => props.$top}px;
   `;
 
-  const HR = styled.hr`
+const HR = styled.hr `
     width: 540px;
     height: 0px;
     stroke-width: 1px;
     stroke: var(--Gray30, #a3a3a3);
-    margin-top: ${(props) => props.$top}px;
+    margin-top: ${ (
+    props
+) => props.$top}px;
   `;
 
-  const RowTitleDiv = styled.div`
+const RowTitleDiv = styled.div `
     width: 540px;
     height: 20px;
     display: flex;
     margin-left: 57px;
   `;
 
-  const RowTitle = styled.div`
+const RowTitle = styled.div `
     color: var(--text-black, #111);
     font-family: "Pretendard";
     font-size: 14px;
     font-style: normal;
     font-weight: 600;
     line-height: 18px;
-    margin-right: ${(props) => props.$right}px;
+    margin-right: ${ (
+    props
+) => props.$right}px;
   `;
 
-  const RowContent = styled.div`
+const RowContent = styled.div `
     color: var(--text-black, #111);
     font-family: "Pretendard";
     font-size: 12px;
     font-style: normal;
     font-weight: 500;
     line-height: 16px;
-    margin-right: ${(props) => props.$right}px;
-    width: ${(props) => props.width}px;
+    margin-right: ${ (
+    props
+) => props.$right}px;
+    width: ${ (props) => props.width}px;
     /* background-color: red; */
     display: flex;
     align-items: center;
     justify-content: start;
   `;
 
-  const RowContentType = styled.div`
+const RowContentType = styled.div `
     color: var(--text-black, #111);
     font-family: "Pretendard";
     font-size: 12px;
     font-style: normal;
     font-weight: 500;
     line-height: 16px;
-    margin-right: ${(props) => props.$right}px;
-    width: ${(props) => props.width}px;
+    margin-right: ${ (
+    props
+) => props.$right}px;
+    width: ${ (props) => props.width}px;
     /* background-color: red; */
     display: flex;
     align-items: center;
@@ -1125,9 +1042,11 @@ const CheckScoreButton = styled.button`
     margin-left: -3px;
   `;
 
-  const RowContentDigit = styled.div`
-    margin-right: ${(props) => props.$right}px;
-    width: ${(props) => props.width}px;
+const RowContentDigit = styled.div `
+    margin-right: ${ (props) => props.$right}px;
+    width: ${ (
+    props
+) => props.width}px;
     /* background-color: red; */
     display: flex;
     align-items: center;
@@ -1139,7 +1058,7 @@ const CheckScoreButton = styled.button`
     line-height: 18px;
   `;
 
-  const RowContentDiv = styled.div`
+const RowContentDiv = styled.div `
     width: 540px;
     height: auto;
     display: flex;
@@ -1147,14 +1066,14 @@ const CheckScoreButton = styled.button`
     margin-top: 16px;
   `;
 
-  const ContentDiv = styled.div`
+const ContentDiv = styled.div `
     height: 150px;
     overflow-y: scroll;
     margin-top: -8px;
     /* background-color: red; */
   `;
 
-  const RegisterButton = styled.button`
+const RegisterButton = styled.button `
     width: 556px;
     height: 48px;
     margin-left: 32px;
@@ -1183,7 +1102,7 @@ const CheckScoreButton = styled.button`
     }
   `;
 
-  const DropdownWrapper1 = styled.div`
+const DropdownWrapper1 = styled.div `
     position: relative;
     display: inline-block;
     margin-top: 12px;
@@ -1198,7 +1117,7 @@ const CheckScoreButton = styled.button`
     background: var(--White, #fff);
   `;
 
-  const DropdownButton1 = styled.button`
+const DropdownButton1 = styled.button `
     cursor: pointer;
     width: 100%;
     height: 100%;
@@ -1216,8 +1135,12 @@ const CheckScoreButton = styled.button`
     align-items: center;
   `;
 
-  const DropdownContent1 = styled.div`
-    display: ${(props) => (props.$isOpen ? "block" : "none")};
+const DropdownContent1 = styled.div `
+    display: ${ (props) => (
+    props.$isOpen
+        ? "block"
+        : "none"
+)};
     position: absolute;
     background-color: #f1f1f1;
     min-width: 218px;
@@ -1229,7 +1152,7 @@ const CheckScoreButton = styled.button`
     border: 1px solid var(--primary-blue, #5262f5);
   `;
 
-  const DropdownItem1 = styled.div`
+const DropdownItem1 = styled.div `
     padding: 10px;
     cursor: pointer;
     background: var(--White, #fff);
@@ -1246,7 +1169,7 @@ const CheckScoreButton = styled.button`
     }
   `;
 
-  const ScoreDiv = styled.div`
+const ScoreDiv = styled.div `
     width: 42px;
     height: 26px;
     flex-shrink: 0;
@@ -1254,11 +1177,12 @@ const CheckScoreButton = styled.button`
     display: flex;
     justify-content: center;
     align-items: center;
-    color: ${(props) => {
-      const score = props.score;
-      if (score > 0) {
-        return "#64C59A";
-      } else if (score < 0) {
+    color: ${ (
+    props
+) => {
+    const score = props.score;
+    if (score > 0) {
+        return "#64C59A";} else if (score < 0) {
         return "#FF5A5A";
       } else {
         return "var(--black-background, #1a1a1a)";
@@ -1270,11 +1194,12 @@ const CheckScoreButton = styled.button`
     font-weight: 600;
     line-height: 24px;
     margin-right: 8px;
-    background: ${(props) => {
-      const score = props.$score;
-      if (score > 0) {
-        return "rgba(100, 197, 154, 0.15)";
-      } else if (score < 0) {
+    background: ${ (
+            props
+        ) => {
+            const score = props.$score;
+            if (score > 0) {
+                return "rgba(100, 197, 154, 0.15)";} else if (score < 0) {
         return "rgba(255, 90, 90, 0.10)";
       } else {
         return "var(--Gray10, #e4e4e4)";
@@ -1282,7 +1207,7 @@ const CheckScoreButton = styled.button`
     }};
   `;
 
-  const UnitText = styled.div`
+const UnitText = styled.div `
     color: var(--Gray30, #a3a3a3);
     font-family: "Pretendard";
     font-size: 18px;
@@ -1290,9 +1215,9 @@ const CheckScoreButton = styled.button`
     font-weight: 600;
     line-height: 24px;
     margin-right: 8px;
-  `;
+    `;
 
-  const UnitSubText = styled.div`
+const UnitSubText = styled.div `
     color: var(--Gray30, #a3a3a3);
     font-family: "Pretendard";
     font-size: 12px;
@@ -1300,9 +1225,9 @@ const CheckScoreButton = styled.button`
     font-weight: 500;
     line-height: 14px;
     margin-top: 8px;
-  `;
+    `;
 
-  const ReasonInput = styled.input`
+const ReasonInput = styled.input `
     width: 385px;
     height: 42px;
     border-radius: 4px;
@@ -1319,12 +1244,12 @@ const CheckScoreButton = styled.button`
     padding-left: 20px;
 
     &::placeholder {
-      color: var(--Gray30, #a3a3a3);
-      padding-right: 20px;
+    color: var(--Gray30, #a3a3a3);
+    padding-right: 20px;
     }
-  `;
+    `;
 
-  const InputNumNum = styled.div`
+const InputNumNum = styled.div `
     color: var(--Gray30, #a3a3a3);
     text-align: right;
     font-family: "Pretendard";
@@ -1334,9 +1259,9 @@ const CheckScoreButton = styled.button`
     line-height: 16px;
     margin-top: 16px;
     margin-right: 40px;
-  `;
+    `;
 
-  const RegisterAddButton = styled.button`
+const RegisterAddButton = styled.button `
     width: 556px;
     height: 48px;
     margin-left: 32px;
@@ -1356,14 +1281,14 @@ const CheckScoreButton = styled.button`
     margin-top: 40px;
     border: none;
     &:hover {
-      box-shadow: 0px 4px 8px 0px #5262f5;
+    box-shadow: 0px 4px 8px 0px #5262f5;
     }
     &:active {
-      box-shadow: 0px 4px 8px 0px #5262f5 inset;
+    box-shadow: 0px 4px 8px 0px #5262f5 inset;
     }
-  `;
+    `;
 
-  const ScoreInput = styled.input`
+const ScoreInput = styled.input `
     width: 80px;
     height: 26px;
     flex-shrink: 0;
@@ -1380,24 +1305,24 @@ const CheckScoreButton = styled.button`
     line-height: 24px;
     margin-right: 8px;
     text-align: center;
-  `;
+    `;
 
-  const ArrowTop1 = styled.img`
+const ArrowTop1 = styled.img `
     width: 14px;
     height: 14px;
     cursor: pointer;
-  `;
+    `;
 
-const ScoreInputExample = styled.div`
+const ScoreInputExample = styled.div `
     color: var(--Gray30, #a3a3a3);
     font-family: "Pretendard";
     font-size: 12px;
     font-style: normal;
     font-weight: 500;
     line-height: 14px;
-`;
+    `;
 
-const DropDownListBox = styled.div`
-  display: flex;
-  margin-top: 89px;
-`;
+const DropDownListBox = styled.div `
+    display: flex;
+    margin-top: 89px;
+    `;

@@ -4,13 +4,14 @@ import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import {FadeLoader} from "react-spinners";
 import {getAllScheduleData} from "../Api/ScheduleAPI";
 import {getRankingInfo} from "../Api/ScoreAPI";
+import { getPartName } from "../Components/Common/Variables";
 
 /*
 - Firebase fireStore 스케쥴 데이터 조회
 - Firebase fireStore 유저 데이터 조회
-  - Firebase에서 사용자 데이터 가져오기
-  - 각 사용자에 대한 순위 계산
-  - 사용자를 totalPoints로 정렬하여 순위 설정
+    - Firebase에서 사용자 데이터 가져오기
+    - 각 사용자에 대한 순위 계산
+    - 사용자를 totalPoints로 정렬하여 순위 설정
 - 로딩 css
 - Main 화면 코드
 */
@@ -25,7 +26,7 @@ const HomePage = () => {
                 // 1. 전체 스케줄 다 가져오기 (type 상관 없이 [false / true])
                 const result = await getAllScheduleData();
                 if (result != undefined) {
-                  setSchedule(result);
+                    setSchedule(result);
                 } 
 
             } catch (error) {
@@ -43,7 +44,7 @@ const HomePage = () => {
                 const result = await getRankingInfo('3');
                 // 순위를 상태에 설정
                 if (result != undefined) {
-                  setUserRankings(result);
+                    setUserRankings(result);
                 } 
 
             } catch (error) {
@@ -75,34 +76,6 @@ const HomePage = () => {
             .replace('.', '일')
             .replace(' ', '');
     };
-
-    // 로딩 css
-    const override = {
-        display: "flex",
-        margin: "0 auto",
-        marginTop: "300px",
-        borderColor: "#5262F5",
-        textAlign: "center"
-    };
-
-    function getPartName(part) {
-        switch (part) {
-            case "기획파트":
-                return "기획";
-            case "iOS파트":
-                return "iOS";
-            case "서버파트":
-                return "서버";
-            case "웹파트":
-                return "웹";
-            case "디자인파트":
-                return "디자인";
-            case "앱":
-                return "앱";
-            default:
-                return part;
-        }
-    }
 
     // Main 화면 코드
     return (
@@ -165,7 +138,7 @@ const HomePage = () => {
                     <RankDiv>
                         {
                             userRankings.map((user, index) => (
-                              <div key={index}>
+                                <div key={index}>
                                     < RankingNumDiv>
                                         <RankingFirstDiv key={index}>
                                             <RankingNum
@@ -198,215 +171,216 @@ const HomePage = () => {
 export default HomePage;
 
 const DDiv = styled.div `
-  background: #fff;
-  margin: 0 auto;
-  height: 100%;
-  overflow-y: hidden;
+    background: #fff;
+    margin: 0 auto;
+    height: 100%;
+    overflow-y: hidden;
 `;
+
 const TitleDiv = styled.div `
-  display: flex;
-  margin-top: 25px;
-  margin-left: 80px;
-  align-items: center;
+    display: flex;
+    margin-top: 25px;
+    margin-left: 80px;
+    align-items: center;
 `;
 
 const HomeTitle = styled.div `
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 32px;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 32px;
 `;
 
 const SubTitle = styled.div `
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 24px;
-  margin-top: 1px;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    margin-top: 1px;
 `;
 
 const ScoreText = styled.div `
-  color: var(--black-background, #1a1a1a);
-  text-align: right;
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 24px;
-  margin-right: 16px;
+    color: var(--black-background, #1a1a1a);
+    text-align: right;
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    margin-right: 16px;
 `;
 
 const BarText = styled.div `
-  width: 2px;
-  height: 24px;
-  margin-top: 1px;
-  margin-left: 12px;
-  margin-right: 14px;
-  background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
+    width: 2px;
+    height: 24px;
+    margin-top: 1px;
+    margin-left: 12px;
+    margin-right: 14px;
+    background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
 `;
 
 const BodyDiv = styled.div `
-  display: flex;
-  margin-top: 83px;
-  margin-left: 80px;
-  height: 744px;
+    display: flex;
+    margin-top: 83px;
+    margin-left: 80px;
+    height: 744px;
 `;
 
 const RightDiv = styled.div `
-  width: 600px;
-  height: 744px;
-  margin-right: 40px;
+    width: 600px;
+    height: 744px;
+    margin-right: 40px;
 `;
 
 const ScheduleDiv = styled.div `
-  margin-top: 16px;
-  height: 656px;
+    margin-top: 16px;
+    height: 656px;
 `;
 
 const ScheduleItem = styled.div `
-  width: 600px;
-  height: 115px;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  margin-bottom: 22px;
-  border-radius: 4px;
-  display: flex;
-  flex-direction: column;
+    width: 600px;
+    height: 115px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 22px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
 `;
 
 const ScheduleFirstDiv = styled.div `
-  margin-top: 16px;
-  width: 100%;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 6px;
+    margin-top: 16px;
+    width: 100%;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
 `;
 
 const PartNameDiv = styled.div `
-  border-radius: 4px;
-  border: 1px solid var(--black-background, #1a1a1a);
-  background: ${props => props.$isPastEvent
+    border-radius: 4px;
+    border: 1px solid var(--black-background, #1a1a1a);
+    background: ${props => props.$isPastEvent
     ? 'pink'
     : 'var(--Gray30, #b0b0b0)'};
-  width: 60px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
-  margin-left: 24px;
+    width: 60px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    margin-left: 24px;
 `;
 
 const DateDiv = styled.div `
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  margin-left: 12px;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 24px;
+    margin-left: 12px;
 `;
 
 const FlextBoxDiv = styled.div `
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 `;
 
 const ContentText = styled.div `
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 12px;
-  margin-left: 24px;
-  margin-top: 10px;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 12px;
+    margin-left: 24px;
+    margin-top: 10px;
 `;
 
 const LeftDiv = styled.div `
-  height: 744px;
-  width: 540px;
+    height: 744px;
+    width: 540px;
 `;
 
 const RankDiv = styled.div `
-  margin-top: 16px;
-  height: 660px;
-  border-radius: 8px;
-  border: 1px solid var(--Gray30, #a3a3a3);
-  width: 540px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow: scroll;
-  padding-top: 10px;
+    margin-top: 16px;
+    height: 660px;
+    border-radius: 8px;
+    border: 1px solid var(--Gray30, #a3a3a3);
+    width: 540px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: scroll;
+    padding-top: 10px;
 `;
 
 const RankingNumDiv = styled.div `
-  width: 500px;
-  height: 72px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 8px;
-  margin-bottom: 8px;
+    width: 500px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+    margin-bottom: 8px;
 `;
 
 const RankingNum = styled.div `
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 50%;
-  margin-right: 24px;
-  background-color: green;
-  color: var(--primary-blue, #5262f5);
-  font-family: "Pretendard";
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 32px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    margin-right: 24px;
+    background-color: green;
+    color: var(--primary-blue, #5262f5);
+    font-family: "Pretendard";
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `;
 
 const RankingName = styled.div `
-  color: var(--black-background, #1a1a1a);
-  font-family: "Pretendard";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  margin-right: 8px;
+    color: var(--black-background, #1a1a1a);
+    font-family: "Pretendard";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 24px;
+    margin-right: 8px;
 `;
 
 const RankingPart = styled.div `
-  color: var(--Gray30, #a3a3a3);
-  font-family: "Pretendard";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 18px;
+    color: var(--Gray30, #a3a3a3);
+    font-family: "Pretendard";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px;
 `;
 
 const RankingFirstDiv = styled.div `
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 `;
 
 const RankingHR = styled.hr `
-  width: 500px;
-  height: 0px;
-  stroke-width: 1px;
-  stroke: var(--Gray30, #a3a3a3);
+    width: 500px;
+    height: 0px;
+    stroke-width: 1px;
+    stroke: var(--Gray30, #a3a3a3);
 `;
