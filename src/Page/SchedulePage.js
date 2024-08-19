@@ -1,22 +1,12 @@
 import React, { useEffect, useState } from "react";
-import styled, { useTheme } from "styled-components";
+import styled from "styled-components";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
-import {
-  collection,
-  getDocs,
-  addDoc,
-  doc,
-  deleteDoc,
-  Timestamp,
-  updateDoc,
-} from "firebase/firestore";
-import { dbService } from "../fbase";
-import { format, fromUnixTime, differenceInDays } from "date-fns";
+import { format, differenceInDays } from "date-fns";
 import koLocale from "date-fns/locale/ko";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import style from "../Styles/calendar.module.scss";
-import { deleteScheduleData, getAllScheduleData, postScheduleData } from "../Api/ScheduleAPI";
+import { deleteScheduleData, getAllScheduleData, patchScheduleData, postScheduleData } from "../Api/ScheduleAPI";
 
 /* 
 - Firebase fireStore 스케쥴 데이터 조회
@@ -38,6 +28,7 @@ const SchedulePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedSchedule, setSelectedSchedule] = useState(null);
 
   // FIREBASE CODE
   // Firebase fireStore 스케쥴 조회
@@ -107,19 +98,22 @@ const SchedulePage = () => {
   };
 
   // Modal 창 관련 코드
-  const openModal = () => {
+  const openModal = (schedule ) => {
     setIsModalOpen(true);
     setIsRegisterModalOpen(true);
+    setSelectedSchedule(schedule);
   };
 
-  const openTaskModal = () => {
+  const openTaskModal =(schedule) => {
     setIsModalOpen(true);
     setIsRegisterModalOpen(false);
+    setSelectedSchedule(schedule);
   };
 
   const closeModal = () => {
     const result = window.confirm("변경사항을 저장하지 않고 나가시겠습니까?");
     if (result) {
+      setSelectedSchedule({});
       setIsModalOpen(false);
     }
   };
@@ -148,6 +142,42 @@ const SchedulePage = () => {
     }
   }
 
+   // 모든 일정 삭제 함수
+  const handleDeleteAll = async (type) => {
+    const confirmMessage = type === 'schedule' 
+      ? "모든 공식 일정을 삭제하시겠습니까?" 
+      : "모든 과제 일정을 삭제하시겠습니까?";
+    
+    const userConfirmed = window.confirm(confirmMessage);
+
+    if (userConfirmed) {
+      try {
+        const itemsToDelete = schedules.filter(schedule => 
+          type === 'schedule' ? schedule.part === "전체" : schedule.part !== "전체"
+        );
+
+        const deletePromises = itemsToDelete.map(item => 
+          deleteScheduleData(item.scheduleId)
+        );
+        
+        await Promise.all(deletePromises);
+
+        const successMessage = type === 'schedule' 
+          ? "모든 공식 일정이 삭제되었습니다." 
+          : "모든 과제 일정이 삭제되었습니다.";
+        alert(successMessage);
+
+        // 로컬 상태 업데이트
+        setSchedule(schedules.filter(schedule => 
+          type === 'schedule' ? schedule.part !== "전체" : schedule.part === "전체"
+        ));
+      } catch (error) {
+        console.error(`Error deleting all ${type}s:`, error);
+        alert(`${type === 'schedule' ? '공식 일정' : '과제 일정'} 삭제 중 오류가 발생했습니다.`);
+      }
+    }
+  };
+
   // Main 화면 코드
   return (
     <DDiv>
@@ -162,13 +192,19 @@ const SchedulePage = () => {
         <AlertText>* 일정 전날 오후 9시에 알림이 발송됩니다.</AlertText>
       </TitleDiv>
 
+      
+
       {/* 공식 일정과 과제 일정이 보여지는 Content */}
       <BodyDiv>
 
         {/* 공식 일정 */}
         <RightDiv>
           <FirstDiv>
-            <HomeTitle>공식 일정</HomeTitle>
+            <FlexBox>
+              <HomeTitle>공식 일정</HomeTitle>
+              <DeleteButton onClick={() => handleDeleteAll('schedule')}>일정 전체 삭제</DeleteButton>
+            </FlexBox>
+            
             <EditButton onClick={openModal}>
               <EditIcon src={require("../Assets/img/ScheduleCIcon.png")} />
               공식 일정 추가하기
@@ -187,7 +223,7 @@ const SchedulePage = () => {
                       <DeleteIcon src={require("../Assets/img/DeleteIcon.png")} />
                       삭제
                     </DelteButton>
-                    <DelteButton onClick={() => setIsOpen(true)}>
+                    <DelteButton onClick={() => openModal(schedule)}>
                       <DeleteIcon src={require("../Assets/img/EditIcon.png")} />
                       수정
                     </DelteButton>
@@ -205,7 +241,10 @@ const SchedulePage = () => {
         {/* 과제 일정 */}
         <LeftDiv>
           <FirstDiv>
-            <HomeTitle>과제 일정</HomeTitle>
+            <FlexBox>
+              <HomeTitle>과제 일정</HomeTitle>
+              <DeleteButton onClick={() => handleDeleteAll('task')}>과제 전체 삭제</DeleteButton>
+            </FlexBox>
             <EditButton onClick={openTaskModal}>
               <EditIcon src={require("../Assets/img/ScheduleCIcon.png")} />
               과제 일정 추가하기
@@ -224,7 +263,7 @@ const SchedulePage = () => {
                       <DeleteIcon src={require("../Assets/img/DeleteIcon.png")} />
                       삭제
                     </DelteButton>
-                    <DelteButton onClick={openTaskModal}>
+                    <DelteButton onClick={() => openTaskModal(schedule)}>
                       <DeleteIcon src={require("../Assets/img/EditIcon.png")} />
                       수정
                     </DelteButton>
@@ -251,6 +290,7 @@ const SchedulePage = () => {
         isRegisterModalOpen={isRegisterModalOpen}
         onClose={() => closeModal()}
         closeModalWidhtUppdate={() => closeModalWidhtUppdate()}
+        selectedSchedule = {selectedSchedule}
       />
     </DDiv>
   );
@@ -746,14 +786,50 @@ const FirstDiv = styled.div`
     isRegisterModalOpen,
     onClose,
     closeModalWidhtUppdate,
+    selectedSchedule,
   }) => {
     const [isToggle, setIsToggle] = useState(false);
     const [selectedOption, setSelectedOption] = useState(null);
     const [inputText, setInputText] = useState("");
     const [inputAbout, setInputAbout] = useState("");
+    const [selectedTime, setSelectedTime] = useState(new Date());
+
+    useEffect(() => {
+      if (selectedSchedule) {
+        setInputText(selectedSchedule?.title);
+
+        // 서버로부터 받은 날짜를 Date 객체로 변환
+        const dateObject = new Date(selectedSchedule?.date);
+
+        // Date 객체가 유효한지 확인
+        if (!isNaN(dateObject.getTime())) {
+          // 유효한 경우에만 상태에 저장
+          setSelectedTime(dateObject);
+        } else {
+          // console.error("Invalid Date format:", selectedSchedule?.date);
+          // 유효하지 않은 경우에 대한 처리
+          setSelectedTime(null);
+        }
+
+        if (selectedSchedule?.content) {
+          // 과제
+          setInputAbout(selectedSchedule?.content);
+          setSelectedOption(selectedSchedule?.part);
+        } else {
+          // 일정
+          setInputAbout(selectedSchedule?.contentsLocation);
+        }
+      } else {
+        setInputText('');
+        setInputAbout('');
+        setSelectedTime(new Date());
+        setSelectedOption(null);
+      }
+    }, [isOpen]);
+
 
     // 파트 선택 토글
-    const toggleDropdown = () => {
+    const toggleDropdown = () => {  
       setIsToggle(!isToggle);
     };
 
@@ -767,22 +843,22 @@ const FirstDiv = styled.div`
     };
 
     const handleInputChange = (e) => {
-      const text = e.target.value;
-      if (text.length <= 10) {
+      const text = e.target.value || '';
+      if (text?.length <= 10) {
         setInputText(text);
       }
     };
 
     const handlePlaceChange = (e) => {
-      const text = e.target.value;
-      if (text.length <= 10) {
+      const text = e.target.value || '';
+      if (text?.length <= 10) {
         setInputAbout(text);
       }
     };
 
     const handleAboutChange = (e) => {
-      const text = e.target.value;
-      if (text.length <= 20) {
+      const text = e.target.value || '';
+      if (text?.length <= 20) {
         setInputAbout(text);
       }
     };
@@ -796,12 +872,9 @@ const FirstDiv = styled.div`
       "기획파트",
     ];
 
-    // 닐짜 관련 Hook
-    const [selectedDate, setSelectedDate] = useState();
-    const [selectedTime, setSelectedTime] = useState(new Date());
+
 
     const handleDateChange = (date) => {
-      setSelectedDate(date);
       setSelectedTime(date);
     };
 
@@ -827,12 +900,18 @@ const FirstDiv = styled.div`
     const handleRegisterButtonClicked = () => {
       const result = window.confirm("일정을 추가하시겠습니까?");
       if (result) {
-        UpdateScedule();
+        AddScedule();
       }
     };
+    const handleUpdateSchedule = () => {
+      const result = window.confirm("일정을 수정하시겠습니까?");
+      if (result) {
+        UpdateSchedule();
+      }
+    }
 
     // 핸들러 : '전체'에 대한 일정 추가 (유효성 검사 후 실제 DB로 등록)
-    const UpdateScedule = async () => {
+    const AddScedule = async () => {
       // 유효성 검사
       if (inputAbout === "") {
         window.confirm("빈칸을 확인해주세요");
@@ -844,7 +923,7 @@ const FirstDiv = styled.div`
             title: inputText,
             content: "",
             part: "전체",
-            date: selectedTime,
+            date: new Date(selectedTime.getTime() + 9 * 60 * 60 * 1000).toISOString(),
             contentsLocation: inputAbout,
             notice: true,
             remaingDay: 0,
@@ -863,21 +942,57 @@ const FirstDiv = styled.div`
       }
     };
 
-    // 핸들러 : 과제 등록
-    const handleRegisterTaskButtonClicked = () => {
-      const result = window.confirm("과제를 추가하시겠습니까?");
-      if (result) {
-        UpdateTask();
-      }
-    };
-
-    // 핸들러 : '과제'에 대한 일정 추가 (유효성 검사 후 실제 DB로 등록)
-    const UpdateTask = async () => {
-            // 유효성 검사
+    const UpdateSchedule = async () => {
       if (inputAbout === "") {
         window.confirm("빈칸을 확인해주세요");
       } else if (inputText === "") {
         window.confirm("빈칸을 확인해주세요");
+      } else {
+        try {
+          const addScheduleInfo = {
+            title: inputText,
+            content: "",
+            part: "전체",
+            date: new Date(selectedTime.getTime() + 9 * 60 * 60 * 1000).toISOString(),
+            contentsLocation: inputAbout,
+            notice: true,
+            remaingDay: 0,
+            pastEvent: false,
+          }
+          const result = await patchScheduleData(addScheduleInfo, selectedSchedule?.scheduleId);
+          
+          alert("일정이 추가되었습니다.");
+          closeModalWidhtUppdate();
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } catch (error) {
+          console.error("일정 추가 실패:", error);
+        }
+      }
+    }
+
+    // 핸들러 : 과제 등록
+    const handleRegisterTaskButtonClicked = () => {
+      const result = window.confirm("과제를 추가하시겠습니까?");
+      if (result) {
+        AddTask();
+      }
+    };
+    
+    const handleUpdateTask = () => {
+      const result = window.confirm("과제를 수정하시겠습니까?");
+      if (result) {
+        UpdateTask();
+      }
+    }
+
+    // 핸들러 : '과제'에 대한 일정 추가 (유효성 검사 후 실제 DB로 등록)
+    const AddTask = async () => {
+      // 유효성 검사
+      if (!inputAbout || !inputText || !selectedOption || !selectedTime) {
+        alert("모든 필드를 채워주세요.");
+        return;
       } else {
         try {
           const addScheduleInfo = {
@@ -891,19 +1006,46 @@ const FirstDiv = styled.div`
             pastEvent: false,
           }
           const result = await postScheduleData(addScheduleInfo);
-          alert("일정이 추가되었습니다.");
+          alert("과제 일정이 추가되었습니다.");
           closeModalWidhtUppdate();
           setTimeout(() => {
             window.location.reload();
           }, 1000);
         } catch (error) {
-          console.error("일정 추가 실패:", error);
+          console.error("과제 일정 추가 실패:", error);
         }
       }
     };
+
+    const UpdateTask = async () => {
+      if (!inputAbout || !inputText || !selectedOption || !selectedTime) {
+        alert("모든 필드를 채워주세요.");
+        return;
+      } else {
+        try {
+          const addScheduleInfo = {
+            title: inputText,
+            content: inputAbout,
+            part: selectedOption,
+            date: selectedTime,
+            contentsLocation: "",
+            notice: false,
+            remaingDay: 0,
+            pastEvent: false,
+          }
+          const result = await patchScheduleData(addScheduleInfo, selectedSchedule?.scheduleId);
+          alert("과제 일정이 수정되었습니다1.");
+          closeModalWidhtUppdate();
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } catch (error) {
+          console.error("과제 일정 수정 실패:", error);
+        }
+      }
+    }
     return (
       <ModalWrapper $isOpen={isOpen}>
-
         <ModalContent>
           <ModalTitleDiv>
             {isRegisterModalOpen ? (
@@ -924,11 +1066,11 @@ const FirstDiv = styled.div`
                 </ModalContents>
                 <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                   <ReasonInput
-                    value={inputText}
+                    value={inputText || ""}
                     onChange={handleInputChange}
                     placeholder="일정 제목을 10자 이내로 작성해주세요."
                   />
-                  <InputNumNum>{inputText.length}/10</InputNumNum>
+                  <InputNumNum>{inputText?.length}/10</InputNumNum>
                 </ModalContents>
               </ModalSubTitle>
               <ModalSubTitle $top={54}>
@@ -940,7 +1082,7 @@ const FirstDiv = styled.div`
                     placeholderText="날짜를 선택하세요"
                     className={style.datePicker}
                     calendarClassName={style.calenderWrapper}
-                    selected={selectedDate}
+                    selected={selectedTime}
                     onChange={handleDateChange}
                     showTimeSelect
                     timeIntervals={15}
@@ -955,11 +1097,11 @@ const FirstDiv = styled.div`
                 </ModalContents>
                 <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                   <ReasonInput
-                    value={inputAbout}
+                    value={inputAbout|| ""}
                     onChange={handlePlaceChange}
                     placeholder="일정 장소를 10자 이내로 작성해주세요."
                   />
-                  <InputNumNum>{inputAbout.length}/10</InputNumNum>
+                  <InputNumNum>{inputAbout?.length}/10</InputNumNum>
                 </ModalContents>
               </ModalSubTitle>
               <ModalSubTitle $top={50}>
@@ -985,17 +1127,27 @@ const FirstDiv = styled.div`
                     </PreviewFlexBox>
                     <AboutText>
                       일시 :{" "}
-                      {format(selectedTime, "M월 d일 EEEE HH:mm", {
-                        locale: koLocale,
-                      })}
+                      {selectedTime && !isNaN(selectedTime.getTime()) ? (
+                        format(selectedTime, "M월 d일 EEEE HH:mm", {
+                          locale: koLocale,
+                        })
+                      ) : (
+                        "유효하지 않은 시간"
+                      )}
                     </AboutText>
                     <AboutText>장소 : {inputAbout}</AboutText>
                   </PreView>
                 </ModalContents>
               </ModalSubTitle>
-              <RegisterButton $top={100} onClick={handleRegisterButtonClicked}>
-                추가하기
-              </RegisterButton>
+                {selectedSchedule?.scheduleId ?           
+                  <RegisterButton onClick={handleUpdateSchedule}>
+                    수정하기
+                  </RegisterButton>
+                  : 
+                  <RegisterButton $top={100} onClick={handleRegisterButtonClicked}>
+                    추가하기
+                  </RegisterButton>
+                }
             </>
           ) : (
             <>
@@ -1010,7 +1162,7 @@ const FirstDiv = styled.div`
                       onClick={toggleDropdown}
                       color={selectedOption}
                     >
-                      {selectedOption || "전체"}
+                      {selectedOption || "선택"}
                       {!isToggle ? (
                         <ArrowTop1 src={require("../Assets/img/PolygonDown.png")} />
                       ) : (
@@ -1040,11 +1192,11 @@ const FirstDiv = styled.div`
                 </ModalContents>
                 <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                   <ReasonInput
-                    value={inputText}
+                    value={inputText|| ""}
                     onChange={handleInputChange}
                     placeholder="과제 제목을 10자 이내로 작성해주세요."
                   />
-                  <InputNumNum>{inputText.length}/10</InputNumNum>
+                  <InputNumNum>{inputText?.length}/10</InputNumNum>
                 </ModalContents>
               </ModalSubTitle>
               
@@ -1055,11 +1207,11 @@ const FirstDiv = styled.div`
                 </ModalContents>
                 <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                   <ReasonInput
-                    value={inputAbout}
+                    value={inputAbout|| ""}
                     onChange={handleAboutChange}
                     placeholder="본문 내용을 20자 이내로 작성해주세요. "
                   />
-                  <InputNumNum>{inputAbout.length}/20</InputNumNum>
+                  <InputNumNum>{inputAbout?.length}/20</InputNumNum>
                 </ModalContents>
               </ModalSubTitle>
               
@@ -1073,7 +1225,7 @@ const FirstDiv = styled.div`
                     placeholderText="날짜를 선택하세요"
                     className={style.datePicker}
                     calendarClassName={style.calenderWrapper}
-                    selected={selectedDate}
+                    selected={selectedTime}
                     onChange={handleDateChange}
                     showTimeSelect
                     timeIntervals={15}
@@ -1084,12 +1236,24 @@ const FirstDiv = styled.div`
               </ModalSubTitle>
               
               {/* 추가하기 버튼 */}
-              <RegisterButton onClick={handleRegisterTaskButtonClicked}>
-                추가하기
-              </RegisterButton>
+              {console.log(selectedSchedule)}
+                {selectedSchedule?.scheduleId ?                  
+                  <RegisterButton onClick={handleUpdateTask}>
+                    수정하기
+                  </RegisterButton>
+                  :<RegisterButton onClick={handleRegisterTaskButtonClicked}>
+                    추가하기 
+                  </RegisterButton>
+                }
             </>
           )}
         </ModalContent>
       </ModalWrapper>
     );
   };
+
+const DeleteButton = styled.button`
+  margin-left: 20px;
+  padding : 5px 10px;
+  box-sizing: border-box;
+`;  
