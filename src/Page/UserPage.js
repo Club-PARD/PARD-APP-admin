@@ -57,6 +57,7 @@ const UserPage = () => {
     useEffect(() => {
         const getUsers = async () => {
             const users = await getAllUserData(selectedGeneration);
+            // console.log(users);
             setUserDataList(users);
         };
         getUsers();
@@ -169,10 +170,14 @@ const UserPage = () => {
         setEmailInputs(updatedEmailInputs);
     };
 
+    const formatPhoneNumberRemoveHipen = (phoneNumber) => {
+    return phoneNumber.replace(/-/g, '');
+    };
     const handleAddButtonClick = async () => {
         let addUserInfo = [];
         let missingFields = [];
         let invalidEmails = [];
+        
         
         // 최대 처리할 횟수 : 15회
         for (let index = 0; index < 15; index++) {
@@ -200,7 +205,7 @@ const UserPage = () => {
                         email: emailInputs[index],
                         part: selectedPart[index],
                         generation: generationInputs[index],
-                        phoneNumber: phoneInputs[index],
+                        phoneNumber: formatPhoneNumberRemoveHipen(phoneInputs[index]),
                         role: selectedMembers[index]
                     };
                     addUserInfo.push(data);
@@ -394,11 +399,11 @@ const UserPage = () => {
                         name: inputName,
                         email: userEmail,
                         part: selectedOption,
-                        phoneNumber: inputPhoneNum,
+                        phoneNumber: formatPhoneNumberRemoveHipen(inputPhoneNum),
                         role: selectedRoleOption,
                         generation: inputGeneration
                     };
-                    console.log(updatedUserInfo);
+                    // console.log(updatedUserInfo);
                     const response = await postUserData([updatedUserInfo]);
                     if (response) {
                         alert("사용자 정보가 업데이트되었습니다.");
@@ -423,7 +428,7 @@ const UserPage = () => {
         }
 
         return (
-            <ModalWrapper isModalOpen={isModalOpen}>
+            <ModalWrapper $isModalOpen={isModalOpen}>
                 <ModalContent>
                     <ModalTitleDiv>
                         <ModalTitle>사용자 정보 수정하기</ModalTitle>
@@ -553,10 +558,10 @@ const UserPage = () => {
                 return "운영진";
                 break;
             case "ROLE_YB":
-                return "YB";
+                return "파디";
                 break;
             case "ROLE_OB":
-                return "OB";
+                return "파도";
                 break;
             case "ALL" :
                 return "전체";
@@ -566,27 +571,7 @@ const UserPage = () => {
         }
     }
 
-    // const formatPhoneNumber = (userInfo) => {
-    //     const phoneNumber = userInfo
-    //         ?.phoneNumber || "";
 
-    //     // 전화번호가 11글자인지 확인
-    //     if (
-    //         phoneNumber
-    //             ?.length === 11 || phoneNumber
-    //                 ?.length > 11
-    //     ) {
-    //         // 포맷 변경
-    //         const formattedNumber = phoneNumber.replace(
-    //             /(\d{3})(\d{4})(\d{4})/,
-    //             '$1-$2-$3'
-    //         );
-    //         return formattedNumber;
-    //     } else {
-    //         // 예외처리: 전화번호가 11글자가 아닌 경우 alert('전화번호는 11글자여야 합니다.');
-    //         // console.log(userInfo.phoneNumber);
-    //     }
-    // }
 
     const resetRowData = (index) => {
         setGenerationInputs(prev => {
@@ -630,8 +615,8 @@ const UserPage = () => {
         if (!value) return value;
         const phoneNumber = value.replace(/[^\d]/g, '');
         const phoneNumberLength = phoneNumber.length;
-        if (phoneNumberLength < 4) return phoneNumber;
-        if (phoneNumberLength < 7) {
+        if (phoneNumberLength <= 3) return phoneNumber;
+        if (phoneNumberLength <= 7) {
             return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3)}`;
         }
         return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 7)}-${phoneNumber.slice(7, 11)}`;
@@ -863,11 +848,12 @@ const UserPage = () => {
                                                 </TableHead2Cell>
                                                 <TableHead2Cell $flex={2}>
                                                     <DropdownWrapper>
-                                                        <DropdownButton
+                                                        <DropdownButton1
                                                             onClick={() => toggleDropdown(index)}
-                                                            $hasValue={selectedMembers[index] !== null}>
+                                                            $hasValue={selectedMembers[index] !== null}
+                                                        >
                                                             {handleChangeRoleName(selectedMembers[index]) || "선택"}
-                                                        </DropdownButton>
+                                                        </DropdownButton1>
                                                         <DropdownContent $isOpen={isOpen[index]} $left={-7} width={160} $top={1}>
                                                             {" "}
                                                             {/* 인덱스에 따라 열림 상태 설정 */}
@@ -1391,7 +1377,7 @@ const DropdownItem = styled.div `
     background: var(--White, #fff);
     border: 0.5px solid var(--primary-blue, #5262f5);
     text-align: center;
-    color: var(--black-background, #1a1a1a);
+    color: black;
     font-family: "Pretendard";
     font-size: 14px;
     font-style: normal;
@@ -1641,7 +1627,7 @@ const ModalWrapper = styled.div `
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.1);
-    display: ${ (props) => (props.isModalOpen? "block": "none")};
+    display: ${ (props) => (props.$isModalOpen? "block": "none")};
 `;
 
 const ModalContent = styled.div `
