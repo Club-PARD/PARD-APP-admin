@@ -62,13 +62,6 @@ const handleLoginAPI = async (email) => {
 };
 
 
-const deleteLoginInfo = () => {
-
-    localStorage.clear();
-    window.location.href = "/Login";
-
-}
-
 export const setupAxiosInterceptors = (navigate) => {
     axios
         .interceptors
