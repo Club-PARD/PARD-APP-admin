@@ -46,7 +46,7 @@ const AppContent = () => {
           <Route path="/Score" element={<ScorePage />} />
           <Route path="/Check" element={<AttendancePage />} />
           <Route path="/Schedule" element={<SchedulePage />} />
-          <Route path="/Member" element={<UserPage />} />
+          <Route path="/User" element={<UserPage />} />
           <Route path="/Login" element={<LoginPage />} />
         </Routes>
       </MainContent>

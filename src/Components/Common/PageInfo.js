@@ -3,9 +3,9 @@ import styled from "styled-components";
 export const PageInfo = ({ title, subTitle }) => {
     return (
         <TitleDiv>
-            <HomeTitle>{title}</HomeTitle>
-            <BarText/>
-            <SubTitle>{subTitle}</SubTitle>
+            <PageTitle>{title}</PageTitle>
+            <TextBar/>
+            <PageSubTitle>{subTitle}</PageSubTitle>
         </TitleDiv>
     );
 }
@@ -16,7 +16,7 @@ const TitleDiv = styled.div `
     align-items: center;
 `;
 
-const HomeTitle = styled.div `
+const PageTitle = styled.div `
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
     font-size: 24px;
@@ -25,7 +25,7 @@ const HomeTitle = styled.div `
     line-height: 32px;
 `;
 
-const SubTitle = styled.div `
+const PageSubTitle = styled.div `
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
     font-size: 18px;
@@ -35,7 +35,7 @@ const SubTitle = styled.div `
     margin-top: 1px;
 `;
 
-const BarText = styled.div `
+const TextBar = styled.div `
     width: 2px;
     height: 24px;
     margin-top: 1px;

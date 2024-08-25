@@ -21,15 +21,17 @@ const HomePage = () => {
     const [schedules, setSchedule] = useState([]);
     const [userRankings, setUserRankings] = useState([]);
 
+    // 스케줄 가져오기
     useEffect(() => {
         const fetchSchedules = async () => {
             try {
-                // 1. 전체 스케줄 다 가져오기 (type 상관 없이 [false / true])
+                // 전체 스케줄 다 가져오기 (type 상관 없이 [false / true])
                 const result = await getAllScheduleData();
+
+                // 스케줄을 저장한다.
                 if (result != undefined) {
                     setSchedule(result);
                 } 
-
             } catch (error) {
                 console.error("Error fetching schedules:", error);
             }
@@ -38,12 +40,14 @@ const HomePage = () => {
         fetchSchedules();
     }, []);
 
+    // 랭킹 점수 가져오기
     useEffect(() => {
         const calculateUserRankings = async () => {
             try {
-                // Firebase에서 사용자 데이터 가져오기 (전체 문서)
+                // 3기 사용자들의 전체 랭킹을 불러온다.
                 const result = await getRankingInfo('3');
-                // 순위를 상태에 설정
+
+                // 랭킹을 저장한다.
                 if (result != undefined) {
                     setUserRankings(result);
                 } 
@@ -275,7 +279,7 @@ const RankDiv = styled.div `
     margin-top: 16px;
     height: 660px;
     border-radius: 8px;
-    border: 1px solid var(--Gray30, #a3a3a3);
+    border: 1px solid #e0e0e0;
     width: 540px;
     display: flex;
     flex-direction: column;
