@@ -5,7 +5,7 @@ import { getAllAttendanceData, postAttendanceData } from "../Api/AttendenceAPI";
 import { attendanceList, options } from "../Components/Common/Variables";
 import { PageInfo } from "../Components/Common/PageInfo";
 import { BaseContainer } from "../Components/Common/BaseContainer";
-import { CancelButton, EditButton, SaveButton } from "../Components/AttendancePage/Buttons";
+import { CancelButton, EditButton, SaveButton } from "../Components/Buttons";
 import { CustomTableCell } from "../Components/AttendancePage/CustomTableCell";
 
 /*

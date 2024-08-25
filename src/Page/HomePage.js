@@ -183,12 +183,12 @@ const ScoreText = styled.div `
 const BodyDiv = styled.div `
     display: flex;
     margin-top: 83px;
-    `;
+`;
 
 const RightDiv = styled.div `
     width: 600px;
     margin-right: 40px;
-    `;
+`;
 
 const ScheduleDiv = styled.div `
     margin-top: 16px;

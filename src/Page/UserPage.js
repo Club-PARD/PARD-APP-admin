@@ -6,6 +6,7 @@ import {handleChangeRoleName, member, memberFillter, options, PartList } from ".
 import GenerationDropDown from "../Components/Common/GenerationDropDown";
 import { PageInfo } from "../Components/Common/PageInfo";
 import { BaseContainer } from "../Components/Common/BaseContainer";
+import { EditButton, CancelButton, SaveButton } from "../Components/Buttons";
 
 /*
 - Firebase fireStore User 데이터 조회
@@ -609,10 +610,10 @@ const UserPage = () => {
                                     </FlexDiv>
                                     <GenerationDropDown selectedGeneration={selectedGeneration} isDropDownGeneration={isDropDownGeneration} setIsDropDownGeneration={setIsDropDownGeneration} setSelectedGeneration={setSelectedGeneration} />
                                 </GenerationDiv>
-                                <RegisterButton onClick={() => setAddable(false)}>
+                                <EditButton onClick={() => setAddable(false)}>
                                     <RegisterMemberIcon src={require("../Assets/img/MemberIcon.png")}/>
                                     사용자 추가
-                                </RegisterButton>
+                                </EditButton>
                             </FirstDiv>
                             <SecondDiv>
                                 <TableHead2>
@@ -733,9 +734,9 @@ const UserPage = () => {
                                 <FlexDiv></FlexDiv>
                                 <FlexDiv>
                                     <CancelButton onClick={handleCancelClick}>취소하기</CancelButton>
-                                    <RegisterAddButton onClick={handleEditButtonClick}>
+                                    <SaveButton onClick={handleEditButtonClick}>
                                         추가하기
-                                    </RegisterAddButton>
+                                    </SaveButton>
                                 </FlexDiv>
                             </FirstDiv>
                             <SecondDiv>
@@ -873,9 +874,8 @@ const BodyAddDiv = styled.div `
     display: flex;
     flex-direction: column;
     margin-top: 83px;
-    margin-left: 80px;
-    width: 77%;
-    height: 744px;
+    width: 100%;
+    height: auto;
 `;
 
 const FlexDiv = styled.div `
@@ -915,73 +915,48 @@ const MemberNumText = styled.div `
     margin-right: 8px;
 `;
 
-const RegisterButton = styled.button `
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    border-radius: 8px;
-    border: 1px solid var(--primary-blue, #5262f5);
-    background: rgba(82, 98, 245, 0.1);
-    color: var(--primary-blue, #5262f5);
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 24px;
-    padding: 12px 36px;
-    cursor: pointer;
+// const RegisterAddButton = styled.button `
+//     display: inline-flex;
+//     justify-content: center;
+//     align-items: center;
+//     display: flex;
+//     border-radius: 8px;
+//     background: #5262f5;
+//     color: #fff;
+//     font-family: "Pretendard";
+//     font-size: 18px;
+//     font-style: normal;
+//     font-weight: 700;
+//     line-height: 24px;
+//     padding: 12px 65px;
+//     cursor: pointer;
+//     border: none;
+//     &:hover {
+//         box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
+//     }
+//     &:active {
+//         box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
+//     }
+// `;
 
-    &:hover {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-    }
-    &:active {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-    }
-`;
-
-const RegisterAddButton = styled.button `
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    border-radius: 8px;
-    background: #5262f5;
-    color: #fff;
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 24px;
-    padding: 12px 65px;
-    cursor: pointer;
-    border: none;
-    &:hover {
-        box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-    }
-    &:active {
-        box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-    }
-`;
-
-const CancelButton = styled.button `
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    border-radius: 8px;
-    background: var(--Gray10, #e4e4e4);
-    color: var(--black-card, #2a2a2a);
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 24px;
-    padding: 12px 65px;
-    cursor: pointer;
-    border: none;
-    margin-right: 16px;
-`;
+// const CancelButton = styled.button `
+//     display: inline-flex;
+//     justify-content: center;
+//     align-items: center;
+//     display: flex;
+//     border-radius: 8px;
+//     background: var(--Gray10, #e4e4e4);
+//     color: var(--black-card, #2a2a2a);
+//     font-family: "Pretendard";
+//     font-size: 18px;
+//     font-style: normal;
+//     font-weight: 700;
+//     line-height: 24px;
+//     padding: 12px 65px;
+//     cursor: pointer;
+//     border: none;
+//     margin-right: 16px;
+// `;
 
 const ArrowTop1 = styled.img `
     width: 14px;

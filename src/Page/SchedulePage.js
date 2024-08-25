@@ -10,6 +10,7 @@ import { deleteScheduleData, getAllScheduleData, patchScheduleData, postSchedule
 import { formatDate, getPartName, options} from "../Components/Common/Variables";
 import { PageInfo } from "../Components/Common/PageInfo";
 import { BaseContainer } from "../Components/Common/BaseContainer";
+import { AddButton} from "../Components/Buttons";
 
 /* 
 - Firebase fireStore 스케쥴 데이터 조회
@@ -189,10 +190,10 @@ const SchedulePage = () => {
                             <DeleteButton onClick={() => handleDeleteAll('schedule')}>일정 전체 삭제</DeleteButton>
                         </FlexBox>
 
-                        <EditButton onClick={openModal}>
+                        <AddButton onClick={openModal}>
                             <EditIcon src={require("../Assets/img/ScheduleCIcon.png")}/>
                             공식 일정 추가하기
-                        </EditButton>
+                        </AddButton>
                     </FirstDiv>
                     <ScheduleDiv>
                         {
@@ -231,10 +232,10 @@ const SchedulePage = () => {
                             <ScheduleTitle>과제 일정</ScheduleTitle>
                             <DeleteButton onClick={() => handleDeleteAll('task')}>과제 전체 삭제</DeleteButton>
                         </FlexBox>
-                        <EditButton onClick={openTaskModal}>
+                        <AddButton onClick={openTaskModal}>
                             <EditIcon src={require("../Assets/img/ScheduleCIcon.png")}/>
                             과제 일정 추가하기
-                        </EditButton>
+                        </AddButton>
                     </FirstDiv>
                     <ScheduleDiv>
                         {
@@ -764,26 +765,25 @@ const ScheduleTitle = styled.div `
 const BodyDiv = styled.div `
     display: flex;
     margin-top: 83px;
-    margin-left: 80px;
     height: 744px;
-    `;
+`;
 
 const RightDiv = styled.div `
     width: 602px;
     height: 744px;
     margin-right: 40px;
-    `;
+`;
 
 const LeftDiv = styled.div `
     height: 744px;
     width: 602px;
-    `;
+`;
 
 const ScheduleDiv = styled.div `
     margin-top: 16px;
     height: 696px;
     overflow: scroll;
-    `;
+`;
 
 const ScheduleItem = styled.div `
     width: 600px;
@@ -794,7 +794,7 @@ const ScheduleItem = styled.div `
     border-radius: 4px;
     display: flex;
     flex-direction: column;
-    `;
+`;
 
 const ScheduleFirstDiv = styled.div `
     margin-top: 24px;
@@ -802,7 +802,7 @@ const ScheduleFirstDiv = styled.div `
     height: 32px;
     display: flex;
     justify-content: space-between;
-    `;
+`;
 
 const PartNameDiv = styled.div `
     border-radius: 4px;
@@ -820,7 +820,7 @@ const PartNameDiv = styled.div `
     font-weight: 600;
     line-height: 24px;
     margin-left: 24px;
-    `;
+`;
 
 const DateDiv = styled.div `
     color: var(--black-background, #1a1a1a);
@@ -830,13 +830,13 @@ const DateDiv = styled.div `
     font-weight: 700;
     line-height: 24px;
     margin-left: 12px;
-    `;
+`;
 
 const FlextBoxDiv = styled.div `
     display: flex;
     align-items: center;
     margin-bottom: 8px;
-    `;
+`;
 
 const DelteButton = styled.button `
     width: 70px;
@@ -875,30 +875,6 @@ const ContentText = styled.div `
     margin-top: 8px;
 `;
 
-const EditButton = styled.button `
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    border-radius: 8px;
-    border: 1px solid var(--primary-blue, #5262f5);
-    background: rgba(82, 98, 245, 0.1);
-    color: var(--primary-blue, #5262f5);
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 24px;
-    padding: 12px 16px;
-    cursor: pointer;
-
-    &:hover {
-        box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-    }
-    &:active {
-        box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-    }
-`;
 
 const EditIcon = styled.img `
     width: 24px;

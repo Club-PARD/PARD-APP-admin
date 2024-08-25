@@ -669,7 +669,6 @@ export default ScorePage;
 const BodyDiv = styled.div `
     display: flex;
     margin-top: 16px;
-    margin-left: 80px;
     max-width: 1300px;
     width: 90%;
     height: 700px;
@@ -763,7 +762,6 @@ const TableCell = styled.div `
 const DropdownWrapper = styled.div `
     position: relative;
     display: inline-block;
-    margin-left: 83px;
     display: flex;
     width: 125px;
     height : 35px;
@@ -1277,9 +1275,9 @@ const ScoreInputExample = styled.div `
     font-style: normal;
     font-weight: 500;
     line-height: 14px;
-    `;
+`;
 
 const DropDownListBox = styled.div `
     display: flex;
     margin-top: 89px;
-    `;
+`;

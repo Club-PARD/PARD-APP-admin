@@ -13,6 +13,8 @@ const AttendancePageButton = styled.button `
     cursor: pointer;
     border: none;
     height : 50px;
+
+    padding: 12px 52px;
 `;
 
 export const EditButton = styled(AttendancePageButton) `
@@ -30,7 +32,6 @@ export const EditButton = styled(AttendancePageButton) `
 `;
 
 export const SaveButton = styled(AttendancePageButton) `
-    padding: 12px 52px;
     color: var(--White, #fff);
     background: var(--primary-blue, #5262f5);
     &:hover {
@@ -42,9 +43,11 @@ export const SaveButton = styled(AttendancePageButton) `
 `;
 
 export const CancelButton = styled(AttendancePageButton) `
-
-    padding: 12px 65px;
     background: var(--Gray10, #e4e4e4);
     color: var(--black-card, #2a2a2a);
     margin-right: 16px;
+`;
+
+export const AddButton = styled(EditButton)`
+    padding : 12px 16px;
 `;
