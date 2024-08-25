@@ -183,19 +183,17 @@ const ScoreText = styled.div `
 const BodyDiv = styled.div `
     display: flex;
     margin-top: 83px;
-    margin-left: 80px;
-    height: 744px;
-`;
+    `;
 
 const RightDiv = styled.div `
     width: 600px;
-    height: 744px;
     margin-right: 40px;
-`;
+    `;
 
 const ScheduleDiv = styled.div `
     margin-top: 16px;
-    height: 656px;
+    height: 700px;
+    /* background-color: green; */
 `;
 
 const ScheduleItem = styled.div `
@@ -204,7 +202,7 @@ const ScheduleItem = styled.div `
     background-color: #ffffff;
     border: 1px solid #e0e0e0;
     margin-bottom: 22px;
-    border-radius: 4px;
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
 `;
@@ -270,7 +268,7 @@ const LeftDiv = styled.div `
 
 const RankDiv = styled.div `
     margin-top: 16px;
-    height: 660px;
+    height: 700px;
     border-radius: 8px;
     border: 1px solid #e0e0e0;
     width: 540px;
@@ -279,6 +277,7 @@ const RankDiv = styled.div `
     align-items: center;
     overflow: scroll;
     padding-top: 10px;
+    /* background-color: blue; */
 `;
 
 const RankingNumDiv = styled.div `

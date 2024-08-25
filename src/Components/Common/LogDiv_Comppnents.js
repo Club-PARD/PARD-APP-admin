@@ -56,9 +56,8 @@ export default CommonLogSection;
 const LogDiv = styled.div `
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: end;
   margin-top: 32px;
-  margin-right: 64px;
 `;
 
 const NameText = styled.div `

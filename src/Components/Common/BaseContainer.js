@@ -5,4 +5,6 @@ export const BaseContainer = styled.div`
     height: 100%;
     width: 100%;
     overflow-y: hidden;
+    padding : 0px 80px;
+    box-sizing: border-box;
 `;

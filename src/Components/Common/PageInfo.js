@@ -12,7 +12,6 @@ export const PageInfo = ({ title, subTitle }) => {
 const TitleDiv = styled.div `
     display: flex;
     margin-top: 25px;
-    margin-left: 80px;
     align-items: center;
 `;
 
