@@ -5,6 +5,7 @@ import {FadeLoader} from "react-spinners";
 import {getAllScheduleData} from "../Api/ScheduleAPI";
 import {getRankingInfo} from "../Api/ScoreAPI";
 import { formatDate, getPartName } from "../Components/Common/Variables";
+import { PageInfo } from "../Components/Common/PageInfo";
 
 /*
 - Firebase fireStore 스케쥴 데이터 조회
@@ -67,18 +68,16 @@ const HomePage = () => {
     return (
         <DDiv>
             {/* 상단 바 로그인 정보 표시 */}
-            <CommonLogSection/> {/* 페이지 정보 표시*/}
-            <TitleDiv>
-                <HomeTitle>홈</HomeTitle>
-                <BarText/>
-                <SubTitle>대시보드로 주요 내용을 확인해보세요.</SubTitle>
-            </TitleDiv>
+            <CommonLogSection />
+            
+            {/* 페이지 정보 표시*/}
+            <PageInfo title = "홈" subTitle="대시보드로 주요 내용을 확인해보세요."/>
 
             {/* HomePage */}
             <BodyDiv>
                 {/* [1] 일정 업데이트 */}
                 <RightDiv>
-                    <HomeTitle>일정 업데이트</HomeTitle>
+                    <UpdateTitle>일정 업데이트</UpdateTitle>
 
                     <ScheduleDiv>
                         {
@@ -119,7 +118,7 @@ const HomePage = () => {
 
                 {/* [2] 점수 업데이트  */}
                 <LeftDiv>
-                    <HomeTitle>점수 업데이트</HomeTitle>
+                    <UpdateTitle>점수 업데이트</UpdateTitle>
 
                     <RankDiv>
                         {
@@ -164,30 +163,13 @@ const DDiv = styled.div `
     overflow-y: hidden;
 `;
 
-const TitleDiv = styled.div `
-    display: flex;
-    margin-top: 25px;
-    margin-left: 80px;
-    align-items: center;
-`;
-
-const HomeTitle = styled.div `
+const UpdateTitle = styled.div `
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
     font-size: 24px;
     font-style: normal;
     font-weight: 700;
     line-height: 32px;
-`;
-
-const SubTitle = styled.div `
-    color: var(--black-background, #1a1a1a);
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 24px;
-    margin-top: 1px;
 `;
 
 const ScoreText = styled.div `
@@ -199,15 +181,6 @@ const ScoreText = styled.div `
     font-weight: 500;
     line-height: 24px;
     margin-right: 16px;
-`;
-
-const BarText = styled.div `
-    width: 2px;
-    height: 24px;
-    margin-top: 1px;
-    margin-left: 12px;
-    margin-right: 14px;
-    background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
 `;
 
 const BodyDiv = styled.div `

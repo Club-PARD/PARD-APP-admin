@@ -9,6 +9,7 @@ import { getAllUserData } from "../Api/UserAPI";
 import { getSelectedUserScoreData } from "../Api/ScoreAPI";
 import { options } from "../Components/Common/Variables";
 import GenerationDropDown from "../Components/Common/GenerationDropDown";
+import { PageInfo } from "../Components/Common/PageInfo";
 
 /* 
 - 모달 관련 코드
@@ -557,11 +558,7 @@ const ScorePage = () => {
         <CommonLogSection />
 
         {/* 점수 관리 Title Header */}
-        <TitleDiv>
-          <HomeTitle>점수 관리</HomeTitle>
-          <BarText />
-          <SubTitle>파트별로 파드너십을 관리해보세요.</SubTitle>
-        </TitleDiv>
+        <PageInfo title = "점수 관리" subTitle = "파트별로 파드너십을 관리해보세요."/>
 
         {/* 점수 관리 카테고리 드롭다운 */}
         <DropDownListBox>
@@ -673,41 +670,6 @@ const DDiv = styled.div `
     overflow-y: hidden;
     margin: 0 auto;
     width: calc(100vw - 200px);
-`;
-
-const TitleDiv = styled.div `
-    display: flex;
-    margin-top: 25px;
-    margin-left: 80px;
-    align-items: center;
-`;
-
-const HomeTitle = styled.div `
-    color: var(--black-background, #1a1a1a);
-    font-family: "Pretendard";
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 32px;
-`;
-
-const SubTitle = styled.div `
-    color: var(--black-background, #1a1a1a);
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 24px;
-    margin-top: 1px;
-`;
-
-const BarText = styled.div `
-    width: 2px;
-    height: 24px;
-    margin-top: 1px;
-    margin-left: 12px;
-    margin-right: 14px;
-    background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
 `;
 
 const BodyDiv = styled.div `

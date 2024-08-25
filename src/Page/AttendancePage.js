@@ -3,6 +3,7 @@ import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import React, {useEffect, useState} from "react";
 import { getAllAttendanceData, postAttendanceData } from "../Api/AttendenceAPI";
 import { attendanceList, options } from "../Components/Common/Variables";
+import { PageInfo } from "../Components/Common/PageInfo";
 
 /*
 - Firebase fireStore 스케쥴 데이터 조회
@@ -256,11 +257,7 @@ const AttendancePage = () => {
             <CommonLogSection />
             
             {/* 페이지 정보 표시 */}
-            <TitleDiv>
-                <HomeTitle>출결 관리</HomeTitle>
-                <BarText/>
-                <SubTitle>파트별로 출결을 관리해보세요.</SubTitle>
-            </TitleDiv>
+            <PageInfo title = "출결 관리" subTitle = "파트별로 출결을 관리해보세요."/>
 
             {/* 전체, 취소하기, 수정하기 Header */}
             <FirstDiv>
@@ -416,43 +413,9 @@ const DDiv = styled.div `
     margin: 0 auto;
     width: calc(100vw - 200px);
     height: 100%;
-    overflow-x: hidden;
+    overflow-x : hidden;
 `;
 
-const TitleDiv = styled.div `
-    display: flex;
-    margin-top: 25px;
-    margin-left: 80px;
-    align-items: center;
-`;
-
-const HomeTitle = styled.div `
-    color: var(--black-background, #1a1a1a);
-    font-family: "Pretendard";
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 32px;
-`;
-
-const SubTitle = styled.div `
-    color: var(--black-background, #1a1a1a);
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 24px;
-    margin-top: 1px;
-`;
-
-const BarText = styled.div `
-    width: 2px;
-    height: 24px;
-    margin-top: 1px;
-    margin-left: 12px;
-    margin-right: 14px;
-    background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
-`;
 
 const BodyDiv = styled.div `
     display: flex;
