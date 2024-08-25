@@ -9,6 +9,7 @@ import style from "../Styles/calendar.module.scss";
 import { deleteScheduleData, getAllScheduleData, patchScheduleData, postScheduleData } from "../Api/ScheduleAPI";
 import { formatDate, getPartName, options} from "../Components/Common/Variables";
 import { PageInfo } from "../Components/Common/PageInfo";
+import { BaseContainer } from "../Components/Common/BaseContainer";
 
 /* 
 - Firebase fireStore 스케쥴 데이터 조회
@@ -170,7 +171,7 @@ const SchedulePage = () => {
 
     // Main 화면 코드
     return (
-        <DDiv>
+        <BaseContainer>
             {/* 상단 바 로그인 정보 표시  */}
             <CommonLogSection />
             
@@ -278,7 +279,7 @@ const SchedulePage = () => {
                 onClose={() => closeModal()}
                 closeModalWidhtUppdate={() => closeModalWidhtUppdate()}
                 selectedSchedule={selectedSchedule}/>
-        </DDiv>
+        </BaseContainer>
     );
 };
 
@@ -748,13 +749,6 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
 };
 
 
-const DDiv = styled.div `
-    background: #fff;
-    margin: 0 auto;
-    height: 100%;
-    overflow-y: hidden;
-    width: calc(100vw - 200px);
-`;
 
 
 const ScheduleTitle = styled.div `

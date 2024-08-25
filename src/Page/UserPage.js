@@ -5,6 +5,7 @@ import {deleteUserData, getAllUserData, postUserData} from "../Api/UserAPI";
 import {handleChangeRoleName, member, memberFillter, options, PartList } from "../Components/Common/Variables";
 import GenerationDropDown from "../Components/Common/GenerationDropDown";
 import { PageInfo } from "../Components/Common/PageInfo";
+import { BaseContainer } from "../Components/Common/BaseContainer";
 
 /*
 - Firebase fireStore User 데이터 조회
@@ -587,7 +588,7 @@ const UserPage = () => {
 
     // Main 화면 코드
     return (
-        <DDiv>
+        <BaseContainer>
             <CommonLogSection />
             
             <PageInfo title = "사용자 관리" subTitle = "사용자를 추가하고 관리해보세요."/>
@@ -862,21 +863,11 @@ const UserPage = () => {
                     )
 
             }
-        </DDiv>
+        </BaseContainer>
     );
 };
 
 export default UserPage;
-
-
-
-const DDiv = styled.div `
-    background: #fff;
-    margin: 0 auto;
-    height: 100%;
-    overflow-y: hidden;
-    width: calc(100vw - 200px);
-`;
 
 const BodyAddDiv = styled.div `
     display: flex;

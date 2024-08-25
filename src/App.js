@@ -70,12 +70,11 @@ const AppContainer = styled.div `
 `;
 
 const NavBarContainer = styled.div `
-  width: 15vw;
   min-width: 250px;
   background: var(--black-card, #2a2a2a);
 `;
 
 const MainContent = styled.div `
-  flex: 1;
   background-color: #fff;
+  width: calc(100% - 250px);
 `;

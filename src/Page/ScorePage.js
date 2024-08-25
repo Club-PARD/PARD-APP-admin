@@ -10,6 +10,7 @@ import { getSelectedUserScoreData } from "../Api/ScoreAPI";
 import { options } from "../Components/Common/Variables";
 import GenerationDropDown from "../Components/Common/GenerationDropDown";
 import { PageInfo } from "../Components/Common/PageInfo";
+import { BaseContainer } from "../Components/Common/BaseContainer";
 
 /* 
 - 모달 관련 코드
@@ -553,7 +554,7 @@ const ScorePage = () => {
     
     // Main 화면 코드
     return (
-      <DDiv>
+      <BaseContainer>
         {/* 사용자 / 로그아웃 */}
         <CommonLogSection />
 
@@ -658,19 +659,12 @@ const ScorePage = () => {
             </TableBody>
           </Table>
         </BodyDiv>
-      </DDiv>
+      </BaseContainer>
     );
 };
 
 export default ScorePage;
 
-const DDiv = styled.div `
-    background: #fff;
-    height: 100%;
-    overflow-y: hidden;
-    margin: 0 auto;
-    width: calc(100vw - 200px);
-`;
 
 const BodyDiv = styled.div `
     display: flex;

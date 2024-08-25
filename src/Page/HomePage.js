@@ -6,6 +6,7 @@ import {getAllScheduleData} from "../Api/ScheduleAPI";
 import {getRankingInfo} from "../Api/ScoreAPI";
 import { formatDate, getPartName } from "../Components/Common/Variables";
 import { PageInfo } from "../Components/Common/PageInfo";
+import { BaseContainer } from "../Components/Common/BaseContainer";
 
 /*
 - Firebase fireStore 스케쥴 데이터 조회
@@ -70,7 +71,7 @@ const HomePage = () => {
 
     // Main 화면 코드
     return (
-        <DDiv>
+        <BaseContainer>
             {/* 상단 바 로그인 정보 표시 */}
             <CommonLogSection />
             
@@ -153,19 +154,11 @@ const HomePage = () => {
                     </RankDiv>
                 </LeftDiv>
             </BodyDiv>
-        </DDiv>
+        </BaseContainer>
     );
 };
 
 export default HomePage;
-
-const DDiv = styled.div `
-    background: #fff;
-    margin: 0 auto;
-    height: 100%;
-    width: calc(100vw - 200px);
-    overflow-y: hidden;
-`;
 
 const UpdateTitle = styled.div `
     color: var(--black-background, #1a1a1a);
