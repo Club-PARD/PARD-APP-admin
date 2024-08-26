@@ -46,7 +46,7 @@ const AppContent = () => {
           <Route path="/Score" element={<ScorePage />} />
           <Route path="/Check" element={<AttendancePage />} />
           <Route path="/Schedule" element={<SchedulePage />} />
-          <Route path="/Member" element={<UserPage />} />
+          <Route path="/User" element={<UserPage />} />
           <Route path="/Login" element={<LoginPage />} />
         </Routes>
       </MainContent>
@@ -70,12 +70,11 @@ const AppContainer = styled.div `
 `;
 
 const NavBarContainer = styled.div `
-  width: 15vw;
   min-width: 250px;
   background: var(--black-card, #2a2a2a);
 `;
 
 const MainContent = styled.div `
-  flex: 1;
   background-color: #fff;
+  width: calc(100% - 250px);
 `;

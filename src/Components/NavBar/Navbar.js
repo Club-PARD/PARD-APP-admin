@@ -143,9 +143,9 @@ function NavBar() {
         </li>
         <li>
           <DisplayDiv>
-            {/* <DisplayTextDiv bottom={0} active={pathname.startsWith("/Member")}> */}
-            <DisplayTextDiv $bottom={0} $active={pathname.startsWith("/Member") ? "true" : undefined}>
-              {pathname.startsWith("/Member") ? (
+            {/* <DisplayTextDiv bottom={0} active={pathname.startsWith("/User")}> */}
+            <DisplayTextDiv $bottom={0} $active={pathname.startsWith("/User") ? "true" : undefined}>
+              {pathname.startsWith("/User") ? (
                 <>
                   <Icon
                     src={require("../../Assets/img/NavBar_MemberIcon.png")}
@@ -164,8 +164,8 @@ function NavBar() {
                   />
                 </>
               )}
-              {/* <MenuLink to="/Member" active={pathname.startsWith("/ㅁㄴㅇ")}> */}
-              <MenuLink to="/Member" $active={pathname.startsWith("/Member") ? "true" : undefined}>
+              {/* <MenuLink to="/User" active={pathname.startsWith("/ㅁㄴㅇ")}> */}
+              <MenuLink to="/User" $active={pathname.startsWith("/User") ? "true" : undefined}>
                 사용자 관리
               </MenuLink>
             </DisplayTextDiv>

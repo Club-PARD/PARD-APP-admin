@@ -4,6 +4,9 @@ import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import {deleteUserData, getAllUserData, postUserData} from "../Api/UserAPI";
 import {handleChangeRoleName, member, memberFillter, options, PartList } from "../Components/Common/Variables";
 import GenerationDropDown from "../Components/Common/GenerationDropDown";
+import { PageInfo } from "../Components/Common/PageInfo";
+import { BaseContainer } from "../Components/Common/BaseContainer";
+import { EditButton, CancelButton, SaveButton } from "../Components/Buttons";
 
 /*
 - Firebase fireStore User 데이터 조회
@@ -586,13 +589,10 @@ const UserPage = () => {
 
     // Main 화면 코드
     return (
-        <DDiv>
-            <CommonLogSection/>
-            <TitleDiv>
-                <HomeTitle>회원관리 - 사용자 관리</HomeTitle>
-                <BarText/>
-                <SubTitle>사용자를 추가하고 관리해보세요.</SubTitle>
-            </TitleDiv>
+        <BaseContainer>
+            <CommonLogSection />
+            
+            <PageInfo title = "사용자 관리" subTitle = "사용자를 추가하고 관리해보세요."/>
             {
                 addable
                     ? (
@@ -610,10 +610,10 @@ const UserPage = () => {
                                     </FlexDiv>
                                     <GenerationDropDown selectedGeneration={selectedGeneration} isDropDownGeneration={isDropDownGeneration} setIsDropDownGeneration={setIsDropDownGeneration} setSelectedGeneration={setSelectedGeneration} />
                                 </GenerationDiv>
-                                <RegisterButton onClick={() => setAddable(false)}>
+                                <EditButton onClick={() => setAddable(false)}>
                                     <RegisterMemberIcon src={require("../Assets/img/MemberIcon.png")}/>
                                     사용자 추가
-                                </RegisterButton>
+                                </EditButton>
                             </FirstDiv>
                             <SecondDiv>
                                 <TableHead2>
@@ -734,9 +734,9 @@ const UserPage = () => {
                                 <FlexDiv></FlexDiv>
                                 <FlexDiv>
                                     <CancelButton onClick={handleCancelClick}>취소하기</CancelButton>
-                                    <RegisterAddButton onClick={handleEditButtonClick}>
+                                    <SaveButton onClick={handleEditButtonClick}>
                                         추가하기
-                                    </RegisterAddButton>
+                                    </SaveButton>
                                 </FlexDiv>
                             </FirstDiv>
                             <SecondDiv>
@@ -864,64 +864,18 @@ const UserPage = () => {
                     )
 
             }
-        </DDiv>
+        </BaseContainer>
     );
 };
 
 export default UserPage;
 
-
-
-const DDiv = styled.div `
-    background: #fff;
-    margin: 0 auto;
-    height: 100%;
-    overflow-y: hidden;
-    width: calc(100vw - 200px);
-`;
-
-const TitleDiv = styled.div `
-    display: flex;
-    margin-top: 25px;
-    margin-left: 80px;;
-    align-items: center;
-`;
-
-const HomeTitle = styled.div `
-    color: var(--black-background, #1a1a1a);
-    font-family: "Pretendard";
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 32px;
-`;
-
-const SubTitle = styled.div `
-    color: var(--black-background, #1a1a1a);
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 24px;
-    margin-top: 1px;
-`;
-
-const BarText = styled.div `
-    width: 2px;
-    height: 24px;
-    margin-top: 1px;
-    margin-left: 12px;
-    margin-right: 14px;
-    background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
-`;
-
 const BodyAddDiv = styled.div `
     display: flex;
     flex-direction: column;
     margin-top: 83px;
-    margin-left: 80px;
-    width: 77%;
-    height: 744px;
+    width: 100%;
+    height: auto;
 `;
 
 const FlexDiv = styled.div `
@@ -961,73 +915,48 @@ const MemberNumText = styled.div `
     margin-right: 8px;
 `;
 
-const RegisterButton = styled.button `
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    border-radius: 8px;
-    border: 1px solid var(--primary-blue, #5262f5);
-    background: rgba(82, 98, 245, 0.1);
-    color: var(--primary-blue, #5262f5);
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 24px;
-    padding: 12px 36px;
-    cursor: pointer;
+// const RegisterAddButton = styled.button `
+//     display: inline-flex;
+//     justify-content: center;
+//     align-items: center;
+//     display: flex;
+//     border-radius: 8px;
+//     background: #5262f5;
+//     color: #fff;
+//     font-family: "Pretendard";
+//     font-size: 18px;
+//     font-style: normal;
+//     font-weight: 700;
+//     line-height: 24px;
+//     padding: 12px 65px;
+//     cursor: pointer;
+//     border: none;
+//     &:hover {
+//         box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
+//     }
+//     &:active {
+//         box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
+//     }
+// `;
 
-    &:hover {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-    }
-    &:active {
-    box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-    }
-`;
-
-const RegisterAddButton = styled.button `
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    border-radius: 8px;
-    background: #5262f5;
-    color: #fff;
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 24px;
-    padding: 12px 65px;
-    cursor: pointer;
-    border: none;
-    &:hover {
-        box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-    }
-    &:active {
-        box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-    }
-`;
-
-const CancelButton = styled.button `
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    border-radius: 8px;
-    background: var(--Gray10, #e4e4e4);
-    color: var(--black-card, #2a2a2a);
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 24px;
-    padding: 12px 65px;
-    cursor: pointer;
-    border: none;
-    margin-right: 16px;
-`;
+// const CancelButton = styled.button `
+//     display: inline-flex;
+//     justify-content: center;
+//     align-items: center;
+//     display: flex;
+//     border-radius: 8px;
+//     background: var(--Gray10, #e4e4e4);
+//     color: var(--black-card, #2a2a2a);
+//     font-family: "Pretendard";
+//     font-size: 18px;
+//     font-style: normal;
+//     font-weight: 700;
+//     line-height: 24px;
+//     padding: 12px 65px;
+//     cursor: pointer;
+//     border: none;
+//     margin-right: 16px;
+// `;
 
 const ArrowTop1 = styled.img `
     width: 14px;

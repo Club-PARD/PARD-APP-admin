@@ -3,6 +3,10 @@ import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
 import React, {useEffect, useState} from "react";
 import { getAllAttendanceData, postAttendanceData } from "../Api/AttendenceAPI";
 import { attendanceList, options } from "../Components/Common/Variables";
+import { PageInfo } from "../Components/Common/PageInfo";
+import { BaseContainer } from "../Components/Common/BaseContainer";
+import { CancelButton, EditButton, SaveButton } from "../Components/Buttons";
+import { CustomTableCell } from "../Components/AttendancePage/CustomTableCell";
 
 /*
 - Firebase fireStore 스케쥴 데이터 조회
@@ -153,114 +157,15 @@ const AttendancePage = () => {
             return updatedData;
         });
     };
-    const CustomTableCell = ({ value, onUpdate, addable, seminarIndex, userIndex }) => {
-        const [showButtons, setShowButtons] = useState(false);
-
-        const toggleButtons = () => {
-            if(addable == false)
-                setShowButtons(!showButtons);
-        };
-
-        const updateValue = (newValue) => {
-            setShowButtons(false);
-            if (onUpdate) onUpdate(userIndex, seminarIndex, newValue);
-        };
-
-        let backgroundColor = "";
-        let color = "";
-        let displayValue = "";
-
-        switch (value) {
-            case "지각":
-                backgroundColor = "#FFE7D9";
-                color = "var(--primary-orange, #FF5C00)";
-                displayValue = "지각";
-                break;
-            case "출석":
-                backgroundColor = "#E8F6F0";
-                color = "var(--primary-green, #64C59A)";
-                displayValue = "출석";
-                break;
-            case "결석":
-                backgroundColor = "#FFE6E6";
-                color = "var(--error-red, #FF5A5A)";
-                displayValue = "결석";
-                break;
-            default:
-                backgroundColor = "#F0F0F0";
-                color = "#A0A0A0";
-                displayValue = "  ";
-        }
-
-        return (
-            <CustomTableCellContainer>
-                {
-                    !showButtons
-                        ? (
-                            <AttendBox
-                                onClick={toggleButtons}
-                                style={{
-                                    backgroundColor,
-                                    color
-                                }}>
-                                {displayValue}
-                            </AttendBox>
-                        )
-                        : (
-                            <div>
-                                <AttendButton
-                                    onClick={toggleButtons}
-                                    style={{
-                                        backgroundColor,
-                                        color
-                                    }}>
-                                    {displayValue}
-                                </AttendButton>
-
-                                <ImageContainer>
-                                    <Image src={require("../Assets/img/CheckEditBox.png")} alt="Image Alt Text" />
-                                    <ButtonFlexDiv>
-                                        <Button
-                                            color={"#64C59A"}
-                                            background={"#E8F6F0"}
-                                            onClick={() => updateValue("출석")}>
-                                            출석
-                                        </Button>
-                                        <Button
-                                            color={"#FF5C00"}
-                                            background={"#FFE7D9"}
-                                            left={8}
-                                            right={8}
-                                            onClick={() => updateValue("지각")}>
-                                            지각
-                                        </Button>
-                                        <Button
-                                            color={"#FF5A5A"}
-                                            background={"#FFE6E6"}
-                                            onClick={() => updateValue("결석")}>
-                                            결석
-                                        </Button>
-                                    </ButtonFlexDiv>
-                                </ImageContainer>
-                            </div>
-                        )
-                }
-            </CustomTableCellContainer>
-        );
-    };
 
     // Main 화면 코드
     return (
-        <DDiv>
+        <BaseContainer>
             {/* 상단 바 로그인 정보 표시 */}
             <CommonLogSection />
             
             {/* 페이지 정보 표시 */}
-            <TitleDiv>
-                <HomeTitle>출결 관리</HomeTitle>
-                <BarText/>
-                <SubTitle>파트별로 출결을 관리해보세요.</SubTitle>
-            </TitleDiv>
+            <PageInfo title = "출결 관리" subTitle = "파트별로 출결을 관리해보세요."/>
 
             {/* 전체, 취소하기, 수정하기 Header */}
             <FirstDiv>
@@ -385,7 +290,7 @@ const AttendancePage = () => {
                                                 </TableCell>
                                                 {
                                                     getSortedAttendances(attendanceDataInfo.attendances).map((attendance, idx) => (
-                                                        <TableCell key={idx} width={152}>
+                                                        <TableCell key={idx} width={152} $isUpdate = "pointer">
                                                             <CustomTableCell
                                                                 value={attendance.status}
                                                                 idx={idx}
@@ -405,61 +310,16 @@ const AttendancePage = () => {
                         </BodyDiv>
                     )
             }
-        </DDiv>
+        </BaseContainer>
     );
 };
 
 export default AttendancePage;
 
-const DDiv = styled.div `
-    background: #fff;
-    margin: 0 auto;
-    width: calc(100vw - 200px);
-    height: 100%;
-    overflow-x: hidden;
-`;
-
-const TitleDiv = styled.div `
-    display: flex;
-    margin-top: 25px;
-    margin-left: 80px;
-    align-items: center;
-`;
-
-const HomeTitle = styled.div `
-    color: var(--black-background, #1a1a1a);
-    font-family: "Pretendard";
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 32px;
-`;
-
-const SubTitle = styled.div `
-    color: var(--black-background, #1a1a1a);
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 24px;
-    margin-top: 1px;
-`;
-
-const BarText = styled.div `
-    width: 2px;
-    height: 24px;
-    margin-top: 1px;
-    margin-left: 12px;
-    margin-right: 14px;
-    background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
-`;
-
 const BodyDiv = styled.div `
     display: flex;
-    margin-left: 80px;
-    /* max-width: 1300px; */
-    width: 90%;
-    height: 700px;
+    width: 100%;
+    height : auto;
     overflow: scroll;
 `;
 
@@ -541,6 +401,7 @@ const TableCell = styled.td `
     height: 40px;
     border-right: 0.5px solid var(--Gray30, #a3a3a3);
     border-left: 0.5px solid var(--Gray30, #a3a3a3);
+    cursor: ${props => props.$isUpdate};
 
     &:first-child {
         border-left: 1px solid var(--Gray30, #a3a3a3);
@@ -554,8 +415,6 @@ const TableCell = styled.td `
 const DropdownWrapper = styled.div `
     position: relative;
     display: inline-block;
-    margin-top: 83px;
-    margin-left: 83px;
     display: flex;
     width: 125px;
     justify-content: center;
@@ -616,88 +475,17 @@ const DropdownItem = styled.div `
 
 const FirstDiv = styled.div `
     display: flex;
-    height: 48px;
+    height : auto;
     width: 100%;
     margin-bottom: 16px;
     margin-top: 83px;
     justify-content: space-between;
-    align-items: flex-end;
-`;
-
-const EditButton = styled.button `
-    display: inline-flex;
-    justify-content: center;
     align-items: center;
-    display: flex;
-    border-radius: 8px;
-    border: 1px solid var(--primary-blue, #5262f5);
-    background: rgba(82, 98, 245, 0.1);
-    color: var(--primary-blue, #5262f5);
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 24px;
-    padding: 12px 36px;
-    cursor: pointer;
-    margin-right: 140px;
-
-    &:hover {
-        box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-    }
-    &:active {
-        box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-    }
-`;
-
-const SaveButton = styled.button `
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    border-radius: 8px;
-    color: var(--White, #fff);
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 24px;
-    padding: 12px 52px;
-    cursor: pointer;
-    margin-right: 140px;
-    background: var(--primary-blue, #5262f5);
-    border: none;
-
-    &:hover {
-        box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-    }
-    &:active {
-        box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-    }
 `;
 
 const FlexDiv = styled.div `
     display: flex;
     align-items: center;
-`;
-
-const CancelButton = styled.button `
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    border-radius: 8px;
-    background: var(--Gray10, #e4e4e4);
-    color: var(--black-card, #2a2a2a);
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 24px;
-    padding: 12px 65px;
-    cursor: pointer;
-    border: none;
-    margin-right: 16px;
 `;
 
 const EditIcon = styled.img `
@@ -711,87 +499,3 @@ const ArrowTop = styled.img `
     cursor: pointer;
 `;
 
-// 출석 결석 지각 버튼
-const AttendBox = styled.div `
-    display: flex;
-    padding: 4px 12px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    font-family: "Pretendard";
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 16px;
-    border-radius: 4px;
-`;
-
-const AttendButton = styled.button `
-    display: flex;
-    width: 45px;
-    height: 24px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    font-family: "Pretendard";
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 16px;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    &:hover {
-        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25);
-    }
-    &:active {
-        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25) inset;
-    }
-`;
-
-const CustomTableCellContainer = styled.div `
-    position: relative;
-`;
-
-const ImageContainer = styled.div `
-    position: absolute;
-    top: -60px; 
-    left: -80px; 
-    width: 200px;
-    height: 60px;
-    z-index: 999; 
-`;
-
-const Image = styled.img `
-    width: 200px;
-    height: 60px;
-    object-fit: cover; 
-`;
-
-const ButtonFlexDiv = styled.div `
-    display: flex;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    top: -6%;
-`;
-
-const Button = styled.button `
-    border: none;
-    margin-right: ${ (props) => props.right}px;
-    margin-left: ${ (props) => props.left}px;
-    color: ${(props) => props.color};
-    background-color: ${(props) => props.background};
-    display: flex;
-    padding: 4px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: "Pretendard";
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 16px;
-    border-radius: 4px;
-`;

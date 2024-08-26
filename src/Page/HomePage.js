@@ -5,6 +5,8 @@ import {FadeLoader} from "react-spinners";
 import {getAllScheduleData} from "../Api/ScheduleAPI";
 import {getRankingInfo} from "../Api/ScoreAPI";
 import { formatDate, getPartName } from "../Components/Common/Variables";
+import { PageInfo } from "../Components/Common/PageInfo";
+import { BaseContainer } from "../Components/Common/BaseContainer";
 
 /*
 - Firebase fireStore 스케쥴 데이터 조회
@@ -20,15 +22,17 @@ const HomePage = () => {
     const [schedules, setSchedule] = useState([]);
     const [userRankings, setUserRankings] = useState([]);
 
+    // 스케줄 가져오기
     useEffect(() => {
         const fetchSchedules = async () => {
             try {
-                // 1. 전체 스케줄 다 가져오기 (type 상관 없이 [false / true])
+                // 전체 스케줄 다 가져오기 (type 상관 없이 [false / true])
                 const result = await getAllScheduleData();
+
+                // 스케줄을 저장한다.
                 if (result != undefined) {
                     setSchedule(result);
                 } 
-
             } catch (error) {
                 console.error("Error fetching schedules:", error);
             }
@@ -37,12 +41,14 @@ const HomePage = () => {
         fetchSchedules();
     }, []);
 
+    // 랭킹 점수 가져오기
     useEffect(() => {
         const calculateUserRankings = async () => {
             try {
-                // Firebase에서 사용자 데이터 가져오기 (전체 문서)
+                // 3기 사용자들의 전체 랭킹을 불러온다.
                 const result = await getRankingInfo('3');
-                // 순위를 상태에 설정
+
+                // 랭킹을 저장한다.
                 if (result != undefined) {
                     setUserRankings(result);
                 } 
@@ -65,20 +71,18 @@ const HomePage = () => {
 
     // Main 화면 코드
     return (
-        <DDiv>
+        <BaseContainer>
             {/* 상단 바 로그인 정보 표시 */}
-            <CommonLogSection/> {/* 페이지 정보 표시*/}
-            <TitleDiv>
-                <HomeTitle>홈</HomeTitle>
-                <BarText/>
-                <SubTitle>대시보드로 주요 내용을 확인해보세요.</SubTitle>
-            </TitleDiv>
+            <CommonLogSection />
+            
+            {/* 페이지 정보 표시*/}
+            <PageInfo title = "홈" subTitle="대시보드로 주요 내용을 확인해보세요."/>
 
             {/* HomePage */}
             <BodyDiv>
                 {/* [1] 일정 업데이트 */}
                 <RightDiv>
-                    <HomeTitle>일정 업데이트</HomeTitle>
+                    <UpdateTitle>일정 업데이트</UpdateTitle>
 
                     <ScheduleDiv>
                         {
@@ -119,7 +123,7 @@ const HomePage = () => {
 
                 {/* [2] 점수 업데이트  */}
                 <LeftDiv>
-                    <HomeTitle>점수 업데이트</HomeTitle>
+                    <UpdateTitle>점수 업데이트</UpdateTitle>
 
                     <RankDiv>
                         {
@@ -150,44 +154,19 @@ const HomePage = () => {
                     </RankDiv>
                 </LeftDiv>
             </BodyDiv>
-        </DDiv>
+        </BaseContainer>
     );
 };
 
 export default HomePage;
 
-const DDiv = styled.div `
-    background: #fff;
-    margin: 0 auto;
-    height: 100%;
-    width: calc(100vw - 200px);
-    overflow-y: hidden;
-`;
-
-const TitleDiv = styled.div `
-    display: flex;
-    margin-top: 25px;
-    margin-left: 80px;
-    align-items: center;
-`;
-
-const HomeTitle = styled.div `
+const UpdateTitle = styled.div `
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
     font-size: 24px;
     font-style: normal;
     font-weight: 700;
     line-height: 32px;
-`;
-
-const SubTitle = styled.div `
-    color: var(--black-background, #1a1a1a);
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 24px;
-    margin-top: 1px;
 `;
 
 const ScoreText = styled.div `
@@ -201,31 +180,20 @@ const ScoreText = styled.div `
     margin-right: 16px;
 `;
 
-const BarText = styled.div `
-    width: 2px;
-    height: 24px;
-    margin-top: 1px;
-    margin-left: 12px;
-    margin-right: 14px;
-    background: linear-gradient(92deg, #5262f5 0%, #7b3fef 100%);
-`;
-
 const BodyDiv = styled.div `
     display: flex;
     margin-top: 83px;
-    margin-left: 80px;
-    height: 744px;
 `;
 
 const RightDiv = styled.div `
     width: 600px;
-    height: 744px;
     margin-right: 40px;
 `;
 
 const ScheduleDiv = styled.div `
     margin-top: 16px;
-    height: 656px;
+    height: 700px;
+    /* background-color: green; */
 `;
 
 const ScheduleItem = styled.div `
@@ -234,7 +202,7 @@ const ScheduleItem = styled.div `
     background-color: #ffffff;
     border: 1px solid #e0e0e0;
     margin-bottom: 22px;
-    border-radius: 4px;
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
 `;
@@ -300,15 +268,16 @@ const LeftDiv = styled.div `
 
 const RankDiv = styled.div `
     margin-top: 16px;
-    height: 660px;
+    height: 700px;
     border-radius: 8px;
-    border: 1px solid var(--Gray30, #a3a3a3);
+    border: 1px solid #e0e0e0;
     width: 540px;
     display: flex;
     flex-direction: column;
     align-items: center;
     overflow: scroll;
     padding-top: 10px;
+    /* background-color: blue; */
 `;
 
 const RankingNumDiv = styled.div `
