@@ -32,12 +32,11 @@ const HomePage = () => {
                 // 스케줄을 저장한다.
                 if (result != undefined) {
                     setSchedule(result);
-                } 
+                }
             } catch (error) {
                 console.error("Error fetching schedules:", error);
             }
         };
-
         fetchSchedules();
     }, []);
 

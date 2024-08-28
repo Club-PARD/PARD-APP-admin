@@ -7,6 +7,7 @@ const GenerationDropDown = ({ selectedGeneration, isDropDownGeneration, setIsDro
     // 기수 변경 시 실행되는 핸들러
     const handleSelectGeneration = (generation) => {
         setSelectedGeneration(generation);
+        sessionStorage.setItem('selectedGeneration', generation);
         setIsDropDownGeneration(false);
     }
     return (

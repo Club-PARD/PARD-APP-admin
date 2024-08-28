@@ -58,6 +58,14 @@ const UserPage = () => {
         return memberFilter && partFilter;
     });
 
+    useEffect(() => {
+        const getGenerationId = () => {
+            const selectedGeneration = sessionStorage.getItem('selectedGeneration');
+            setSelectedGeneration(selectedGeneration);
+        }
+        getGenerationId();
+    }, []);
+    
     // FIREBASE CODE Firebase fireStore User 데이터 조회
     useEffect(() => {
         const getUsers = async () => {

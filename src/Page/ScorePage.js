@@ -58,6 +58,14 @@ const ScorePage = () => {
     const [selectedGeneration, setSelectedGeneration] = useState(3);
     const [isDropDownGeneration, setIsDropDownGeneration] = useState(false);
 
+    useEffect(() => {
+        const getGenerationId = () => {
+            const selectedGeneration = sessionStorage.getItem('selectedGeneration');
+            setSelectedGeneration(selectedGeneration);
+        }
+        getGenerationId();
+    }, []);
+    
     // Firebase fireStore 전체 Point 데이터 조회
     useEffect(() => {
         const fetchUserScores = async () => {
@@ -75,7 +83,6 @@ const ScorePage = () => {
                 console.error("Error fetching user scores:", error);
             }
         };
-
         fetchUserScores();
     }, [selectedGeneration]);
 

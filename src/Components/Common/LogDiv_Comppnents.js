@@ -30,6 +30,7 @@ const CommonLogSection = () => {
         try {
             await auth.signOut();
             alert("로그아웃되었습니다.");
+            sessionStorage.clear();
             localStorage.removeItem("token");
             localStorage.removeItem("userName");
             navigate("/Login");

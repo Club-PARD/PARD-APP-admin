@@ -26,6 +26,7 @@ export const handleGoogleLogin = async (navigate) => {
             // console.log(user.displayName);
             // console.log(response);
             alert("로그인되었습니다.");
+            sessionStorage.setItem('selectedGeneration', 4);
             localStorage.setItem("token", "pardo-admin-key");
             localStorage.setItem("userName", user.displayName);
             navigate("/");
@@ -33,6 +34,7 @@ export const handleGoogleLogin = async (navigate) => {
             //     .location
             //     .reload();
         } else {
+            sessionStorage.removeItem();
             localStorage.removeItem();
         }
 

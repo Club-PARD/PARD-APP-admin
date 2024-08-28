@@ -9,6 +9,7 @@ import SchedulePage from "./Page/SchedulePage";
 import ScorePage from "./Page/ScorePage";
 import {useEffect} from "react";
 import {setupAxiosInterceptors} from "./Api/LoginService";
+import { RecoilRoot } from "recoil";
 
 /*
 - 개발자 도구 Console 메세지 강제 제거
@@ -56,10 +57,12 @@ const AppContent = () => {
 
 function App() {
   return (
-    <Router>
-      <InterceptorSetup />
-      <AppContent />
-    </Router>
+    <RecoilRoot>
+      <Router>
+        <InterceptorSetup />
+        <AppContent />
+      </Router>
+    </RecoilRoot>
   );
 }
 export default App;
