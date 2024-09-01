@@ -43,6 +43,7 @@ const SchedulePage = () => {
 
                 // 2. useState 변수에 저장
                 setSchedule(result);
+                console.log(result);
             } catch (error) {
                 console.error("[Error] getAllScheduleData():", error);
             }
@@ -60,7 +61,7 @@ const SchedulePage = () => {
 
         // 날짜 순으로 정렬된 버전을 '전체' 스케줄로 필터한 버전
         const filteredSchedules = sortedSchedules.filter(
-            schedule => schedule.part === "전체"
+            schedule => schedule.notice === true
         );
 
         return filteredSchedules;
@@ -75,7 +76,7 @@ const SchedulePage = () => {
 
         // 날짜 순으로 정렬된 버전을 '전체' 스케줄로 필터한 버전
         const filteredSchedules = sortedSchedules.filter(
-            schedule => schedule.part != "전체"
+            schedule => schedule.notice === false
         );
 
         return filteredSchedules;
@@ -331,11 +332,7 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
     };
 
     const handleOptionClick = (option) => {
-        if (option === "전체") {
-            setSelectedOption(null);
-        } else {
-            setSelectedOption(option);
-        }
+        setSelectedOption(option);
         setIsToggle(false);
     };
 
