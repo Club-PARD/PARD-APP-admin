@@ -634,7 +634,7 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
                                 </ModalSubTitle>
                                 {
                                     selectedSchedule?.scheduleId
-                                        ?   <RegisterButton onClick={handleUpdateSchedule}>
+                                        ?   <RegisterButton onClick={handleUpdateSchedule} $top={100}>
                                                 수정하기
                                             </RegisterButton>
                                         :   <RegisterButton $top={100} onClick={handleRegisterButtonClicked}>
@@ -1078,7 +1078,7 @@ const RegisterButton = styled.button `
     font-style: normal;
     font-weight: 600;
     line-height: 24px;
-    margin-top: ${(props) => props.top || 66}px;
+    margin-top: ${(props) => props.$top || 66}px;
     cursor: pointer;
 
     &:hover {
