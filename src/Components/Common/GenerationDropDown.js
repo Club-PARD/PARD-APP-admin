@@ -11,13 +11,14 @@ const GenerationDropDown = ({ selectedGeneration, isDropDownGeneration, setIsDro
         setIsDropDownGeneration(false);
     }
     return (
-        <DropdownGenerationBox>
+        <DropdownGenerationBox onClick={() => setIsDropDownGeneration(!isDropDownGeneration)}>
+
             <SelectedGeneration><strong>{selectedGeneration}기</strong></SelectedGeneration>
             {
                 isDropDownGeneration
-                    ? <DropdownGenerationImg src={require("../../Assets/img/Polygon.png")} onClick={() => setIsDropDownGeneration(false)} />
-                    : <DropdownGenerationImg src={require("../../Assets/img/PolygonDown.png")} onClick={() => setIsDropDownGeneration(true)} />
-
+                ? <DropdownGenerationImg src={require("../../Assets/img/Polygon.png")} onClick={() => setIsDropDownGeneration(false)} />
+                : <DropdownGenerationImg src={require("../../Assets/img/PolygonDown.png")} onClick={() => setIsDropDownGeneration(true)} />
+                
             }
             {isDropDownGeneration && 
                 <DropdownGenerationListBox>

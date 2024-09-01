@@ -43,6 +43,7 @@ const SchedulePage = () => {
 
                 // 2. useState 변수에 저장
                 setSchedule(result);
+                console.log(result);
             } catch (error) {
                 console.error("[Error] getAllScheduleData():", error);
             }
@@ -60,7 +61,7 @@ const SchedulePage = () => {
 
         // 날짜 순으로 정렬된 버전을 '전체' 스케줄로 필터한 버전
         const filteredSchedules = sortedSchedules.filter(
-            schedule => schedule.part === "전체"
+            schedule => schedule.notice === true
         );
 
         return filteredSchedules;
@@ -75,7 +76,7 @@ const SchedulePage = () => {
 
         // 날짜 순으로 정렬된 버전을 '전체' 스케줄로 필터한 버전
         const filteredSchedules = sortedSchedules.filter(
-            schedule => schedule.part != "전체"
+            schedule => schedule.notice === false
         );
 
         return filteredSchedules;
@@ -331,11 +332,7 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
     };
 
     const handleOptionClick = (option) => {
-        if (option === "전체") {
-            setSelectedOption(null);
-        } else {
-            setSelectedOption(option);
-        }
+        setSelectedOption(option);
         setIsToggle(false);
     };
 
@@ -406,8 +403,8 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
     // 핸들러 : '전체'에 대한 일정 추가 (유효성 검사 후 실제 DB로 등록)
     const AddScedule = async () => {
         // 유효성 검사
-        if (inputAbout === "" || inputText === "") {
-            window.confirm("빈칸을 확인해주세요");
+        if (inputAbout === "" || inputText === "" || selectedTime == null) {
+            alert("모든 필드를 채워주세요.");
         } else {
             try {
                 const addScheduleInfo = {
@@ -637,7 +634,7 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
                                 </ModalSubTitle>
                                 {
                                     selectedSchedule?.scheduleId
-                                        ?   <RegisterButton onClick={handleUpdateSchedule}>
+                                        ?   <RegisterButton onClick={handleUpdateSchedule} $top={100}>
                                                 수정하기
                                             </RegisterButton>
                                         :   <RegisterButton $top={100} onClick={handleRegisterButtonClicked}>
@@ -1081,7 +1078,7 @@ const RegisterButton = styled.button `
     font-style: normal;
     font-weight: 600;
     line-height: 24px;
-    margin-top: ${(props) => props.top || 66}px;
+    margin-top: ${(props) => props.$top || 66}px;
     cursor: pointer;
 
     &:hover {
