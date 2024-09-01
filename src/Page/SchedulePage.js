@@ -403,8 +403,8 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
     // 핸들러 : '전체'에 대한 일정 추가 (유효성 검사 후 실제 DB로 등록)
     const AddScedule = async () => {
         // 유효성 검사
-        if (inputAbout === "" || inputText === "") {
-            window.confirm("빈칸을 확인해주세요");
+        if (inputAbout === "" || inputText === "" || selectedTime == null) {
+            alert("모든 필드를 채워주세요.");
         } else {
             try {
                 const addScheduleInfo = {
