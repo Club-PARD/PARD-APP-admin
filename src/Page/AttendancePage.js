@@ -27,6 +27,8 @@ const AttendancePage = () => {
     const [addable, setAddable] = useState(true);
     const [originalAttendanceData, setOriginalAttendanceData] = useState([]);
 
+    const [activeCell, setActiveCell] = useState({ userIndex: null, seminarIndex: null });
+
     // 사용자 출석 정보 다 불러오기
     useEffect(() => {
         const fetchAllAttendanceData = async () => {
@@ -156,6 +158,14 @@ const AttendancePage = () => {
             // console.log("check", updatedData);
             return updatedData;
         });
+    };
+
+    const handleCellClick = (userIndex, seminarIndex) => {
+        if (activeCell.userIndex === userIndex && activeCell.seminarIndex === seminarIndex) {
+            setActiveCell({ userIndex: null, seminarIndex: null });
+        } else {
+            setActiveCell({ userIndex, seminarIndex });
+        }
     };
 
     // Main 화면 코드
@@ -298,6 +308,8 @@ const AttendancePage = () => {
                                                                 onUpdate={updateUser}
                                                                 seminarIndex={idx}
                                                                 userIndex={index}
+                                                                handleClick={handleCellClick}
+                                                                isActive={activeCell.userIndex === index && activeCell.seminarIndex === idx}
                                                             />
                                                         </TableCell>
                                                     ))
