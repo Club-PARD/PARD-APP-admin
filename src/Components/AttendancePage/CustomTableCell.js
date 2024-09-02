@@ -1,19 +1,20 @@
 import { useState } from "react";
 import styled from "styled-components";
 
-export const CustomTableCell = ({value, onUpdate, addable, seminarIndex, userIndex}) => {
-    const [showButtons, setShowButtons] = useState(false);
-
+export const CustomTableCell = ({value, onUpdate, addable, seminarIndex, userIndex, handleClick, isActive}) => {
+    // const [showButtons, setShowButtons] = useState(false);
     const toggleButtons = () => {
-        if (addable == false) 
-            setShowButtons(!showButtons);
-        };
+        if (addable === false) {
+            handleClick(userIndex, seminarIndex); // 상태를 업데이트하는 핸들러 호출
+        }
+    };
     
     const updateValue = (newValue) => {
-        setShowButtons(false);
+        // setShowButtons(false);
         if (onUpdate) 
             onUpdate(userIndex, seminarIndex, newValue);
-        };
+        handleClick(userIndex, seminarIndex);
+    };
     
     let backgroundColor = "";
     let color = "";
@@ -37,14 +38,14 @@ export const CustomTableCell = ({value, onUpdate, addable, seminarIndex, userInd
             break;
         default:
             backgroundColor = "#F0F0F0";
-            color = "#A0A0A0";
-            displayValue = "  ";
+            color = "#F0F0F0";
+            displayValue = "_____";
     }
 
     return (
         <CustomTableCellContainer>
             {
-                !showButtons
+                !isActive
                     ? (
                         <AttendBox
                             onClick={toggleButtons}

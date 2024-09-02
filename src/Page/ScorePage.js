@@ -642,7 +642,7 @@ const ScorePage = () => {
                                                         {userScoreInfo.name}
                                                     </TableCell>
                                                     <TableCell color={"#64C59A"} width={180}>
-                                                        +{userScoreInfo.totalBonus}점
+                                                        +{userScoreInfo.totalBonus < "오류" ? 0 : userScoreInfo.totalBonus}점
                                                     </TableCell>
                                                     <TableCell color={"#FF5A5A"} width={180}>
                                                         {userScoreInfo.totalMinus}점
