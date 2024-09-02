@@ -7,13 +7,13 @@ export const CustomTableCell = ({value, onUpdate, addable, seminarIndex, userInd
     const toggleButtons = () => {
         if (addable == false) 
             setShowButtons(!showButtons);
-        };
+    };
     
     const updateValue = (newValue) => {
         setShowButtons(false);
         if (onUpdate) 
             onUpdate(userIndex, seminarIndex, newValue);
-        };
+    };
     
     let backgroundColor = "";
     let color = "";
@@ -37,8 +37,8 @@ export const CustomTableCell = ({value, onUpdate, addable, seminarIndex, userInd
             break;
         default:
             backgroundColor = "#F0F0F0";
-            color = "#A0A0A0";
-            displayValue = "  ";
+            color = "#F0F0F0";
+            displayValue = "_____";
     }
 
     return (
