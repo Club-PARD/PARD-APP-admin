@@ -1,6 +1,8 @@
 import {GoogleAuthProvider, signInWithPopup} from "firebase/auth";
 import {auth} from "../fbase";
 import axios from "axios";
+import { jwtDecode } from 'jwt-decode';
+import { de } from "date-fns/locale";
 
 
 /*
@@ -25,14 +27,20 @@ export const handleGoogleLogin = async (navigate) => {
         if (response) {
             // console.log(user.displayName);
             // console.log(response);
-            alert("로그인되었습니다.");
-            sessionStorage.setItem('selectedGeneration', 4);
-            localStorage.setItem("token", "pardo-admin-key");
-            localStorage.setItem("userName", user.displayName);
-            navigate("/");
-            // window
-            //     .location
-            //     .reload();
+            
+            const decoded = jwtDecode(response);
+            // console.log(decoded);
+            if (decoded?.role === "ROLE_ADMIN") {
+                alert("로그인되었습니다.");
+                sessionStorage.setItem('selectedGeneration', 4);
+                localStorage.setItem("token", "pardo-admin-key");
+                localStorage.setItem("userName", user.displayName);
+                navigate("/");                
+            } else {
+                alert("등록된 사용자(운영진)만 사용 가능합니다.");
+                window.location.reload();
+            }
+
         } else {
             sessionStorage.removeItem();
             localStorage.removeItem();
