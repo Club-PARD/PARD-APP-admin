@@ -763,7 +763,7 @@ const ScheduleTitle = styled.div `
 `;
 
 
-const BodyDiv = styled.div `
+export const BodyDiv = styled.div `
     display: flex;
     margin-top: 83px;
     height: 744px;
@@ -775,7 +775,7 @@ const BodyDiv = styled.div `
     }
 `;
 
-const RightDiv = styled.div `
+export const RightDiv = styled.div `
     width: 49%;
     height: 744px;
     margin-right: 2%;
@@ -785,7 +785,7 @@ const RightDiv = styled.div `
     }
 `;
 
-const LeftDiv = styled.div `
+export const LeftDiv = styled.div `
     height: 744px;
     width: 49%;
     /* background-color: green; */
@@ -800,7 +800,7 @@ const ScheduleDiv = styled.div `
     overflow: scroll;
 `;
 
-const ScheduleItem = styled.div `
+export const ScheduleItem = styled.div `
     width : 100%;
     height: 115px;
     background-color: #ffffff;
