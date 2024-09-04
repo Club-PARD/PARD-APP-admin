@@ -7,6 +7,7 @@ import {getRankingInfo} from "../Api/ScoreAPI";
 import { formatDate, getPartName } from "../Components/Common/Variables";
 import { PageInfo } from "../Components/Common/PageInfo";
 import { BaseContainer } from "../Components/Common/BaseContainer";
+import { BodyDiv, LeftDiv, RightDiv, ScheduleItem } from "./SchedulePage";
 
 /*
 - Firebase fireStore 스케쥴 데이터 조회
@@ -60,12 +61,16 @@ const HomePage = () => {
         calculateUserRankings();
     }, []);
 
-    // 최근 다섯 개의 스케줄 return하는 핸들러
+        // 오늘 날짜 기준으로 오늘 포함해서 아직 지나지 않은 일정들만 반환하는 핸들러
     const getRecentSchedules = () => {
-        const sortedSchedules = [...schedules].sort(
-            (a, b) => new Date(b.date) - new Date(a.date)
+        const today = new Date(); // 오늘 날짜 가져오기
+        const filteredSchedules = schedules.filter(
+            (schedule) => new Date(schedule.date) >= today
         );
-        return sortedSchedules.slice(0, 5);
+        const sortedSchedules = filteredSchedules.sort(
+            (a, b) => new Date(a.date) - new Date(b.date)
+        );
+        return sortedSchedules; // 필터된 스케줄들을 반환
     };
 
     // Main 화면 코드
@@ -127,7 +132,7 @@ const HomePage = () => {
                     <RankDiv>
                         {
                             userRankings.map((user, index) => (
-                                <div key={index}>
+                                <RankingItem key={index}>
                                     <RankingNumDiv>
                                         <RankingFirstDiv key={index}>
                                             <RankingNum
@@ -147,7 +152,7 @@ const HomePage = () => {
                                         <ScoreText>{user.totalBonus}점</ScoreText>
                                     </RankingNumDiv>
                                     <RankingHR/>
-                                </div>
+                                </RankingItem>
                             ))
                         }
                     </RankDiv>
@@ -179,32 +184,22 @@ const ScoreText = styled.div `
     margin-right: 16px;
 `;
 
-const BodyDiv = styled.div `
-    display: flex;
-    margin-top: 83px;
-`;
 
-const RightDiv = styled.div `
-    width: 600px;
-    margin-right: 40px;
-`;
 
 const ScheduleDiv = styled.div `
     margin-top: 16px;
-    height: 700px;
-    /* background-color: green; */
+    height: 600px;
+    overflow-y: scroll;
+
+    /* 스크롤바 숨기기 */
+    ::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Edge, Opera */
+    }
+    
+    -ms-overflow-style: none;  /* IE 10+ */
+    scrollbar-width: none;  /* Firefox */
 `;
 
-const ScheduleItem = styled.div `
-    width: 600px;
-    height: 115px;
-    background-color: #ffffff;
-    border: 1px solid #e0e0e0;
-    margin-bottom: 22px;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-`;
 
 const ScheduleFirstDiv = styled.div `
     margin-top: 16px;
@@ -260,27 +255,23 @@ const ContentText = styled.div `
     margin-top: 10px;
 `;
 
-const LeftDiv = styled.div `
-    height: 744px;
-    width: 540px;
-`;
+
 
 const RankDiv = styled.div `
     margin-top: 16px;
-    height: 700px;
-    border-radius: 8px;
+    /* height: 700px; */
+    border-radius: 3px;
     border: 1px solid #e0e0e0;
-    width: 540px;
     display: flex;
     flex-direction: column;
     align-items: center;
     overflow: scroll;
     padding-top: 10px;
-    /* background-color: blue; */
+    width : 100%;
 `;
 
 const RankingNumDiv = styled.div `
-    width: 500px;
+    width : 100%;
     height: 72px;
     display: flex;
     align-items: center;
@@ -333,8 +324,14 @@ const RankingFirstDiv = styled.div `
 `;
 
 const RankingHR = styled.hr `
-    width: 500px;
+    /* width: 500px; */
     height: 0px;
     stroke-width: 1px;
     stroke: var(--Gray30, #a3a3a3);
+`;
+
+const RankingItem = styled.div`
+    width: 100%;
+    padding : 0px 20px;
+    box-sizing: border-box;
 `;

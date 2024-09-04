@@ -61,6 +61,7 @@ const Div = styled.div `
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    width : calc(100% + 250px);
   `;
 
 const FlexDiv = styled.div `
