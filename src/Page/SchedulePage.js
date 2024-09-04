@@ -756,24 +756,42 @@ const ScheduleTitle = styled.div `
     font-style: normal;
     font-weight: 700;
     line-height: 32px;
-    `;
+
+    @media (max-width: 1300px) {
+        font-size: 18px;
+    }
+`;
 
 
 const BodyDiv = styled.div `
     display: flex;
     margin-top: 83px;
     height: 744px;
+    /* background-color: red; */
+
+    @media (max-width: 1050px) {
+        height: auto;
+        flex-direction: column;
+    }
 `;
 
 const RightDiv = styled.div `
-    width: 602px;
+    width: 49%;
     height: 744px;
-    margin-right: 40px;
+    margin-right: 2%;
+    /* background-color: yellow; */
+    @media (max-width: 1050px) {
+        width: 100%;
+    }
 `;
 
 const LeftDiv = styled.div `
     height: 744px;
-    width: 602px;
+    width: 49%;
+    /* background-color: green; */
+    @media (max-width: 1050px) {
+        width: 100%;
+    }
 `;
 
 const ScheduleDiv = styled.div `
@@ -783,12 +801,13 @@ const ScheduleDiv = styled.div `
 `;
 
 const ScheduleItem = styled.div `
-    width: 600px;
+    width : 100%;
     height: 115px;
     background-color: #ffffff;
     border: 1px solid #e0e0e0;
     margin-bottom: 22px;
     border-radius: 4px;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
 `;

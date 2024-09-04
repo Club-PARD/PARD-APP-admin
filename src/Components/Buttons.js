@@ -15,6 +15,12 @@ const AttendancePageButton = styled.button `
     height : 50px;
 
     padding: 12px 52px;
+
+    @media (max-width: 1300px) {
+        font-size: 14px;
+        height : 40px;
+        border-radius: 5px;
+    }
 `;
 
 export const EditButton = styled(AttendancePageButton) `
@@ -50,4 +56,5 @@ export const CancelButton = styled(AttendancePageButton) `
 
 export const AddButton = styled(EditButton)`
     padding : 12px 16px;
+
 `;
