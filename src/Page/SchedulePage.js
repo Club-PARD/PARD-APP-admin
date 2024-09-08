@@ -43,7 +43,7 @@ const SchedulePage = () => {
 
                 // 2. useState 변수에 저장
                 setSchedule(result);
-                console.log(result);
+                // console.log(result);
             } catch (error) {
                 console.error("[Error] getAllScheduleData():", error);
             }
