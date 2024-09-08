@@ -32,8 +32,8 @@ const AttendancePage = () => {
     // 사용자 출석 정보 다 불러오기
     useEffect(() => {
         const fetchAllAttendanceData = async () => {
-            const result = await getAllAttendanceData('3');
-
+            const result = await getAllAttendanceData('4');
+            // console.log(result);
             if (result != undefined) {
                 setAttendanceData(result);
                 setOriginalAttendanceData(JSON.parse(JSON.stringify(result))); // 깊은 복사

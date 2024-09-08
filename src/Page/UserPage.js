@@ -40,7 +40,7 @@ const UserPage = () => {
     const [selectedPartFilter, setSelectedPartFilter] = useState("파트");
     const [isdropdownPart, setIsdropdownPart] = useState(false);
     const [isContentChanged, setContentChanged] = useState(false); // 컨텐츠 변경 확인 state
-    const [selectedGeneration, setSelectedGeneration] = useState(3);
+    const [selectedGeneration, setSelectedGeneration] = useState(4);
     const [isDropDownGeneration, setIsDropDownGeneration] = useState(false);
 
     // 변수 : User 정보 조회 후 sort

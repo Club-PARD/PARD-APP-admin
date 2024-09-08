@@ -43,7 +43,7 @@ const SchedulePage = () => {
 
                 // 2. useState 변수에 저장
                 setSchedule(result);
-                console.log(result);
+                // console.log(result);
             } catch (error) {
                 console.error("[Error] getAllScheduleData():", error);
             }
@@ -202,7 +202,7 @@ const SchedulePage = () => {
                                 <ScheduleItem key={index}>
                                     <ScheduleFirstDiv key={index}>
                                         <FlextBoxDiv>
-                                            <PartNameDiv $isPastEvent={schedule.isPastEvent}>{schedule.part}</PartNameDiv>
+                                            <PartNameDiv>{schedule.part}</PartNameDiv>
                                             <DateDiv>{schedule.title}</DateDiv>
                                         </FlextBoxDiv>
                                         <div>
@@ -823,7 +823,7 @@ const ScheduleFirstDiv = styled.div `
 const PartNameDiv = styled.div `
     border-radius: 4px;
     border: 1px solid var(--black-background, #1a1a1a);
-    background: ${props => props.$isPastEvent ? 'pink': 'var(--Gray30, #b0b0b0)'};
+    background: #E4E4E4;
     width: 60px;
     height: 32px;
     display: flex;

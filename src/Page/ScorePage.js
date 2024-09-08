@@ -55,7 +55,7 @@ const ScorePage = () => {
     const [isContentChanged, setContentChanged] = useState(false); // 컨텐츠 변경 확인 state
     const [loading, setLoading] = useState(true);
     const [userScoreDetail, setUserCoreDetail] = useState([]);
-    const [selectedGeneration, setSelectedGeneration] = useState(3);
+    const [selectedGeneration, setSelectedGeneration] = useState(4);
     const [isDropDownGeneration, setIsDropDownGeneration] = useState(false);
 
     useEffect(() => {
