@@ -95,7 +95,7 @@ const HomePage = () => {
                                     {/* 공지타입 : 공지 제목 */}
                                     <ScheduleFirstDiv key={index}>
                                         <FlextBoxDiv>
-                                            <PartNameDiv $isPastEvent={schedule.isPastEvent}>{getPartName(schedule.part)}</PartNameDiv>
+                                            <PartNameDiv>{getPartName(schedule.part)}</PartNameDiv>
                                             <DateDiv>{schedule.title}</DateDiv>
                                         </FlextBoxDiv>
                                     </ScheduleFirstDiv>
@@ -214,7 +214,7 @@ const ScheduleFirstDiv = styled.div `
 const PartNameDiv = styled.div `
     border-radius: 4px;
     border: 1px solid var(--black-background, #1a1a1a);
-    background: ${props => props.$isPastEvent? 'pink': 'var(--Gray30, #b0b0b0)'};
+    background: #E4E4E4;
     width: 60px;
     height: 32px;
     display: flex;
