@@ -65,7 +65,7 @@ const handleLoginAPI = async (email) => {
         if (error?.response?.status === 404) {
             alert("등록되지 않은 사용자 정보입니다.");
         } else if (error?.response?.status === 401) {
-            alert("권한이 없는 사용자입니다. (추천 : 쿠키를 초기화하세요!)");
+            alert("로그인에 실패했습니다! (추천 : 쿠키를 초기화하세요!)");
         }
         throw error;
     }
