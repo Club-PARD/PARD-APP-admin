@@ -518,7 +518,7 @@ const UserPage = () => {
                             삭제
                         </ModalContents>
                         <ModalContents>
-                            <CheckScoreButton width='140' onClick={openDeleteConfirmModal}>
+                            <CheckScoreButton width='140px' onClick={openDeleteConfirmModal}>
                                 <Img
                                     src={require("../Assets/img/DeleteIconBlue.png")}
                                     style={{
@@ -600,12 +600,13 @@ const UserPage = () => {
         <BaseContainer>
             <CommonLogSection />
             
-            <PageInfo title = "사용자 관리" subTitle = "사용자를 추가하고 관리해보세요."/>
+            <PageInfo title="사용자 관리" subTitle="사용자를 추가하고 관리해보세요." />
+            
             {
                 addable
                     ? (
-                        <BodyAddDiv>
-                            <FirstDiv>
+                        <ContentContainer>
+                            <FirstContainer>
                                 <GenerationDiv>
                                     <FlexDiv>
                                         <MemberNumText color={"#1A1A1A"} $right={4}>
@@ -622,8 +623,8 @@ const UserPage = () => {
                                     <RegisterMemberIcon src={require("../Assets/img/MemberIcon.png")}/>
                                     사용자 추가
                                 </EditButton>
-                            </FirstDiv>
-                            <SecondDiv>
+                            </FirstContainer>
+                            <SecondContainer>
                                 <TableHead2>
                                     <TableHead2Cell $flex={1}>
                                         No.
@@ -666,7 +667,7 @@ const UserPage = () => {
                                     <TableHead2Cell $flex={2}>
                                         <DropdownWrapper>
                                             <DropdownButton onClick={handleArrowPartClick} $colorValue={true} $Backcolor={"#eee"}>
-                                                {selectedPartFilter || "파트"}
+                                                {selectedPartFilter || "파트?"}
                                                 {
                                                     !isdropdownPart
                                                         ? (<ArrowTop1 src={require("../Assets/img/PolygonDown.png")}/>)
@@ -733,12 +734,12 @@ const UserPage = () => {
                                         </TableBody2>
                                     ))
                                 }
-                            </SecondDiv>
-                        </BodyAddDiv>
+                            </SecondContainer>
+                        </ContentContainer>
                     )
                     : (
-                        <BodyAddDiv>
-                            <FirstDiv>
+                        <ContentContainer>
+                            <FirstContainer>
                                 <FlexDiv></FlexDiv>
                                 <FlexDiv>
                                     <CancelButton onClick={handleCancelClick}>취소하기</CancelButton>
@@ -746,8 +747,8 @@ const UserPage = () => {
                                         추가하기
                                     </SaveButton>
                                 </FlexDiv>
-                            </FirstDiv>
-                            <SecondDiv>
+                            </FirstContainer>
+                            <SecondContainer>
                                 <TableHead2>
                                     <TableHead2Cell $flex={1}>
                                         No.
@@ -867,8 +868,8 @@ const UserPage = () => {
                                             </TableBody2>
                                         ))
                                 }
-                            </SecondDiv>
-                        </BodyAddDiv>
+                            </SecondContainer>
+                        </ContentContainer>
                     )
 
             }
@@ -878,27 +879,66 @@ const UserPage = () => {
 
 export default UserPage;
 
-const BodyAddDiv = styled.div `
+const ContentContainer = styled.div `
     display: flex;
     flex-direction: column;
+
     margin-top: 83px;
+
     width: 100%;
     height: auto;
+    /* background-color: red; */
+
 `;
+
+const FirstContainer = styled.div `
+    width: 100%;
+    /* height: auto; */
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    /* margin-bottom: 16px; */
+    /* background-color: yellow; */
+`;
+
+const SecondContainer = styled.div `
+    width: 100%;
+    height : 60vh;
+    overflow-y: scroll;
+
+    display: flex;
+    flex-direction: column;
+
+    /* background-color: green; */
+
+    box-sizing: border-box;
+    border-top : 0.5px solid #a3a3a3;
+    border-bottom : 0.5px solid #a3a3a3;
+
+    margin-top: 20px;
+
+
+    /* 스크롤바 숨기기 */
+    ::-webkit-scrollbar {
+        display : ${props => props.$type === true ? "none" : "none"}; /* Chrome, Safari, Edge, Opera */
+    }
+    
+    -ms-overflow-style: none;  /* IE 10+ */
+    scrollbar-width: none;  /* Firefox */
+
+`;
+
+
+
+
 
 const FlexDiv = styled.div `
     display: flex;
     align-items: center;
 `;
 
-const FirstDiv = styled.div `
-    display: flex;
-    height: 48px;
-    width: 100%;
-    margin-bottom: 16px;
-    justify-content: space-between;
-    align-items: flex-end;
-`;
 
 export const GenerationDiv = styled.div `
     display: flex;
@@ -923,52 +963,10 @@ const MemberNumText = styled.div `
     margin-right: 8px;
 `;
 
-// const RegisterAddButton = styled.button `
-//     display: inline-flex;
-//     justify-content: center;
-//     align-items: center;
-//     display: flex;
-//     border-radius: 8px;
-//     background: #5262f5;
-//     color: #fff;
-//     font-family: "Pretendard";
-//     font-size: 18px;
-//     font-style: normal;
-//     font-weight: 700;
-//     line-height: 24px;
-//     padding: 12px 65px;
-//     cursor: pointer;
-//     border: none;
-//     &:hover {
-//         box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-//     }
-//     &:active {
-//         box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-//     }
-// `;
-
-// const CancelButton = styled.button `
-//     display: inline-flex;
-//     justify-content: center;
-//     align-items: center;
-//     display: flex;
-//     border-radius: 8px;
-//     background: var(--Gray10, #e4e4e4);
-//     color: var(--black-card, #2a2a2a);
-//     font-family: "Pretendard";
-//     font-size: 18px;
-//     font-style: normal;
-//     font-weight: 700;
-//     line-height: 24px;
-//     padding: 12px 65px;
-//     cursor: pointer;
-//     border: none;
-//     margin-right: 16px;
-// `;
-
 const ArrowTop1 = styled.img `
-    width: 14px;
-    height: 14px;
+    max-width: 14px;
+    width: 1vw;
+    /* height: 14px; */
     margin-left: 16px;
     margin-bottom: 1px;
     cursor: pointer;
@@ -976,7 +974,7 @@ const ArrowTop1 = styled.img `
 
 const CheckScoreButton = styled.button `
     display: flex;
-    width: ${props => props.width || "100"}px;
+    width: ${props => props.width || "90%"};
     padding: 6px 16px;
     justify-content: center;
     align-items: center;
@@ -984,7 +982,7 @@ const CheckScoreButton = styled.button `
     flex-shrink: 0;
     color: var(--primary-blue, #5262f5);
     font-family: "Pretendard";
-    font-size: 14px;
+    font-size: 1vw;
     font-style: normal;
     font-weight: 600;
     line-height: 18px;
@@ -1006,10 +1004,12 @@ const DropdownWrapper = styled.div `
     display: inline-block;
     display: flex;
     width: 100%;
+    height : 100%;
     justify-content: center;
     align-items: center;
     gap: 24px;
     background: var(--White, #fff);
+
 `;
 
 const DropdownButton = styled.button `
@@ -1022,12 +1022,15 @@ const DropdownButton = styled.button `
     ) => props.$Backcolor};
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
-    font-size: 16px;
+    font-size: 1vw;
     font-style: normal;
     font-weight: 600;
     line-height: 24px;
-    border: none;
-    padding: 8px 12px;
+    border : none;
+    border-bottom: 1px solid #a3a3a3;
+
+    
+
     color: ${ (
     props
     ) => (
@@ -1076,6 +1079,7 @@ const DropdownItem = styled.div `
     &:hover {
         background-color: #eeeffe;
     }
+    
 `;
 
 const DropdownWrapper1 = styled.div `
@@ -1087,6 +1091,7 @@ const DropdownWrapper1 = styled.div `
     align-items: center;
     gap: 24px;
     background: var(--White, #fff);
+    
 `;
 
 const DropdownButton1 = styled.button`
@@ -1139,24 +1144,6 @@ const DropdownItem1 = styled.div `
     }
 `;
 
-const DeleteUserButton = styled.div`
-    width: 124px;
-    height : 40px;
-
-    border-radius: 8px;
-    border : 1px solid #5262F5;
-
-    background-color: #5262F510;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &:hover{
-        background-color: #5262F550;
-    }
-`;
-
 const Img = styled.img`
     width: ${props => props.width};
     height : ${props => props.height};
@@ -1172,18 +1159,11 @@ const Span = styled.span`
     color : #5262F5;
 `;
 
-const SecondDiv = styled.div `
-    width: 100%;
-    height : 744px;
 
-    display: flex;
-    flex-direction: column;
-
-`;
 
 const TableRow2 = styled.div `
     width : 100%;
-    height : 48px;
+    min-height : 48px;
     display: flex;
 `;
 
@@ -1204,7 +1184,7 @@ const TableHead2Cell = styled.div `
     justify-content: center;
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
-    font-size: 16px;
+    font-size: 1vw;
     font-style: normal;
     font-weight: 600;
     line-height: 24px;
@@ -1213,6 +1193,7 @@ const TableHead2Cell = styled.div `
     border-bottom: 1px solid var(--Gray30, #a3a3a3);
     border-left: 0.5px solid var(--Gray30, #a3a3a3);
     border-right: 0.5px solid var(--Gray30, #a3a3a3);
+    /* overflow-x: hidden; */
 `;
 
 const InputBox = styled.input `
