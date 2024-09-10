@@ -10,7 +10,8 @@ import { deleteScheduleData, getAllScheduleData, patchScheduleData, postSchedule
 import { formatDate, getPartName, options} from "../Components/Common/Variables";
 import { PageInfo } from "../Components/Common/PageInfo";
 import { BaseContainer } from "../Components/Common/BaseContainer";
-import { AddButton} from "../Components/Buttons";
+import { AddButton } from "../Components/Buttons";
+import { ContentContainer, ContentText, LeftContainer, PartNameChip, RightContainer, ScheduleFirstRow, ScheduleItem, ScheduleSecondRow, ScheduleTitle, ScrollContainer, ButtonListContainer, ScheduleInfoContainer} from "../Components/Schedule/ScheduleItem";
 
 /* 
 - Firebase fireStore 스케쥴 데이터 조회
@@ -181,13 +182,13 @@ const SchedulePage = () => {
             <PageInfo title = "일정 관리" subTitle = "중요한 일정을 공지하고 알림을 발송하세요."/>
 
             {/* 공식 일정과 과제 일정이 보여지는 Content */}
-            <BodyDiv>
+            <ContentContainer>
 
                 {/* 공식 일정 */}
-                <RightDiv>
+                <LeftContainer>
                     <FirstDiv>
                         <FlexBox>
-                            <ScheduleTitle>공식 일정</ScheduleTitle>
+                            <ScheduleTitleText>공식 일정</ScheduleTitleText>
                             <DeleteButton onClick={() => handleDeleteAll('schedule')}>일정 전체 삭제</DeleteButton>
                         </FlexBox>
 
@@ -196,41 +197,41 @@ const SchedulePage = () => {
                             공식 일정 추가하기
                         </AddButton>
                     </FirstDiv>
-                    <ScheduleDiv>
+                    <ScrollContainer>
                         {
                             getRecentSchedules().map((schedule, index) => (
-                                <ScheduleItem key={index}>
-                                    <ScheduleFirstDiv key={index}>
-                                        <FlextBoxDiv>
-                                            <PartNameDiv>{schedule.part}</PartNameDiv>
-                                            <DateDiv>{schedule.title}</DateDiv>
-                                        </FlextBoxDiv>
-                                        <div>
-                                            <DelteButton onClick={() => handleDeleteSchedule(schedule.scheduleId)}>
-                                                <DeleteIcon src={require("../Assets/img/DeleteIcon.png")}/>
-                                                삭제
-                                            </DelteButton>
-                                            <DelteButton onClick={() => openModal(schedule)}>
-                                                <DeleteIcon src={require("../Assets/img/EditIcon.png")}/>
-                                                수정
-                                            </DelteButton>
-                                        </div>
-                                    </ScheduleFirstDiv>
-                                    <ContentText>
-                                        일시 : {formatDate(schedule.date)}
-                                    </ContentText>
-                                    <ContentText>장소 : {schedule.contentsLocation}</ContentText>
+                                <ScheduleItem key={index} $type={true}>
+                                    <ScheduleInfoContainer>
+                                        <ScheduleFirstRow key={index}>
+                                                <PartNameChip>{schedule.part}</PartNameChip>
+                                                <ScheduleTitle>{schedule.title}</ScheduleTitle>
+                                        </ScheduleFirstRow>
+                                        <ScheduleSecondRow>
+                                            <ContentText>일시 : {formatDate(schedule.date)}</ContentText>
+                                            <ContentText>장소 : {schedule.contentsLocation}</ContentText>
+                                        </ScheduleSecondRow>
+                                    </ScheduleInfoContainer>
+                                    <ButtonListContainer>
+                                        <DelteButton onClick={() => handleDeleteSchedule(schedule.scheduleId)}>
+                                            <DeleteIcon src={require("../Assets/img/DeleteIcon.png")}/>
+                                            삭제
+                                        </DelteButton>
+                                        <DelteButton onClick={() => openModal(schedule)}>
+                                            <DeleteIcon src={require("../Assets/img/EditIcon.png")}/>
+                                            수정
+                                        </DelteButton>
+                                    </ButtonListContainer> 
                                 </ScheduleItem>
                             ))
                         }
-                    </ScheduleDiv>
-                </RightDiv>
+                    </ScrollContainer>
+                </LeftContainer>
 
                 {/* 과제 일정 */}
-                <LeftDiv>
+                <RightContainer>
                     <FirstDiv>
                         <FlexBox>
-                            <ScheduleTitle>과제 일정</ScheduleTitle>
+                            <ScheduleTitleText>과제 일정</ScheduleTitleText>
                             <DeleteButton onClick={() => handleDeleteAll('task')}>과제 전체 삭제</DeleteButton>
                         </FlexBox>
                         <AddButton onClick={openTaskModal}>
@@ -238,16 +239,25 @@ const SchedulePage = () => {
                             과제 일정 추가하기
                         </AddButton>
                     </FirstDiv>
-                    <ScheduleDiv>
+                    <ScrollContainer>
                         {
                             getRecenTask().map((schedule, index) => (
-                                <ScheduleItem key={index}>
-                                    <ScheduleFirstDiv key={index}>
-                                        <FlextBoxDiv>
-                                            <PartNameDiv $isPastEvent={schedule.isPastEvent}>{getPartName(schedule.part)}</PartNameDiv>
-                                            <DateDiv>{schedule.title}</DateDiv>
-                                        </FlextBoxDiv>
-                                        <div>
+                                <ScheduleItem key={index} $type={true}>
+                                    <ScheduleInfoContainer>
+                                        <ScheduleFirstRow key={index}>
+                                            <PartNameChip $isPastEvent={schedule.isPastEvent}>{getPartName(schedule.part)}</PartNameChip>
+                                            <ScheduleTitle>{schedule.title}</ScheduleTitle>
+                                        </ScheduleFirstRow>
+                                        <ScheduleSecondRow>
+                                            <ContentText>
+                                                설명 : {schedule.content || "내용 없음"}
+                                            </ContentText>
+                                            <ContentText>
+                                                마감 : {formatDate(schedule.date)}
+                                            </ContentText>
+                                        </ScheduleSecondRow>
+                                    </ScheduleInfoContainer>
+                                    <ButtonListContainer>
                                             <DelteButton onClick={() => handleDeleteSchedule(schedule.scheduleId)}>
                                                 <DeleteIcon src={require("../Assets/img/DeleteIcon.png")}/>
                                                 삭제
@@ -256,23 +266,15 @@ const SchedulePage = () => {
                                                 <DeleteIcon src={require("../Assets/img/EditIcon.png")}/>
                                                 수정
                                             </DelteButton>
-                                        </div>
-                                    </ScheduleFirstDiv>
-                                    <ContentText>
-                                        설명 : {schedule.content || "내용 없음"}
-                                    </ContentText>
-                                    <ContentText>
-                                        마감 : {formatDate(schedule.date)}
-                                    </ContentText>
-
+                                    </ButtonListContainer>
                                 </ScheduleItem>
                             ))
                         }
-                    </ScheduleDiv>
-                </LeftDiv>
+                    </ScrollContainer>
+                </RightContainer>
 
                 {isOpen}
-            </BodyDiv>
+            </ContentContainer>
 
             {/* 추가하기 모달 Content */}
             <Modal
@@ -749,7 +751,7 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
 
 
 
-const ScheduleTitle = styled.div `
+const ScheduleTitleText = styled.div `
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
     font-size: 24px;
@@ -763,54 +765,15 @@ const ScheduleTitle = styled.div `
 `;
 
 
-export const BodyDiv = styled.div `
-    display: flex;
-    margin-top: 83px;
-    height: 744px;
-    /* background-color: red; */
 
-    @media (max-width: 1050px) {
-        height: auto;
-        flex-direction: column;
-    }
-`;
-
-export const RightDiv = styled.div `
-    width: 49%;
-    height: 744px;
-    margin-right: 2%;
-    /* background-color: yellow; */
-    @media (max-width: 1050px) {
-        width: 100%;
-    }
-`;
-
-export const LeftDiv = styled.div `
-    height: 744px;
-    width: 49%;
-    /* background-color: green; */
-    @media (max-width: 1050px) {
-        width: 100%;
-    }
-`;
 
 const ScheduleDiv = styled.div `
     margin-top: 16px;
-    height: 696px;
+    height: auto;
     overflow: scroll;
 `;
 
-export const ScheduleItem = styled.div `
-    width : 100%;
-    height: 115px;
-    background-color: #ffffff;
-    border: 1px solid #e0e0e0;
-    margin-bottom: 22px;
-    border-radius: 4px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-`;
+
 
 const ScheduleFirstDiv = styled.div `
     margin-top: 24px;
@@ -869,9 +832,9 @@ const DelteButton = styled.button `
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 24px;
-    margin-bottom: 10px;
     cursor: pointer;
+
+    margin-bottom: 10px;
 `;
 
 const DeleteIcon = styled.img `
@@ -880,16 +843,6 @@ const DeleteIcon = styled.img `
     margin-right: 2px;
 `;
 
-const ContentText = styled.div `
-    color: var(--black-background, #1a1a1a);
-    font-family: "Pretendard";
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 12px;
-    margin-left: 24px;
-    margin-top: 8px;
-`;
 
 
 const EditIcon = styled.img `
