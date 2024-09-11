@@ -40,7 +40,7 @@ const UserPage = () => {
     const [selectedPartFilter, setSelectedPartFilter] = useState("파트");
     const [isdropdownPart, setIsdropdownPart] = useState(false);
     const [isContentChanged, setContentChanged] = useState(false); // 컨텐츠 변경 확인 state
-    const [selectedGeneration, setSelectedGeneration] = useState(4);
+    const [selectedGeneration, setSelectedGeneration] = useState();
     const [isDropDownGeneration, setIsDropDownGeneration] = useState(false);
 
     // 변수 : User 정보 조회 후 sort
@@ -57,23 +57,33 @@ const UserPage = () => {
         const partFilter = selectedPartFilter === "전체" || selectedPartFilter === "파트" || userDataList.part === selectedPartFilter;
         return memberFilter && partFilter;
     });
+    
 
-    useEffect(() => {
-        const getGenerationId = () => {
-            const selectedGeneration = sessionStorage.getItem('selectedGeneration');
-            setSelectedGeneration(selectedGeneration);
-        }
-        getGenerationId();
-    }, []);
+    
+    // useEffect(() => {
+    //     getGenerationId();
+    // }, []);
     
     // FIREBASE CODE Firebase fireStore User 데이터 조회
     useEffect(() => {
-        const getUsers = async () => {
-            const users = await getAllUserData(selectedGeneration);
-            // console.log(users);
-            setUserDataList(users);
-        };
-        getUsers();
+        const getGenerationId = () => {
+            const selectedGeneration = sessionStorage.getItem('selectedGeneration');
+            if(selectedGeneration)
+                setSelectedGeneration(selectedGeneration);
+        }
+
+        if (selectedGeneration) {
+            const getUsers = async () => {
+                const users = await getAllUserData(selectedGeneration);
+                // console.log(users);
+                setUserDataList(users);
+            };
+            getUsers();
+        } else {
+            // console.log("research");
+            getGenerationId();
+        }
+
     }, [selectedGeneration]);
 
     // 토글 코드
