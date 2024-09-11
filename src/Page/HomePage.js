@@ -7,7 +7,7 @@ import {getRankingInfo} from "../Api/ScoreAPI";
 import { formatDate, getPartName } from "../Components/Common/Variables";
 import { PageInfo } from "../Components/Common/PageInfo";
 import { BaseContainer } from "../Components/Common/BaseContainer";
-import { BodyDiv, LeftDiv, RightDiv, ScheduleItem } from "./SchedulePage";
+import { ContentContainer, LeftContainer, RightContainer, ScheduleItem, ScheduleFirstRow, ScheduleSecondRow, ContentText, ScrollContainer, PartNameChip, ScheduleTitle } from "../Components/Schedule/ScheduleItem";
 
 /*
 - Firebase fireStore 스케쥴 데이터 조회
@@ -46,7 +46,7 @@ const HomePage = () => {
         const calculateUserRankings = async () => {
             try {
                 // 3기 사용자들의 전체 랭킹을 불러온다.
-                const result = await getRankingInfo('3');
+                const result = await getRankingInfo('4');
 
                 // 랭킹을 저장한다.
                 if (result != undefined) {
@@ -83,81 +83,74 @@ const HomePage = () => {
             <PageInfo title = "홈" subTitle="대시보드로 주요 내용을 확인해보세요."/>
 
             {/* HomePage */}
-            <BodyDiv>
+            <ContentContainer>
                 {/* [1] 일정 업데이트 */}
-                <RightDiv>
+                <LeftContainer>
                     <UpdateTitle>일정 업데이트</UpdateTitle>
 
-                    <ScheduleDiv>
+                    <ScrollContainer>
                         {
                             getRecentSchedules().map((schedule, index) => (
                                 <ScheduleItem key={index}>
-                                    {/* 공지타입 : 공지 제목 */}
-                                    <ScheduleFirstDiv key={index}>
-                                        <FlextBoxDiv>
-                                            <PartNameDiv>{getPartName(schedule.part)}</PartNameDiv>
-                                            <DateDiv>{schedule.title}</DateDiv>
-                                        </FlextBoxDiv>
-                                    </ScheduleFirstDiv>
-
-                                    {/* 일시 */}
-                                    <ContentText>
-                                        {
-                                            schedule.notice
+                                    <ScheduleFirstRow key={index}>
+                                        <PartNameChip>{getPartName(schedule.part)}</PartNameChip>
+                                        <ScheduleTitle>{schedule.title}</ScheduleTitle>
+                                    </ScheduleFirstRow>
+                                    
+                                    <ScheduleSecondRow>
+                                        <ContentText>
+                                            {
+                                                schedule.notice
                                                 ? "일시 : "
                                                 : "기한 : "
-                                        }
-                                        {formatDate(schedule.date)}
-                                    </ContentText>
+                                            }
+                                            {formatDate(schedule.date)}
+                                        </ContentText>
 
-                                    {/* 장소 */}
-                                    <ContentText>
-                                        {
-                                            schedule.notice
+                                        <ContentText>
+                                            {
+                                                schedule.notice
                                                 ? "장소 : " + schedule.contentsLocation
                                                 : "설명 : " + schedule.content
-                                        }
-                                        {/* 장소 : {schedule.place} */}
-                                    </ContentText>
+                                            }
+                                        </ContentText>
+                                    </ScheduleSecondRow>
                                 </ScheduleItem>
                             ))
                         }
-                    </ScheduleDiv>
-                </RightDiv>
+                    </ScrollContainer>
+                </LeftContainer>
 
                 {/* [2] 점수 업데이트  */}
-                <LeftDiv>
+                <RightContainer>
                     <UpdateTitle>점수 업데이트</UpdateTitle>
 
-                    <RankDiv>
+                    <ScrollContainer $type={true}>
                         {
                             userRankings.map((user, index) => (
                                 <RankingItem key={index}>
-                                    <RankingNumDiv>
-                                        <RankingFirstDiv key={index}>
-                                            <RankingNum
-                                                style={{
-                                                    backgroundColor: index < 3
-                                                        ? "#EEEFFE"
-                                                        : "#F8F8F8",
-                                                    color: index < 3
-                                                        ? "#5262F5"
-                                                        : "#A3A3A3"
-                                                }}>
-                                                {index + 1}
-                                            </RankingNum>
-                                            <RankingName>{user.name}</RankingName>
-                                            <RankingPart>{getPartName(user.part)}</RankingPart>
-                                        </RankingFirstDiv>
-                                        <ScoreText>{user.totalBonus}점</ScoreText>
-                                    </RankingNumDiv>
-                                    <RankingHR/>
+                                    <UserInfo key={index}>
+                                        <RankingNumCircle
+                                            style={{
+                                                backgroundColor: index < 3
+                                                    ? "#EEEFFE"
+                                                    : "#F8F8F8",
+                                                color: index < 3
+                                                    ? "#5262F5"
+                                                    : "#A3A3A3"
+                                            }}>
+                                            {index + 1}
+                                        </RankingNumCircle>
+                                        <UserName>{user.name}</UserName>
+                                        <UserPart>{getPartName(user.part)}</UserPart>
+                                    </UserInfo>
+                                    <UserScore>{user.totalBonus}점</UserScore>
                                 </RankingItem>
                             ))
                         }
-                    </RankDiv>
-                </LeftDiv>
-            </BodyDiv>
+                    </ScrollContainer>
+                </RightContainer>
+            </ContentContainer>
         </BaseContainer>
     );
 };
@@ -173,7 +166,34 @@ const UpdateTitle = styled.div `
     line-height: 32px;
 `;
 
-const ScoreText = styled.div `
+
+const RankingItem = styled.div`
+    height: 66px;
+
+    box-sizing: border-box;
+    
+    /* background-color: skyblue; */
+    margin : 10px 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &:last-child{
+        border-bottom: none;
+    }
+    border-bottom: 1px solid #a3a3a3;
+
+`;
+
+const UserInfo = styled.div `
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background-color: green; */
+`;
+
+const UserScore = styled.div `
     color: var(--black-background, #1a1a1a);
     text-align: right;
     font-family: "Pretendard";
@@ -185,102 +205,7 @@ const ScoreText = styled.div `
 `;
 
 
-
-const ScheduleDiv = styled.div `
-    margin-top: 16px;
-    height: 600px;
-    overflow-y: scroll;
-
-    /* 스크롤바 숨기기 */
-    ::-webkit-scrollbar {
-        display: none; /* Chrome, Safari, Edge, Opera */
-    }
-    
-    -ms-overflow-style: none;  /* IE 10+ */
-    scrollbar-width: none;  /* Firefox */
-`;
-
-
-const ScheduleFirstDiv = styled.div `
-    margin-top: 16px;
-    width: 100%;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 6px;
-`;
-
-const PartNameDiv = styled.div `
-    border-radius: 4px;
-    border: 1px solid var(--black-background, #1a1a1a);
-    background: #E4E4E4;
-    width: 60px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--black-background, #1a1a1a);
-    font-family: "Pretendard";
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 24px;
-    margin-left: 24px;
-`;
-
-const DateDiv = styled.div `
-    color: var(--black-background, #1a1a1a);
-    font-family: "Pretendard";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 24px;
-    margin-left: 12px;
-`;
-
-const FlextBoxDiv = styled.div `
-    display: flex;
-    align-items: center;
-`;
-
-const ContentText = styled.div `
-    color: var(--black-background, #1a1a1a);
-    font-family: "Pretendard";
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 12px;
-    margin-left: 24px;
-    margin-top: 10px;
-`;
-
-
-
-const RankDiv = styled.div `
-    margin-top: 16px;
-    /* height: 700px; */
-    border-radius: 3px;
-    border: 1px solid #e0e0e0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: scroll;
-    padding-top: 10px;
-    width : 100%;
-`;
-
-const RankingNumDiv = styled.div `
-    width : 100%;
-    height: 72px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 8px;
-    margin-bottom: 8px;
-`;
-
-const RankingNum = styled.div `
+const RankingNumCircle = styled.div `
     width: 40px;
     height: 40px;
     border: none;
@@ -298,7 +223,7 @@ const RankingNum = styled.div `
     align-items: center;
 `;
 
-const RankingName = styled.div `
+const UserName = styled.div `
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
     font-size: 18px;
@@ -308,7 +233,7 @@ const RankingName = styled.div `
     margin-right: 8px;
 `;
 
-const RankingPart = styled.div `
+const UserPart = styled.div `
     color: var(--Gray30, #a3a3a3);
     font-family: "Pretendard";
     font-size: 14px;
@@ -317,21 +242,3 @@ const RankingPart = styled.div `
     line-height: 18px;
 `;
 
-const RankingFirstDiv = styled.div `
-    display: flex;
-    align-items: center;
-    justify-content: center;
-`;
-
-const RankingHR = styled.hr `
-    /* width: 500px; */
-    height: 0px;
-    stroke-width: 1px;
-    stroke: var(--Gray30, #a3a3a3);
-`;
-
-const RankingItem = styled.div`
-    width: 100%;
-    padding : 0px 20px;
-    box-sizing: border-box;
-`;

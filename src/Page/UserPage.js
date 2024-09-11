@@ -33,6 +33,7 @@ const UserPage = () => {
     const [selectedPart, setSelectedPart] = useState(Array(15).fill(null));
     const [generationInputs, setGenerationInputs] = useState(Array(15).fill(""));
     const [nameInputs, setNameInputs] = useState(Array(15).fill(""));
+    const [birthdayInputs, setBirthdayInputs] = useState(Array(15).fill(""));
     const [phoneInputs, setPhoneInputs] = useState(Array(15).fill(""));
     const [emailInputs, setEmailInputs] = useState(Array(15).fill(""));
     const [selectedMemberFilter, setSelectedMemberFilter] = useState("구분");
@@ -40,8 +41,9 @@ const UserPage = () => {
     const [selectedPartFilter, setSelectedPartFilter] = useState("파트");
     const [isdropdownPart, setIsdropdownPart] = useState(false);
     const [isContentChanged, setContentChanged] = useState(false); // 컨텐츠 변경 확인 state
-    const [selectedGeneration, setSelectedGeneration] = useState(4);
+    const [selectedGeneration, setSelectedGeneration] = useState();
     const [isDropDownGeneration, setIsDropDownGeneration] = useState(false);
+    const [openDropdown, setOpenDropdown] = useState(null);
 
     // 변수 : User 정보 조회 후 sort
     const sortedUserDataList = userDataList
@@ -57,53 +59,69 @@ const UserPage = () => {
         const partFilter = selectedPartFilter === "전체" || selectedPartFilter === "파트" || userDataList.part === selectedPartFilter;
         return memberFilter && partFilter;
     });
+    
 
-    useEffect(() => {
-        const getGenerationId = () => {
-            const selectedGeneration = sessionStorage.getItem('selectedGeneration');
-            setSelectedGeneration(selectedGeneration);
-        }
-        getGenerationId();
-    }, []);
+    
+    // useEffect(() => {
+    //     getGenerationId();
+    // }, []);
     
     // FIREBASE CODE Firebase fireStore User 데이터 조회
     useEffect(() => {
-        const getUsers = async () => {
-            const users = await getAllUserData(selectedGeneration);
-            // console.log(users);
-            setUserDataList(users);
-        };
-        getUsers();
+        const getGenerationId = () => {
+            const selectedGeneration = sessionStorage.getItem('selectedGeneration');
+            if(selectedGeneration)
+                setSelectedGeneration(selectedGeneration);
+        }
+
+        if (selectedGeneration) {
+            const getUsers = async () => {
+                const users = await getAllUserData(selectedGeneration);
+                // console.log(users);
+                setUserDataList(users);
+            };
+            getUsers();
+        } else {
+            // console.log("research");
+            getGenerationId();
+        }
+
     }, [selectedGeneration]);
 
     // 토글 코드
     const handleArrowTopClick = () => {
         // Dropdown 열고 닫기 토글
-        setIsDropdownOpen(!isDropdownOpen);
+        setOpenDropdown(openDropdown === 'member' ? null : 'member');
+        setSelectedPartFilter("파트");
     };
 
     const handleMemberItemClick = (memberOption) => {
         // 멤버를 선택하고 Dropdown 닫기
         handleArrowTopClick();
         setSelectedMemberFilter(memberOption);
+        setOpenDropdown(null); // 드롭다운 닫기
     };
 
     const handleArrowPartClick = () => {
         // 파트 열고 닫기 토글
-        setIsdropdownPart(!isdropdownPart);
+        setOpenDropdown(openDropdown === 'part' ? null : 'part');
+        setSelectedMemberFilter("구분");
     };
 
     const handlePartItemClick = (memberOption) => {
         // 멤버를 선택하고 Dropdown 닫기
         handleArrowPartClick();
         setSelectedPartFilter(memberOption);
+        setOpenDropdown(null); // 드롭다운 닫기
     };
 
 
     const toggleDropdown = (index) => {
-        const updatedIsOpen = [...isOpen];
-        updatedIsOpen[index] = !updatedIsOpen[index];
-        setIsOpen(updatedIsOpen);
+        // const updatedIsOpen = [...isOpen];
+        // updatedIsOpen[index] = !updatedIsOpen[index];
+        // setIsOpen(updatedIsOpen);
+        setOpenDropdown(openDropdown === `member-${index}` ? null : `member-${index}`);
+        setIsOpenPart(Array(15).fill(false));
     };
 
     const handleMemberClick = (member, index) => {
@@ -113,6 +131,7 @@ const UserPage = () => {
         const updatedIsOpen = [...isOpen];
         updatedIsOpen[index] = false;
         setIsOpen(updatedIsOpen);
+        setOpenDropdown(null); // 드롭다운 닫기
     };
 
     const handlePartClick = (partOption, index) => {
@@ -127,14 +146,17 @@ const UserPage = () => {
             updatedIsOpenPart[index] = false;
             return updatedIsOpenPart;
         });
+        setOpenDropdown(null); // 드롭다운 닫기
     };
 
     const toggleDropdownPart = (index) => {
-        setIsOpenPart((prevIsOpenPart) => {
-            const updatedIsOpenPart = [...prevIsOpenPart];
-            updatedIsOpenPart[index] = !updatedIsOpenPart[index];
-            return updatedIsOpenPart;
-        });
+        // setIsOpenPart((prevIsOpenPart) => {
+        //     const updatedIsOpenPart = [...prevIsOpenPart];
+        //     updatedIsOpenPart[index] = !updatedIsOpenPart[index];
+        //     return updatedIsOpenPart;
+        // });
+        setOpenDropdown(openDropdown === `part-${index}` ? null : `part-${index}`);
+        setIsOpen(Array(15).fill(false));
     };
 
     // 사용자 추가 코드
@@ -157,6 +179,12 @@ const UserPage = () => {
         updatedNameInputs[index] = e.target.value;
         setNameInputs(updatedNameInputs);
     };
+
+    const handleBirthdayInputChange = (e, index) => {
+        const updatedBirthdayInputs = [...birthdayInputs];
+        updatedBirthdayInputs[index] = e.target.value;
+        setBirthdayInputs(updatedBirthdayInputs);
+    }
 
     const handlePhoneInputChange = (e, index) => {
         const formattedPhoneNumber = formatPhoneNumber(e.target.value);
@@ -195,6 +223,7 @@ const UserPage = () => {
                     invalidEmails.push(`${index + 1}번째 행`);
                 }
                 if (phoneInputs[index] === "") rowMissingFields.push("전화번호");
+                if (birthdayInputs[index] === "") rowMissingFields.push("생일");
                 if (generationInputs[index] === "") rowMissingFields.push("기수");
                 if (selectedMembers[index] === null) rowMissingFields.push("구분");
                 if (selectedPart[index] === null) rowMissingFields.push("파트");
@@ -208,7 +237,8 @@ const UserPage = () => {
                         part: selectedPart[index],
                         generation: generationInputs[index],
                         phoneNumber: formatPhoneNumberRemoveHipen(phoneInputs[index]),
-                        role: selectedMembers[index]
+                        role: selectedMembers[index],
+                        birthDay : birthdayInputs[index]
                     };
                     addUserInfo.push(data);
                 }
@@ -297,6 +327,7 @@ const UserPage = () => {
         Num,
         userEmail,
         role,
+        birthDay,
         generation
     }) => {
         const [inputName, setInputName] = useState(name);
@@ -306,57 +337,72 @@ const UserPage = () => {
         const [toggleToPart, setToggleToPart] = useState(false);
         const [toggleToRole, setToggleToRole] = useState(false);
         const [isEditm, setIsEdit] = useState(false);
-        const [inputGeneration, setInputGeneartion] = useState(generation);
+        const [inputGeneration, setInputGeneration] = useState(generation);
+        const [inputBirthday, setInputBirthday] = useState(birthDay);
+        const [isOpenDeleteConfirmModal, setIsOpenDeleteConfirmModal] = useState(false);
+        const [contentChanged, setContentChanged] = useState(false);
+        const [openDropdown, setOpenDropdown] = useState(null);
 
-        const [isDeleteUser, setIsDeleteUser] = useState(false);
-        const [isDeleteUserModal, setIsDeleteUserModal] = useState(false)
+        useEffect(() => {
+            if (isModalOpen) {
+                setIsEdit(true);
+            }
+        }, [isModalOpen]);
+        const toggleDropdown = (dropdownName) => {
+            setOpenDropdown(prevDropdown => prevDropdown === dropdownName ? null : dropdownName);
+        };
+
 
         const handleNameChange = (e) => {
             const text = e.target.value;
-            setIsEdit(true);
             if (text.length <= 10) {
                 setInputName(text);
-                setContentChanged(true); // 정보 수정이 되었으므로 true로 설정
+                setContentChanged(true);
+            }
+        };
+
+        const handleBirthdayChange = (e) => {
+            const text = e.target.value;
+            if (text.length <= 10) {
+                setInputBirthday(text);
+                setContentChanged(true);
             }
         };
 
         const handlePhoneNumChange = (e) => {
-            setIsEdit(true);
             const formattedPhoneNumber = formatPhoneNumber(e.target.value);
             setInputPhoneNum(formattedPhoneNumber);
-            setContentChanged(true); // 정보 수정이 되었으므로 true로 설정
+            setContentChanged(true);
         };
 
         const handleGenerationChange = (e) => {
-
-            setIsEdit(true);
             const text = e.target.value;
             if (text.length <= 20) {
-                setInputGeneartion(text);
-                setContentChanged(true); // 정보 수정이 되었으므로 true로 설정
+                setInputGeneration(text);
+                setContentChanged(true);
             }
-        }
-
-        const RoleOption = ["ROLE_YB", "ROLE_OB", "ROLE_ADMIN"];
+        };
 
         const handleOptionClick = (option) => {
             if (option === "ALL") {
                 setSelectedOption(null);
             } else {
-                setIsEdit(true);
                 setSelectedOption(option);
+                setContentChanged(true);
             }
             setToggleToPart(false);
+            setOpenDropdown(null);  // 드롭다운 닫기
         };
 
         const handleOptionRoleClick = (option) => {
             if (option === "ALL") {
                 setSelectedRoleOption(null);
             } else {
-                setIsEdit(true);
                 setSelectedRoleOption(option);
+                setContentChanged(true);
             }
             setToggleToRole(false);
+            setOpenDropdown(null);  // 드롭다운 닫기
         };
 
         const toggleDropdownPart = () => {
@@ -367,23 +413,10 @@ const UserPage = () => {
             setToggleToRole(!toggleToRole);
         };
 
-        // const isValidPhoneNumber = (phoneNumber) => {
-        //     if (phoneNumber.length === 13)
-        //         return true;
-        //     else
-        //         return false;
-        // };
-        
-        // user 정보 업데이트 코드
         const handleUpdateButtonClick = async () => {
             const confirmUpdate = window.confirm("사용자 정보를 수정하시겠습니까?");
 
             if (confirmUpdate) {
-                // if (!isValidPhoneNumber(inputPhoneNum)) {
-                //     alert("전화번호 길이가 알맞지 않습니다. (예: 010-1234-5678)");
-                //     return;
-                // }
-
                 try {
                     const updatedUserInfo = {
                         name: inputName,
@@ -391,14 +424,14 @@ const UserPage = () => {
                         part: selectedOption,
                         phoneNumber: formatPhoneNumberRemoveHipen(inputPhoneNum),
                         role: selectedRoleOption,
-                        generation: inputGeneration
+                        generation: inputGeneration,
+                        birthDay: inputBirthday
                     };
-                    // console.log(updatedUserInfo);
                     const response = await postUserData([updatedUserInfo]);
                     if (response) {
                         alert("사용자 정보가 업데이트되었습니다.");
                         closeModalUpdate();
-                        setContentChanged(false); // 정보 수정이 되었으므로 false로 초기화
+                        setContentChanged(false);
                         window.location.reload();
                     }
                 } catch (error) {
@@ -408,14 +441,13 @@ const UserPage = () => {
             }
         };
 
-        const [isOpenDeleteConfirmModal, setIsOpenDeleteConfirmModal] = useState(false);
-
         const openDeleteConfirmModal = () => {
             setIsOpenDeleteConfirmModal(true);
-        }
+        };
+
         const closeDeleteConfirmModal = () => {
             setIsOpenDeleteConfirmModal(false);
-        }
+        };
 
         return (
             <ModalWrapper $isModalOpen={isModalOpen}>
@@ -424,8 +456,9 @@ const UserPage = () => {
                         <ModalTitle>사용자 정보 수정하기</ModalTitle>
                         <CancelIcon
                             src={require("../Assets/img/CancelButton.png")}
-                            onClick={onModalClose}/>
-                    </ModalTitleDiv>{" "}
+                            onClick={onModalClose}
+                        />
+                    </ModalTitleDiv>
                     <ModalSubTitle>
                         <ModalContents color={"#111"} $right={71} $weight={500}>
                             이름
@@ -434,7 +467,8 @@ const UserPage = () => {
                             <Input
                                 value={inputName}
                                 onChange={handleNameChange}
-                                placeholder="이름을 10자 이내로 작성해주세요."/>
+                                placeholder="이름을 10자 이내로 작성해주세요."
+                            />
                         </ModalContents>
                     </ModalSubTitle>
                     <ModalSubTitle>
@@ -446,7 +480,20 @@ const UserPage = () => {
                                 value={formatPhoneNumber(inputPhoneNum)}
                                 onChange={handlePhoneNumChange}
                                 placeholder="전화번호를 입력해주세요."
-                                maxLength={13} // XXX-XXXX-XXXX 형식의 최대 길이
+                                maxLength={13}
+                            />
+                        </ModalContents>
+                    </ModalSubTitle>
+                    <ModalSubTitle>
+                        <ModalContents color={"#111"} $right={71} $weight={500}>
+                            생일
+                        </ModalContents>
+                        <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
+                            <Input
+                                value={inputBirthday}
+                                onChange={handleBirthdayChange}
+                                maxLength={4}
+                                placeholder="생일을 4자 이내로 작성해주세요."
                             />
                         </ModalContents>
                     </ModalSubTitle>
@@ -457,8 +504,10 @@ const UserPage = () => {
                         <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                             <Input
                                 value={inputGeneration}
+                                maxLength={1}
                                 onChange={handleGenerationChange}
-                                placeholder="기수를 작성해주세요."/>
+                                placeholder="기수를 작성해주세요."
+                            />
                         </ModalContents>
                     </ModalSubTitle>
                     <ModalSubTitle>
@@ -467,22 +516,16 @@ const UserPage = () => {
                         </ModalContents>
                         <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                             <DropdownWrapperModal>
-                                <DropdownButtonModal onClick={toggleDropdownRole}>
-                                    {handleChangeRoleName(selectedRoleOption || role)}
-                                    {
-                                        !toggleToRole
-                                            ? (<ArrowTop1 src={require("../Assets/img/PolygonDown.png")}/>)
-                                            : (<ArrowTop1 src={require("../Assets/img/Polygon.png")}/>)
-                                    }
-                                </DropdownButtonModal>
-                                <DropdownContentModal $isOpen={toggleToRole}>
-                                    {
-                                        RoleOption.map((option, index) => (
-                                            <DropdownItemModal key={index} onClick={() => handleOptionRoleClick(option)}>
-                                                {handleChangeRoleName(option)}
-                                            </DropdownItemModal>
-                                        ))
-                                    }
+                                    <DropdownButtonModal onClick={() => toggleDropdown('role')}>
+                                        {handleChangeRoleName(selectedRoleOption || role)}
+                                        <ArrowTop1 src={require(`../Assets/img/${openDropdown === 'role' ? 'Polygon.png' : 'PolygonDown.png'}`)} />
+                                    </DropdownButtonModal>
+                                    <DropdownContentModal $isOpen={openDropdown === 'role'}>
+                                    {["ROLE_YB", "ROLE_OB", "ROLE_ADMIN"].map((option, index) => (
+                                        <DropdownItemModal key={index} onClick={() => handleOptionRoleClick(option)}>
+                                            {handleChangeRoleName(option)}
+                                        </DropdownItemModal>
+                                    ))}
                                 </DropdownContentModal>
                             </DropdownWrapperModal>
                         </ModalContents>
@@ -493,22 +536,16 @@ const UserPage = () => {
                         </ModalContents>
                         <ModalContents color={"#A3A3A3"} $right={0} $weight={600}>
                             <DropdownWrapperModal>
-                                <DropdownButtonModal onClick={toggleDropdownPart}>
+                                <DropdownButtonModal onClick={() => toggleDropdown('part')}>
                                     {selectedOption || part}
-                                    {
-                                        !toggleToPart
-                                            ? (<ArrowTop1 src={require("../Assets/img/PolygonDown.png")}/>)
-                                            : (<ArrowTop1 src={require("../Assets/img/Polygon.png")}/>)
-                                    }
+                                    <ArrowTop1 src={require(`../Assets/img/${openDropdown === 'part' ? 'Polygon.png' : 'PolygonDown.png'}`)} />
                                 </DropdownButtonModal>
-                                <DropdownContentModal $isOpen={toggleToPart}>
-                                    {
-                                        PartList.map((option, index) => (
-                                            <DropdownItemModal key={index} onClick={() => handleOptionClick(option)}>
-                                                {option}
-                                            </DropdownItemModal>
-                                        ))
-                                    }
+                                <DropdownContentModal $isOpen={openDropdown === 'part'}>
+                                    {PartList.map((option, index) => (
+                                        <DropdownItemModal key={index} onClick={() => handleOptionClick(option)}>
+                                            {option}
+                                        </DropdownItemModal>
+                                    ))}
                                 </DropdownContentModal>
                             </DropdownWrapperModal>
                         </ModalContents>
@@ -518,26 +555,24 @@ const UserPage = () => {
                             삭제
                         </ModalContents>
                         <ModalContents>
-                            <CheckScoreButton width='140' onClick={openDeleteConfirmModal}>
+                            <CheckScoreButton width='140px' onClick={openDeleteConfirmModal}>
                                 <Img
                                     src={require("../Assets/img/DeleteIconBlue.png")}
                                     style={{
                                         width: "20px"
-                                    }}/>
+                                    }}
+                                />
                                 <Span>삭제하기</Span>
                             </CheckScoreButton>
                         </ModalContents>
-                        {
-                            isOpenDeleteConfirmModal && (
-                                <DeleteConfirmModal closeModal={closeDeleteConfirmModal} userEmail={userEmail}/>
-                            )
-                        }
+                        {isOpenDeleteConfirmModal && (
+                            <DeleteConfirmModal closeModal={closeDeleteConfirmModal} userEmail={userEmail} />
+                        )}
                     </ModalSubTitle>
-                    <UpdateButton disabled={!isEditm} onClick={handleUpdateButtonClick}>
+                    <UpdateButton disabled={!contentChanged} onClick={handleUpdateButtonClick}>
                         저장하기
                     </UpdateButton>
                 </ModalContent>
-
             </ModalWrapper>
         );
     };
@@ -547,36 +582,43 @@ const UserPage = () => {
 
 
     const resetRowData = (index) => {
-        setGenerationInputs(prev => {
-            const newInputs = [...prev];
-            newInputs[index] = "";
-            return newInputs;
-        });
-        setNameInputs(prev => {
-            const newInputs = [...prev];
-            newInputs[index] = "";
-            return newInputs;
-        });
-        setEmailInputs(prev => {
-            const newInputs = [...prev];
-            newInputs[index] = "";
-            return newInputs;
-        });
-        setPhoneInputs(prev => {
-            const newInputs = [...prev];
-            newInputs[index] = "";
-            return newInputs;
-        });
-        setSelectedMembers(prev => {
-            const newSelected = [...prev];
-            newSelected[index] = null;
-            return newSelected;
-        });
-        setSelectedPart(prev => {
-            const newSelected = [...prev];
-            newSelected[index] = null;
-            return newSelected;
-        });
+        if (window.confirm("초기화 하시겠습니까?")) {
+            setGenerationInputs(prev => {
+                const newInputs = [...prev];
+                newInputs[index] = "";
+                return newInputs;
+            });
+            setNameInputs(prev => {
+                const newInputs = [...prev];
+                newInputs[index] = "";
+                return newInputs;
+            });
+            setEmailInputs(prev => {
+                const newInputs = [...prev];
+                newInputs[index] = "";
+                return newInputs;
+            });
+            setPhoneInputs(prev => {
+                const newInputs = [...prev];
+                newInputs[index] = "";
+                return newInputs;
+            });
+            setBirthdayInputs(prev => {
+                const newInputs = [...prev];
+                newInputs[index] = "";
+                return newInputs;
+            });
+            setSelectedMembers(prev => {
+                const newSelected = [...prev];
+                newSelected[index] = null;
+                return newSelected;
+            });
+            setSelectedPart(prev => {
+                const newSelected = [...prev];
+                newSelected[index] = null;
+                return newSelected;
+            });
+        }
     };
 
     const isValidEmail = (email) => {
@@ -600,12 +642,13 @@ const UserPage = () => {
         <BaseContainer>
             <CommonLogSection />
             
-            <PageInfo title = "사용자 관리" subTitle = "사용자를 추가하고 관리해보세요."/>
+            <PageInfo title="사용자 관리" subTitle="사용자를 추가하고 관리해보세요." />
+            
             {
                 addable
                     ? (
-                        <BodyAddDiv>
-                            <FirstDiv>
+                        <ContentContainer>
+                            <FirstContainer>
                                 <GenerationDiv>
                                     <FlexDiv>
                                         <MemberNumText color={"#1A1A1A"} $right={4}>
@@ -622,8 +665,8 @@ const UserPage = () => {
                                     <RegisterMemberIcon src={require("../Assets/img/MemberIcon.png")}/>
                                     사용자 추가
                                 </EditButton>
-                            </FirstDiv>
-                            <SecondDiv>
+                            </FirstContainer>
+                            <SecondContainer>
                                 <TableHead2>
                                     <TableHead2Cell $flex={1}>
                                         No.
@@ -641,6 +684,9 @@ const UserPage = () => {
                                         전화번호
                                     </TableHead2Cell>
                                     <TableHead2Cell $flex={2}>
+                                        생일
+                                    </TableHead2Cell >
+                                    <TableHead2Cell $flex={2}>
                                         <DropdownWrapper>
                                             <DropdownButton onClick={handleArrowTopClick} $colorValue={true} $Backcolor={"#eee"}>
                                                 {handleChangeRoleName(selectedMemberFilter) || "구분"}
@@ -650,7 +696,7 @@ const UserPage = () => {
                                                         : (<ArrowTop1 src={require("../Assets/img/Polygon.png")}/>)
                                                 }
                                             </DropdownButton>
-                                            <DropdownContent $isOpen={isDropdownOpen} $left={-5} width={145}>
+                                            <DropdownContent $isOpen={openDropdown === 'member'} $left={-5} width={145}>
                                                 {
                                                     memberFillter.map((memberOption, memberIndex) => (
                                                         <DropdownItem
@@ -666,14 +712,14 @@ const UserPage = () => {
                                     <TableHead2Cell $flex={2}>
                                         <DropdownWrapper>
                                             <DropdownButton onClick={handleArrowPartClick} $colorValue={true} $Backcolor={"#eee"}>
-                                                {selectedPartFilter || "파트"}
+                                                {selectedPartFilter || "파트?"}
                                                 {
                                                     !isdropdownPart
                                                         ? (<ArrowTop1 src={require("../Assets/img/PolygonDown.png")}/>)
                                                         : (<ArrowTop1 src={require("../Assets/img/Polygon.png")}/>)
                                                 }
                                             </DropdownButton>
-                                            <DropdownContent $isOpen={isdropdownPart} $left={-7} width={120}>
+                                            <DropdownContent $isOpen={openDropdown === 'part'} $left={-7} width={120}>
                                                 {
                                                     options.map((memberOption, memberIndex) => (
                                                         <DropdownItem
@@ -709,6 +755,9 @@ const UserPage = () => {
                                                 {formatPhoneNumber(userInfo.phoneNumber)}
                                             </TableHead2Cell>
                                             <TableHead2Cell $flex={2}>
+                                                {userInfo.birthDay[0]+userInfo.birthDay[1]+'월 ' + userInfo.birthDay[2] + userInfo.birthDay[3] + "일"}
+                                            </TableHead2Cell >
+                                            <TableHead2Cell $flex={2}>
                                                 {handleChangeRoleName(userInfo.role)}
                                                 {/* {userInfo.role} */}
                                             </TableHead2Cell>
@@ -729,16 +778,17 @@ const UserPage = () => {
                                                 Num={userInfo.phoneNumber}
                                                 role={userInfo.role}
                                                 userEmail={userInfo.userEmail}
+                                                birthDay={userInfo.birthDay}
                                                 generation={userInfo.generation}/>
                                         </TableBody2>
                                     ))
                                 }
-                            </SecondDiv>
-                        </BodyAddDiv>
+                            </SecondContainer>
+                        </ContentContainer>
                     )
                     : (
-                        <BodyAddDiv>
-                            <FirstDiv>
+                        <ContentContainer>
+                            <FirstContainer>
                                 <FlexDiv></FlexDiv>
                                 <FlexDiv>
                                     <CancelButton onClick={handleCancelClick}>취소하기</CancelButton>
@@ -746,8 +796,8 @@ const UserPage = () => {
                                         추가하기
                                     </SaveButton>
                                 </FlexDiv>
-                            </FirstDiv>
-                            <SecondDiv>
+                            </FirstContainer>
+                            <SecondContainer>
                                 <TableHead2>
                                     <TableHead2Cell $flex={1}>
                                         No.
@@ -764,6 +814,9 @@ const UserPage = () => {
                                     <TableHead2Cell >
                                         전화번호
                                     </TableHead2Cell>
+                                    <TableHead2Cell $flex={2}>
+                                        생일
+                                    </TableHead2Cell >
                                     <TableHead2Cell $flex={2}>
                                         구분
                                     </TableHead2Cell>
@@ -817,6 +870,15 @@ const UserPage = () => {
                                                 />
                                                 </TableHead2Cell>
                                                 <TableHead2Cell $flex={2}>
+                                                    <InputBox
+                                                        type="text"
+                                                        placeholder="입력"
+                                                        value={birthdayInputs[index] || ""}
+                                                        required
+                                                        onChange={(e) => handleBirthdayInputChange(e, index)}/>
+                                                </TableHead2Cell >
+                                                
+                                                <TableHead2Cell $flex={2}>
                                                     <DropdownWrapper>
                                                         <DropdownButton1
                                                             onClick={() => toggleDropdown(index)}
@@ -824,7 +886,7 @@ const UserPage = () => {
                                                         >
                                                             {handleChangeRoleName(selectedMembers[index]) || "선택"}
                                                         </DropdownButton1>
-                                                        <DropdownContent $isOpen={isOpen[index]} $left={-7} width={160} $top={1}>
+                                                        <DropdownContent $isOpen={openDropdown === `member-${index}`} $left={-7} width={160} $top={1}>
                                                             {" "}
                                                             {/* 인덱스에 따라 열림 상태 설정 */}
                                                             {
@@ -841,12 +903,12 @@ const UserPage = () => {
                                                 </TableHead2Cell>
                                                 <TableHead2Cell $flex={2}>
                                                     <DropdownWrapper1>
-                                                    <DropdownButton1
-                                                        onClick={() => toggleDropdownPart(index)}
-                                                        $hasValue={selectedPart[index] !== null}>
-                                                        {selectedPart[index] || "선택"}
-                                                    </DropdownButton1>
-                                                        <DropdownContent1 $isOpen={isOpenPart[index]}>
+                                                        <DropdownButton1
+                                                            onClick={() => toggleDropdownPart(index)}
+                                                            $hasValue={selectedPart[index] !== null}>
+                                                            {selectedPart[index] || "선택"}
+                                                        </DropdownButton1>
+                                                        <DropdownContent1 $isOpen={openDropdown === `part-${index}`}>
                                                             {
                                                                 PartList.map((partOption, partIndex) => (
                                                                     <DropdownItem1
@@ -867,8 +929,8 @@ const UserPage = () => {
                                             </TableBody2>
                                         ))
                                 }
-                            </SecondDiv>
-                        </BodyAddDiv>
+                            </SecondContainer>
+                        </ContentContainer>
                     )
 
             }
@@ -878,27 +940,66 @@ const UserPage = () => {
 
 export default UserPage;
 
-const BodyAddDiv = styled.div `
+const ContentContainer = styled.div `
     display: flex;
     flex-direction: column;
+
     margin-top: 83px;
+
     width: 100%;
     height: auto;
+    /* background-color: red; */
+
 `;
+
+const FirstContainer = styled.div `
+    width: 100%;
+    /* height: auto; */
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    /* margin-bottom: 16px; */
+    /* background-color: yellow; */
+`;
+
+const SecondContainer = styled.div `
+    width: 100%;
+    height : 60vh;
+    overflow-y: scroll;
+
+    display: flex;
+    flex-direction: column;
+
+    /* background-color: green; */
+
+    box-sizing: border-box;
+    border-top : 0.5px solid #a3a3a3;
+    border-bottom : 0.5px solid #a3a3a3;
+
+    margin-top: 20px;
+
+
+    /* 스크롤바 숨기기 */
+    ::-webkit-scrollbar {
+        display : ${props => props.$type === true ? "none" : "none"}; /* Chrome, Safari, Edge, Opera */
+    }
+    
+    -ms-overflow-style: none;  /* IE 10+ */
+    scrollbar-width: none;  /* Firefox */
+
+`;
+
+
+
+
 
 const FlexDiv = styled.div `
     display: flex;
     align-items: center;
 `;
 
-const FirstDiv = styled.div `
-    display: flex;
-    height: 48px;
-    width: 100%;
-    margin-bottom: 16px;
-    justify-content: space-between;
-    align-items: flex-end;
-`;
 
 export const GenerationDiv = styled.div `
     display: flex;
@@ -923,52 +1024,10 @@ const MemberNumText = styled.div `
     margin-right: 8px;
 `;
 
-// const RegisterAddButton = styled.button `
-//     display: inline-flex;
-//     justify-content: center;
-//     align-items: center;
-//     display: flex;
-//     border-radius: 8px;
-//     background: #5262f5;
-//     color: #fff;
-//     font-family: "Pretendard";
-//     font-size: 18px;
-//     font-style: normal;
-//     font-weight: 700;
-//     line-height: 24px;
-//     padding: 12px 65px;
-//     cursor: pointer;
-//     border: none;
-//     &:hover {
-//         box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
-//     }
-//     &:active {
-//         box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
-//     }
-// `;
-
-// const CancelButton = styled.button `
-//     display: inline-flex;
-//     justify-content: center;
-//     align-items: center;
-//     display: flex;
-//     border-radius: 8px;
-//     background: var(--Gray10, #e4e4e4);
-//     color: var(--black-card, #2a2a2a);
-//     font-family: "Pretendard";
-//     font-size: 18px;
-//     font-style: normal;
-//     font-weight: 700;
-//     line-height: 24px;
-//     padding: 12px 65px;
-//     cursor: pointer;
-//     border: none;
-//     margin-right: 16px;
-// `;
-
 const ArrowTop1 = styled.img `
-    width: 14px;
-    height: 14px;
+    max-width: 14px;
+    width: 1vw;
+    /* height: 14px; */
     margin-left: 16px;
     margin-bottom: 1px;
     cursor: pointer;
@@ -976,7 +1035,7 @@ const ArrowTop1 = styled.img `
 
 const CheckScoreButton = styled.button `
     display: flex;
-    width: ${props => props.width || "100"}px;
+    width: ${props => props.width || "90%"};
     padding: 6px 16px;
     justify-content: center;
     align-items: center;
@@ -984,7 +1043,7 @@ const CheckScoreButton = styled.button `
     flex-shrink: 0;
     color: var(--primary-blue, #5262f5);
     font-family: "Pretendard";
-    font-size: 14px;
+    font-size: 1vw;
     font-style: normal;
     font-weight: 600;
     line-height: 18px;
@@ -1006,6 +1065,7 @@ const DropdownWrapper = styled.div `
     display: inline-block;
     display: flex;
     width: 100%;
+    height : 100%;
     justify-content: center;
     align-items: center;
     gap: 24px;
@@ -1022,12 +1082,15 @@ const DropdownButton = styled.button `
     ) => props.$Backcolor};
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
-    font-size: 16px;
+    font-size: 1vw;
     font-style: normal;
     font-weight: 600;
     line-height: 24px;
-    border: none;
-    padding: 8px 12px;
+    border : none;
+    border-bottom: 1px solid #a3a3a3;
+
+    
+
     color: ${ (
     props
     ) => (
@@ -1038,6 +1101,7 @@ const DropdownButton = styled.button `
     display: flex;
     align-items: center;
     justify-content: center;
+    
 `;
 
 const DropdownContent = styled.div `
@@ -1076,6 +1140,7 @@ const DropdownItem = styled.div `
     &:hover {
         background-color: #eeeffe;
     }
+    
 `;
 
 const DropdownWrapper1 = styled.div `
@@ -1087,6 +1152,7 @@ const DropdownWrapper1 = styled.div `
     align-items: center;
     gap: 24px;
     background: var(--White, #fff);
+    
 `;
 
 const DropdownButton1 = styled.button`
@@ -1095,13 +1161,14 @@ const DropdownButton1 = styled.button`
     height: 100%;
     background-color: white;
     font-family: "Pretendard";
-    font-size: 16px;
+    font-size: 1vw;
     font-style: normal;
     font-weight: 600;
     line-height: 24px;
     border: none;
     padding: 8px 12px;
     color: ${props => props.$hasValue ? "#1A1A1A" : "#A3A3A3"};
+    
 `;
 
 const DropdownContent1 = styled.div `
@@ -1130,30 +1197,12 @@ const DropdownItem1 = styled.div `
     text-align: center;
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
-    font-size: 14px;
+    font-size: 1vw;
     font-style: normal;
     font-weight: 600;
     line-height: 18px;
     &:hover {
         background-color: #eeeffe;
-    }
-`;
-
-const DeleteUserButton = styled.div`
-    width: 124px;
-    height : 40px;
-
-    border-radius: 8px;
-    border : 1px solid #5262F5;
-
-    background-color: #5262F510;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &:hover{
-        background-color: #5262F550;
     }
 `;
 
@@ -1172,18 +1221,11 @@ const Span = styled.span`
     color : #5262F5;
 `;
 
-const SecondDiv = styled.div `
-    width: 100%;
-    height : 744px;
 
-    display: flex;
-    flex-direction: column;
-
-`;
 
 const TableRow2 = styled.div `
     width : 100%;
-    height : 48px;
+    min-height : 48px;
     display: flex;
 `;
 
@@ -1204,7 +1246,7 @@ const TableHead2Cell = styled.div `
     justify-content: center;
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
-    font-size: 16px;
+    font-size: 1vw;
     font-style: normal;
     font-weight: 600;
     line-height: 24px;
@@ -1213,6 +1255,7 @@ const TableHead2Cell = styled.div `
     border-bottom: 1px solid var(--Gray30, #a3a3a3);
     border-left: 0.5px solid var(--Gray30, #a3a3a3);
     border-right: 0.5px solid var(--Gray30, #a3a3a3);
+    /* overflow-x: hidden; */
 `;
 
 const InputBox = styled.input `
@@ -1224,7 +1267,7 @@ const InputBox = styled.input `
     box-sizing: border-box;
 
     font-family: "Pretendard";
-    font-size: 16px;
+    font-size: 1vw;
     font-style: normal;
     font-weight: 500;
     line-height: 24px;
@@ -1249,7 +1292,7 @@ const ModalContent = styled.div `
     left: 50%;
     transform: translate(-50%, -50%);
     width: 620px;
-    height: 640px;
+    height: 700px;
     background-color: white;
 `;
 
@@ -1387,7 +1430,7 @@ const DropdownButtonModal = styled.button `
     background: ${ (props) => props.$Backcolor};
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
-    font-size: 16px;
+    font-size: 1vw;
     font-style: normal;
     font-weight: 600;
     line-height: 24px;
