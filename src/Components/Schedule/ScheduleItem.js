@@ -76,6 +76,7 @@ export const ScheduleFirstRow = styled.div `
     height: 32px;
     display: flex;
     align-items: center;
+    margin-bottom: 10px;
     /* background-color: violet; */
 `;
 
