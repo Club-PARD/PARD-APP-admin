@@ -150,7 +150,7 @@ const ScorePage = () => {
             if (text.length <= 20) {
                 setInputText(text);
             }
-            setContentChanged(true); // 수정사항이 생겼으므로 true로 설정
+            // setContentChanged(true); // 수정사항이 생겼으므로 true로 설정
         };
 
         // Firebase fireStore Point 데이터 조회
@@ -425,7 +425,7 @@ const ScorePage = () => {
                                                             onClick={() => {
                                                             handleScoreClick(option);
                                                             setSelectedScore(option);
-                                                            setContentChanged(true); // 수정사항이 생겼으므로 true로 설정
+                                                            // setContentChanged(true); // 수정사항이 생겼으므로 true로 설정
                                                             }}
                                                         >
                                                             {option}
