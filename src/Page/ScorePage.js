@@ -55,22 +55,22 @@ const ScorePage = () => {
     const [isContentChanged, setContentChanged] = useState(false); // 컨텐츠 변경 확인 state
     const [loading, setLoading] = useState(true);
     const [userScoreDetail, setUserCoreDetail] = useState([]);
-    const [selectedGeneration, setSelectedGeneration] = useState(4);
-    const [isDropDownGeneration, setIsDropDownGeneration] = useState(false);
+    // const [selectedGeneration, setSelectedGeneration] = useState(4);
+    // const [isDropDownGeneration, setIsDropDownGeneration] = useState(false);
 
-    useEffect(() => {
-        const getGenerationId = () => {
-            const selectedGeneration = sessionStorage.getItem('selectedGeneration');
-            setSelectedGeneration(selectedGeneration);
-        }
-        getGenerationId();
-    }, []);
+    // useEffect(() => {
+    //     const getGenerationId = () => {
+    //         const selectedGeneration = sessionStorage.getItem('selectedGeneration');
+    //         setSelectedGeneration(selectedGeneration);
+    //     }
+    //     getGenerationId();
+    // }, []);
     
     // Firebase fireStore 전체 Point 데이터 조회
     useEffect(() => {
         const fetchUserScores = async () => {
             try {
-                const result = await getAllUserData(selectedGeneration);
+                const result = await getAllUserData(4);
                 if (result != undefined) {
                     const filteredResults = result.filter(user => user.role !== "ROLE_ADMIN");
                     setUserScores(filteredResults);
@@ -84,7 +84,7 @@ const ScorePage = () => {
             }
         };
         fetchUserScores();
-    }, [selectedGeneration]);
+    }, []);
 
     // 모달 열기
     const openModal = (index) => {
@@ -573,11 +573,11 @@ const ScorePage = () => {
                         }
                     </DropdownContent>
                 </DropdownWrapper>
-                <GenerationDropDown
+                {/* <GenerationDropDown
                     selectedGeneration={selectedGeneration}
                     isDropDownGeneration={isDropDownGeneration}
                     setIsDropDownGeneration={setIsDropDownGeneration}
-                    setSelectedGeneration={setSelectedGeneration}/>
+                    setSelectedGeneration={setSelectedGeneration}/> */}
             </DropDownListBox>
 
             {/* 전체 점수 Table */}
