@@ -189,7 +189,7 @@ const SchedulePage = () => {
                     <FirstDiv>
                         <FlexBox>
                             <ScheduleTitleText>공식 일정</ScheduleTitleText>
-                            <DeleteButton onClick={() => handleDeleteAll('schedule')}>일정 전체 삭제</DeleteButton>
+                            {/* <DeleteButton onClick={() => handleDeleteAll('schedule')}>일정 전체 삭제</DeleteButton> */}
                         </FlexBox>
 
                         <AddButton onClick={openModal}>
@@ -232,7 +232,7 @@ const SchedulePage = () => {
                     <FirstDiv>
                         <FlexBox>
                             <ScheduleTitleText>과제 일정</ScheduleTitleText>
-                            <DeleteButton onClick={() => handleDeleteAll('task')}>과제 전체 삭제</DeleteButton>
+                            {/* <DeleteButton onClick={() => handleDeleteAll('task')}>과제 전체 삭제</DeleteButton> */}
                         </FlexBox>
                         <AddButton onClick={openTaskModal}>
                             <EditIcon src={require("../Assets/img/ScheduleCIcon.png")}/>
@@ -1137,8 +1137,8 @@ const SubMessage = styled.div `
     line-height: 16px;
 `;
 
-const DeleteButton = styled.button `
-    margin-left: 20px;
-    padding : 5px 10px;
-    box-sizing: border-box;
-`;
+// const DeleteButton = styled.button `
+//     margin-left: 20px;
+//     padding : 5px 10px;
+//     box-sizing: border-box;
+// `;
