@@ -520,7 +520,7 @@ const UserPage = () => {
                             <DropdownWrapperModal>
                                     <DropdownButtonModal onClick={() => toggleDropdown('role')}>
                                         {handleChangeRoleName(selectedRoleOption || role)}
-                                        <ArrowTop1 src={require(`../Assets/img/${openDropdown === 'role' ? 'Polygon.png' : 'PolygonDown.png'}`)} />
+                                        <ArrowTop1 src={require(`../Assets/img/${openDropdown === 'role' ? 'Polygo.png' : 'PolygonDown.png'}`)} />
                                     </DropdownButtonModal>
                                     <DropdownContentModal $isOpen={openDropdown === 'role'}>
                                     {["ROLE_YB", "ROLE_OB", "ROLE_ADMIN"].map((option, index) => (
@@ -688,15 +688,11 @@ const UserPage = () => {
                                     <TableHead2Cell $flex={2}>
                                         생일
                                     </TableHead2Cell >
-                                    <TableHead2Cell $flex={2}>
+                                    <TableHead2Cell $flex={2} $overflowX = "none">
                                         <DropdownWrapper>
                                             <DropdownButton onClick={handleArrowTopClick} $colorValue={true} $Backcolor={"#eee"}>
                                                 {handleChangeRoleName(selectedMemberFilter) || "구분"}
-                                                {
-                                                    !isDropdownOpen
-                                                        ? (<ArrowTop1 src={require("../Assets/img/PolygonDown.png")}/>)
-                                                        : (<ArrowTop1 src={require("../Assets/img/Polygon.png")}/>)
-                                                }
+                                                <ArrowTop1 src={require(`../Assets/img/${openDropdown === 'member' ? 'Polygon.png' : 'PolygonDown.png'}`)} />
                                             </DropdownButton>
                                             <DropdownContent $isOpen={openDropdown === 'member'} $left={-5} width={145}>
                                                 {
@@ -711,15 +707,11 @@ const UserPage = () => {
                                             </DropdownContent>
                                         </DropdownWrapper>
                                     </TableHead2Cell>
-                                    <TableHead2Cell $flex={2}>
+                                    <TableHead2Cell $flex={2} $overflowX = "none">
                                         <DropdownWrapper>
                                             <DropdownButton onClick={handleArrowPartClick} $colorValue={true} $Backcolor={"#eee"}>
                                                 {selectedPartFilter || "파트?"}
-                                                {
-                                                    !isdropdownPart
-                                                        ? (<ArrowTop1 src={require("../Assets/img/PolygonDown.png")}/>)
-                                                        : (<ArrowTop1 src={require("../Assets/img/Polygon.png")}/>)
-                                                }
+                                                <ArrowTop1 src={require(`../Assets/img/${openDropdown === 'part' ? 'Polygon.png' : 'PolygonDown.png'}`)} />
                                             </DropdownButton>
                                             <DropdownContent $isOpen={openDropdown === 'part'} $left={-7} width={120}>
                                                 {
@@ -1255,6 +1247,8 @@ const TableRow2 = styled.div `
 const TableHead2 = styled(TableRow2)`
     background-color: #eee;
     border-bottom: 1px solid #a3a3a3;
+    position: sticky;
+    top: 0;
 `;
 const TableBody2 = styled(TableRow2)`
     background-color: white;
