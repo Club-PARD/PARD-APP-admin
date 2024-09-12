@@ -880,7 +880,7 @@ const UserPage = () => {
                                                         onChange={(e) => handleBirthdayInputChange(e, index)}/>
                                                 </TableHead2Cell >
                                                 
-                                                <TableHead2Cell $flex={2}>
+                                                <TableHead2Cell $flex={2} $overflowX = "none">
                                                     <DropdownWrapper>
                                                         <DropdownButton1
                                                             onClick={() => toggleDropdown(index)}
@@ -903,7 +903,7 @@ const UserPage = () => {
                                                         </DropdownContent>
                                                     </DropdownWrapper>
                                                 </TableHead2Cell>
-                                                <TableHead2Cell $flex={2}>
+                                                <TableHead2Cell $flex={2} $overflowX = "none">
                                                     <DropdownWrapper1>
                                                         <DropdownButton1
                                                             onClick={() => toggleDropdownPart(index)}
@@ -1078,6 +1078,8 @@ const DropdownWrapper = styled.div `
     align-items: center;
     gap: 24px;
     background: var(--White, #fff);
+    border-bottom : 1px solid #a3a3a3;
+    box-sizing: border-box;
 `;
 
 const DropdownButton = styled.button `
@@ -1144,12 +1146,15 @@ const DropdownItem = styled.div `
     text-align: center;
     color: black;
     font-family: "Pretendard";
-    font-size: 14px;
+    font-size: 1vw;
     font-style: normal;
     font-weight: 600;
     line-height: 18px;
     &:hover {
         background-color: #eeeffe;
+    }
+    @media (min-width: 1200px) {
+        font-size: 15px;
     }
     
 `;
@@ -1220,7 +1225,7 @@ const DropdownItem1 = styled.div `
         background-color: #eeeffe;
     }
     @media (min-width: 1200px) {
-        font-size: 18px;
+        font-size: 15px;
     }
 `;
 
@@ -1268,7 +1273,7 @@ const TableHead2Cell = styled.div `
     font-style: normal;
     font-weight: 600;
     line-height: 24px;
-    overflow-x: hidden;
+    overflow-x: ${props => props.$overflowX|| "hidden"};
 
     border-top: 1px solid var(--Gray30, #a3a3a3);
     border-bottom: 1px solid var(--Gray30, #a3a3a3);
@@ -1489,7 +1494,7 @@ const DropdownItemModal = styled.div `
     cursor: pointer;
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
-    font-size: 16px;
+    font-size: 1vw;
     font-style: normal;
     font-weight: 600;
     line-height: 18px;
