@@ -70,8 +70,10 @@ const UserPage = () => {
     useEffect(() => {
         const getGenerationId = () => {
             const selectedGeneration = sessionStorage.getItem('selectedGeneration');
-            if(selectedGeneration)
+            if (selectedGeneration)
                 setSelectedGeneration(selectedGeneration);
+            else
+                setSelectedGeneration(4);
         }
 
         if (selectedGeneration) {
@@ -1031,7 +1033,10 @@ const ArrowTop1 = styled.img `
     margin-left: 16px;
     margin-bottom: 1px;
     cursor: pointer;
-    `;
+    @media (min-width: 1200px) {
+        font-size: 18px;
+    }
+`;
 
 const CheckScoreButton = styled.button `
     display: flex;
@@ -1057,6 +1062,9 @@ const CheckScoreButton = styled.button `
     }
     &:active {
         box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25) inset;
+    }
+    @media (min-width: 1200px) {
+        font-size: 18px;
     }
 `;
 
@@ -1102,6 +1110,9 @@ const DropdownButton = styled.button `
     align-items: center;
     justify-content: center;
     
+    @media (min-width: 1200px) {
+        font-size: 18px;
+    }
 `;
 
 const DropdownContent = styled.div `
@@ -1168,6 +1179,10 @@ const DropdownButton1 = styled.button`
     border: none;
     padding: 8px 12px;
     color: ${props => props.$hasValue ? "#1A1A1A" : "#A3A3A3"};
+
+    @media (min-width: 1200px) {
+        font-size: 18px;
+    }
     
 `;
 
@@ -1203,6 +1218,9 @@ const DropdownItem1 = styled.div `
     line-height: 18px;
     &:hover {
         background-color: #eeeffe;
+    }
+    @media (min-width: 1200px) {
+        font-size: 18px;
     }
 `;
 
@@ -1250,12 +1268,16 @@ const TableHead2Cell = styled.div `
     font-style: normal;
     font-weight: 600;
     line-height: 24px;
+    overflow-x: hidden;
 
     border-top: 1px solid var(--Gray30, #a3a3a3);
     border-bottom: 1px solid var(--Gray30, #a3a3a3);
     border-left: 0.5px solid var(--Gray30, #a3a3a3);
     border-right: 0.5px solid var(--Gray30, #a3a3a3);
     /* overflow-x: hidden; */
+    @media (min-width: 1200px) {
+        font-size: 18px;
+    }
 `;
 
 const InputBox = styled.input `
@@ -1272,6 +1294,9 @@ const InputBox = styled.input `
     font-weight: 500;
     line-height: 24px;
     text-align: center;
+    @media (min-width: 1200px) {
+        font-size: 18px;
+    }
 `;
 
 // 모달 관련 Style 코드
@@ -1441,6 +1466,9 @@ const DropdownButtonModal = styled.button `
     align-items: center;
     justify-content: center;
     color: var(--black-background, #1a1a1a);
+    @media (min-width: 1200px) {
+        font-size: 16px;
+    }
 `;
 
 const DropdownContentModal = styled.div `
@@ -1461,7 +1489,7 @@ const DropdownItemModal = styled.div `
     cursor: pointer;
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
-    font-size: 14px;
+    font-size: 16px;
     font-style: normal;
     font-weight: 600;
     line-height: 18px;
