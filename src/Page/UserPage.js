@@ -520,7 +520,7 @@ const UserPage = () => {
                             <DropdownWrapperModal>
                                     <DropdownButtonModal onClick={() => toggleDropdown('role')}>
                                         {handleChangeRoleName(selectedRoleOption || role)}
-                                        <ArrowTop1 src={require(`../Assets/img/${openDropdown === 'role' ? 'Polygo.png' : 'PolygonDown.png'}`)} />
+                                        <ArrowTop1 src={require(`../Assets/img/${openDropdown === 'role' ? 'Polygon.png' : 'PolygonDown.png'}`)} />
                                     </DropdownButtonModal>
                                     <DropdownContentModal $isOpen={openDropdown === 'role'}>
                                     {["ROLE_YB", "ROLE_OB", "ROLE_ADMIN"].map((option, index) => (
