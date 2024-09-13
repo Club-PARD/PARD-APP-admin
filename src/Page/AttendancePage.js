@@ -331,8 +331,9 @@ export default AttendancePage;
 const BodyDiv = styled.div `
     display: flex;
     width: 100%;
-    height : auto;
+    height : 60vh;
     overflow: scroll;
+    scrollbar-width: none;
 `;
 
 const Table = styled.table `

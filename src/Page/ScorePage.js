@@ -685,6 +685,8 @@ const BodyDiv = styled.div `
     margin-top: 16px;
     margin-bottom: 10px;
     overflow-y: scroll;
+    height : 60vh;
+    scrollbar-width: none; 
 `;
 
 // Table Container
@@ -736,9 +738,10 @@ const TableHeaderCell = styled.div `
 // Table - Body Container
 const TableBody = styled.div `
     display: block;
-    /* max-height: calc(100% - 48px); */
+    max-height: 100%;
     overflow-y: auto;
     border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
+    scrollbar-width: none;
 `;
 
 // Table - Body - Row Container
