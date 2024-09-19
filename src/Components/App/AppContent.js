@@ -7,7 +7,7 @@ import LoginPage from "../../Page/LoginPage";
 import UserPage from "../../Page/UserPage";
 import SchedulePage from "../../Page/SchedulePage";
 import ScorePage from "../../Page/ScorePage";
-import NavBar from "./Navbar";
+import NavBar from "../NavBar/Navbar";
 
 export const AppContent = () => {
     const location = useLocation();
