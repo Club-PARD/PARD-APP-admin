@@ -1,13 +1,13 @@
 import { Route, Routes, useLocation } from "react-router-dom";
 import { AppContainer, MainContent, NavBarContainer } from "./AppContentComponents";
 
-import AttendancePage from "../../Page/AttendancePage";
-import HomePage from "../../Page/HomePage";
-import LoginPage from "../../Page/LoginPage";
-import UserPage from "../../Page/UserPage";
-import SchedulePage from "../../Page/SchedulePage";
-import ScorePage from "../../Page/ScorePage";
-import NavBar from "../NavBar/Navbar";
+import AttendancePage from "../../../Page/AttendancePage";
+import HomePage from "../../../Page/HomePage";
+import LoginPage from "../../../Page/LoginPage";
+import UserPage from "../../../Page/UserPage";
+import SchedulePage from "../../../Page/SchedulePage";
+import ScorePage from "../../../Page/ScorePage";
+import NavBar from "../../NavBar/Navbar";
 
 export const AppContent = () => {
     const location = useLocation();

@@ -1,5 +1,5 @@
 import {BrowserRouter} from "react-router-dom";
-import {AppContent} from "./Components/App/AppContent";
+import {AppContent} from "./Components/App/AppContent/AppContent";
 import {InterceptorSetup} from "./Components/App/AppIntercepterSetup";
 
 function App() {
