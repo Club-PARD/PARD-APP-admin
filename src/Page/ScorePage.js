@@ -223,7 +223,7 @@ const ScorePage = () => {
                         point: scoreDigit,
                         reason: selectedType,
                         detail: inputText,
-                        bonus: selectedType == "벌점 조정"
+                        bonus: (selectedType == "벌점 조정" || selectedType == "세미나 지각" || selectedType == "세미나 결석" || selectedType == "과제 지각" || selectedType == "과제 결석")
                             ? false
                             : true
                     };
