@@ -14,7 +14,6 @@
     "jwt-decode": "^4.0.0",
     "luxon": "^3.4.3",
     "moment-timezone": "^0.5.43",
-    "node-sass": "^9.0.0",
     "react": "^18.2.0",
     "react-calendar": "^4.6.0",
     "react-cookie": "^7.1.4",
@@ -25,6 +24,7 @@
     "react-spinner": "^0.2.7",
     "react-spinners": "^0.13.8",
     "recoil": "^0.7.7",
+    "sass": "^1.79.4",
     "styled-components": "^6.0.7",
     "web-vitals": "^2.1.4"
   },

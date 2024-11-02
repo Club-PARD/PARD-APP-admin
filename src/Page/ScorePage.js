@@ -199,16 +199,16 @@ const ScorePage = () => {
                         case "디스콰이엇 회고 (+3점)":
                             selectedType = "회고";
                             break;
-                        case "세미나 지각 벌점 (-1점)":
+                        case "세미나 지각 벌점 (1점)":
                             selectedType = "세미나 지각";
                             break;
-                        case "세미나 결석 벌점 (-2점)":
+                        case "세미나 결석 벌점 (2점)":
                             selectedType = "세미나 결석";
                             break;
-                        case "과제 지각 벌점 (-0.5점)":
+                        case "과제 지각 벌점 (0.5점)":
                             selectedType = "과제 지각";
                             break;
-                        case "과제 미제출 (-1점)":
+                        case "과제 미제출 (1점)":
                             selectedType = "과제 결석";
                             break;
 
@@ -645,7 +645,7 @@ const ScorePage = () => {
                                                         +{userScoreInfo.totalBonus < "오류" ? 0 : userScoreInfo.totalBonus}점
                                                     </TableCell>
                                                     <TableCell color={"#FF5A5A"} width={180}>
-                                                        {userScoreInfo.totalMinus}점
+                                                        -{userScoreInfo.totalMinus}점
                                                     </TableCell>
                                                     <TableCell width={180}>
                                                         <CheckScoreButton
