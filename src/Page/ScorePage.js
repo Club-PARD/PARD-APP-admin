@@ -550,7 +550,7 @@ const ScorePage = () => {
         <BaseContainer>
             {/* 사용자 / 로그아웃 */}
             <CommonLogSection/> {/* 점수 관리 Title Header */}
-            <PageInfo title="점수 관리" subTitle="파트별로 파드너십을 관리해보세요."/> {/* 점수 관리 카테고리 드롭다운 */}
+            <PageInfo title="점수 관리!" subTitle="파트별로 파드너십을 관리해보세요."/> {/* 점수 관리 카테고리 드롭다운 */}
             
             <DropDownListBox>
                 <DropdownWrapper>
