@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
-import { format, fromUnixTime } from "date-fns";
-import koLocale from "date-fns/locale/ko";
 import { FadeLoader } from "react-spinners";
 import { deleteScoreData, postScoreData } from "../Api/ScoreAPI";
 import { getAllUserData } from "../Api/UserAPI";
 import { getSelectedUserScoreData } from "../Api/ScoreAPI";
 import { options, ScoreList } from "../Components/Common/Variables";
-import GenerationDropDown from "../Components/Common/GenerationDropDown";
 import { PageInfo } from "../Components/Common/PageInfo";
 import { BaseContainer } from "../Components/Common/BaseContainer";
 
@@ -220,7 +217,9 @@ const ScorePage = () => {
                     // data값 생성
                     const newPoint = {
                         email: email,
-                        point: scoreDigit,
+                        point: (selectedType == "벌점 조정" || selectedType == "세미나 지각" || selectedType == "세미나 결석" || selectedType == "과제 지각" || selectedType == "과제 결석")
+                            ? scoreDigit * -1
+                            : scoreDigit,
                         reason: selectedType,
                         detail: inputText,
                         bonus: (selectedType == "벌점 조정" || selectedType == "세미나 지각" || selectedType == "세미나 결석" || selectedType == "과제 지각" || selectedType == "과제 결석")
@@ -322,7 +321,7 @@ const ScorePage = () => {
                     {Object.keys(groupedData).map((reason) => (
                     <div key={reason}>
                         <h3 style={{ marginLeft: "50px", marginBottom: "0px" }}>
-                        {reason} (총 점수: {groupedData[reason].total}점)
+                        {reason} (총 점수: {(reason === "세미나 결석" || reason === "세미나 지각"  || reason === "벌점 조정"  || reason === "과제 지각 벌점" || reason === "과제 미제출" ? "-" : "+") + groupedData[reason].total}점)
                         </h3>
                         <hr style={{ margin: "0px 50px" }} />
                         {groupedData[reason].points.map((point, index) => (
@@ -332,7 +331,7 @@ const ScorePage = () => {
                                 {point.reason === "MVP" ? "MVP" : point.reason}
                             </RowContentType>
                             <RowContentDigit $right={38} width={45}>
-                                {point.bonus ? `+${point.point}점` : `${point.point}점`}
+                                {point.bonus ? `+${point.point}점` : `-${point.point}점`}
                             </RowContentDigit>
                             <RowContent $right={15} width={200}>
                                 {point.detail}
