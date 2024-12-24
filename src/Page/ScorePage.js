@@ -83,6 +83,21 @@ const ScorePage = () => {
         fetchUserScores();
     }, []);
 
+    useEffect(() => {
+        const handleEscape = (e) => {
+            if (e.key === "Escape") {
+                closeModal(); // 모달창 닫는 로직 호출
+            }
+        };
+
+        document.addEventListener("keydown", handleEscape); // 키보드 이벤트 리스너 추가
+
+        return () => {
+            document.removeEventListener("keydown", handleEscape); // 컴포넌트가 언마운트될 때 리스너 제거
+        };
+    }, []);
+
+
     // 모달 열기
     const openModal = (index) => {
         const newModals = [...modals];
@@ -196,16 +211,16 @@ const ScorePage = () => {
                         case "디스콰이엇 회고 (+3점)":
                             selectedType = "회고";
                             break;
-                        case "세미나 지각 벌점 (1점)":
+                        case "세미나 지각 벌점 (-1점)":
                             selectedType = "세미나 지각";
                             break;
-                        case "세미나 결석 벌점 (2점)":
+                        case "세미나 결석 벌점 (-2점)":
                             selectedType = "세미나 결석";
                             break;
-                        case "과제 지각 벌점 (0.5점)":
+                        case "과제 지각 벌점 (-0.5점)":
                             selectedType = "과제 지각";
                             break;
-                        case "과제 미제출 (1점)":
+                        case "과제 미제출 (-1점)":
                             selectedType = "과제 결석";
                             break;
 
@@ -304,6 +319,7 @@ const ScorePage = () => {
 
         const ContentDiv2 = ({ userScoreDetail }) => {
             // 파트너십 종류별로 데이터를 그룹화
+
             const groupedData = userScoreDetail.slice().reverse().reduce((acc, point) => {
                 const key = point.reason === "MVP" ? "MVP" : point.reason;
             
@@ -321,7 +337,7 @@ const ScorePage = () => {
                     {Object.keys(groupedData).map((reason) => (
                     <div key={reason}>
                         <h3 style={{ marginLeft: "50px", marginBottom: "0px" }}>
-                        {reason} (총 점수: {(reason === "세미나 결석" || reason === "세미나 지각"  || reason === "벌점 조정"  || reason === "과제 지각 벌점" || reason === "과제 미제출" ? "-" : "+") + groupedData[reason].total}점)
+                        {reason} (총 점수: {(reason === "세미나 결석" || reason === "세미나 지각"  || reason === "벌점 조정"  || reason === "과제 지각 벌점" || reason === "과제 지각"|| reason === "과제 미제출" ? "-" : "+") + groupedData[reason].total}점)
                         </h3>
                         <hr style={{ margin: "0px 50px" }} />
                         {groupedData[reason].points.map((point, index) => (
@@ -539,6 +555,7 @@ const ScorePage = () => {
         if (userEmail != undefined) {
             result = await getSelectedUserScoreData(userEmail);
             setUserCoreDetail(result);
+            console.log(result);
             openModal(index);
         } else {
             alert("사용자 이메일이 존재하지 않습니다.");
@@ -550,7 +567,7 @@ const ScorePage = () => {
         <BaseContainer>
             {/* 사용자 / 로그아웃 */}
             <CommonLogSection/> {/* 점수 관리 Title Header */}
-            <PageInfo title="점수 관리!" subTitle="파트별로 파드너십을 관리해보세요."/> {/* 점수 관리 카테고리 드롭다운 */}
+            <PageInfo title="점수 관리" subTitle="파트별로 파드너십을 관리해보세요."/> {/* 점수 관리 카테고리 드롭다운 */}
             
             <DropDownListBox>
                 <DropdownWrapper>

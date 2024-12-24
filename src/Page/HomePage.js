@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import styled from "styled-components";
 import CommonLogSection from "../Components/Common/LogDiv_Comppnents";
-import {FadeLoader} from "react-spinners";
 import {getAllScheduleData} from "../Api/ScheduleAPI";
 import {getRankingInfo} from "../Api/ScoreAPI";
 import { formatDate, getPartName } from "../Components/Common/Variables";
@@ -29,9 +28,8 @@ const HomePage = () => {
             try {
                 // 전체 스케줄 다 가져오기 (type 상관 없이 [false / true])
                 const result = await getAllScheduleData();
-
                 // 스케줄을 저장한다.
-                if (result != undefined) {
+                if (result !== undefined) {
                     setSchedule(result);
                 }
             } catch (error) {
@@ -49,7 +47,7 @@ const HomePage = () => {
                 const result = await getRankingInfo('4');
 
                 // 랭킹을 저장한다.
-                if (result != undefined) {
+                if (result !== undefined) {
                     setUserRankings(result);
                 } 
 

@@ -26,7 +26,7 @@ export const handleGoogleLogin = async (navigate) => {
         const response = await handleLoginAPI(userEmail);
         if (response) {
             // console.log(user.displayName);
-            // console.log(response);
+            console.log(response);
             
             const decoded = jwtDecode(response);
             // console.log(decoded);

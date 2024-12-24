@@ -41,6 +41,7 @@ const SchedulePage = () => {
             try {
                 // 1. 전체 스케줄 다 가져오기 (type 상관 없이 [false / true])
                 const result = await getAllScheduleData();
+                console.log(result);
 
                 // 2. useState 변수에 저장
                 setSchedule(result);
@@ -327,6 +328,19 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
             setSelectedOption(null);
         }
     }, [isOpen]);
+    useEffect(() => {
+        const handleEscape = (e) => {
+            if (e.key === "Escape") {
+                onClose();
+            }
+        };
+
+        document.addEventListener("keydown", handleEscape); // 키보드 이벤트 리스너 추가
+
+        return () => {
+            document.removeEventListener("keydown", handleEscape); // 컴포넌트가 언마운트될 때 리스너 제거
+        };
+    }, []);
 
     // 파트 선택 토글
     const toggleDropdown = () => {
@@ -417,7 +431,8 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
                     contentsLocation: inputAbout,
                     notice: true,
                     remaingDay: 0,
-                    pastEvent: false
+                    pastEvent: false,
+                    generation : 4
                 }
                 const result = await postScheduleData(addScheduleInfo);
 
@@ -447,7 +462,8 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
                     contentsLocation: inputAbout,
                     notice: true,
                     remaingDay: 0,
-                    pastEvent: false
+                    pastEvent: false,
+                    generation : 4
                 }
                 const result = await patchScheduleData(
                     addScheduleInfo,
