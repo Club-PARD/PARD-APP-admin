@@ -147,7 +147,7 @@ const ScorePage = () => {
     };
 
     // 모달 컴포넌트
-    const Modal = ({isOpen, onClose, name, part, email, closeModalWidhtUpdate}) => {
+    const Modal = ({isOpen, onClose, name, part, email, closeModalWidhtUpdate, userData}) => {
         const [points, setPoints] = useState([]); // Points 데이터를 저장할 상태 변수
         const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(true);
         const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -182,6 +182,9 @@ const ScorePage = () => {
                 UpdateScore();
             }
         };
+
+        // const TotalPoint = userData.filter(data => data.reason == selectedPointCategory);
+        // console.log(TotalPoint);
 
         // 점수 업데이트 코드
         const UpdateScore = async () => {
@@ -232,7 +235,7 @@ const ScorePage = () => {
                     // data값 생성
                     const newPoint = {
                         email: email,
-                        point: (selectedType == "벌점 조정" || selectedType == "세미나 지각" || selectedType == "세미나 결석" || selectedType == "과제 지각" || selectedType == "과제 결석")
+                        point: (selectedType == "세미나 지각" || selectedType == "세미나 결석" || selectedType == "과제 지각" || selectedType == "과제 결석")
                             ? scoreDigit * -1
                             : scoreDigit,
                         reason: selectedType,
@@ -308,65 +311,74 @@ const ScorePage = () => {
         function formatDate(createdAt) {
             // 날짜 문자열을 Date 객체로 변환
             const date = new Date(createdAt);
-            
-            // 월과 일을 추출
-            const month = date.getMonth() + 1; // 월은 0부터 시작하므로 1을 더해줍니다.
+
+            // 월, 일, 요일 추출
+            const month = date.getMonth() + 1; // 월은 0부터 시작하므로 1을 더해줌
             const day = date.getDate();
-            
-            // 원하는 형식으로 변환하여 반환
-            return `${month.toString().padStart(2, '0')}월 ${day.toString().padStart(2, '0')}일`;
+            const dayNames = ['일', '월', '화', '수', '목', '금', '토']; // 요일 배열
+            const dayOfWeek = dayNames[date.getDay()]; // 요일 값 추출
+
+            // 원하는 형식으로 반환
+            return `${month.toString().padStart(2, '0')}월 ${day.toString().padStart(2, '0')}일 (${dayOfWeek})`;
         }
 
-        const ContentDiv2 = ({ userScoreDetail }) => {
-            // 파트너십 종류별로 데이터를 그룹화
-
-            const groupedData = userScoreDetail.slice().reverse().reduce((acc, point) => {
-                const key = point.reason === "MVP" ? "MVP" : point.reason;
+        const calculateTotalPoint = (data, category) => {
+            if (!data || data.length === 0) return 0;
             
-                if (!acc[key]) {
-                    acc[key] = { points: [], total: 0 };
-                }
-                
-                acc[key].points.push(point);
-                acc[key].total += point.point;
-                return acc;
-            }, {});
+            if (category === '전체') {
+                return data.reduce((total, item) => total + item.point, 0);
+            } else if (category === '벌점') {
+                return data
+                    .filter(item => !item.bonus)
+                    .reduce((total, item) => total + item.point, 0);
+            } else {
+                return data
+                    .filter(item => item.reason === category)
+                    .reduce((total, item) => total + item.point, 0);
+            }
+        };
         
+        const ContentDiv2 = ({ userScoreDetail, category }) => {
+            // 파트너십 종류별로 데이터를 그룹화
+            // console.log(userScoreDetail); 
+            let filterData = category === '전체' ? userScoreDetail : userScoreDetail.filter(data => data.reason === category);
+            filterData = category === "벌점" ? userScoreDetail.filter(data => data.bonus === false) : filterData;
+
             return (
-                <div style={{ overflow: "auto", maxHeight: "200px" }}>
-                    {Object.keys(groupedData).map((reason) => (
-                    <div key={reason}>
-                        <h3 style={{ marginLeft: "50px", marginBottom: "0px" }}>
-                        {reason} (총 점수: {(reason === "세미나 결석" || reason === "세미나 지각"  || reason === "벌점 조정"  || reason === "과제 지각 벌점" || reason === "과제 지각"|| reason === "과제 미제출" ? "-" : "+") + groupedData[reason].total}점)
-                        </h3>
-                        <hr style={{ margin: "0px 50px" }} />
-                        {groupedData[reason].points.map((point, index) => (
+                <div style={{ overflow: "auto", maxHeight: "150px" }}>
+                    {filterData.map((data, index) => (
                         <div key={index}>
                             <RowContentDiv>
-                            <RowContentType $right={30} width={60}>
-                                {point.reason === "MVP" ? "MVP" : point.reason}
-                            </RowContentType>
-                            <RowContentDigit $right={38} width={45}>
-                                {point.bonus ? `+${point.point}점` : `-${point.point}점`}
-                            </RowContentDigit>
-                            <RowContent $right={15} width={200}>
-                                {point.detail}
-                            </RowContent>
-                            <RowContent $right={0} width={100}>
-                                {formatDate(point.createAt)}
-                            </RowContent>
-                            {/* <RowContent> */}
-                            <RowContent onClick={() => handleDeleteButtonClick(point.reasonId)}>
-                                삭제
-                            </RowContent>
+                                <RowContent $flex = {1.3}>
+                                    {data.reason === "MVP" ? "MVP" : data.reason}
+                                </RowContent>
+                                <RowContent $flex = {1}>
+                                    {data.bonus ? `+${data.point}점` : `-${data.point}점`}
+                                </RowContent>
+                                <RowContent $flex = {4}>
+                                    {data.detail}
+                                </RowContent>
+                                <RowContent $flex = {1.4}>
+                                    {formatDate(data.createAt)}
+                                </RowContent>
+                                {/* <RowContent> */}
+                                <RowContent $flex = {1.5} onClick={() => handleDeleteButtonClick(data.reasonId)}>
+                                    <DeleteContainer>
+                                        <DeleteIcon src={require("../Assets/img/DeleteIcon.png")} />
+                                        삭제
+                                    </DeleteContainer>
+                                </RowContent>
                             </RowContentDiv>
                         </div>
-                        ))}
-                    </div>
                     ))}
                 </div>
             );
         };
+
+        const [selectedPointCategory, setSeletedPointCategory] = useState('전체');
+        const handleSelectPointCategory = (data) => {
+            setSeletedPointCategory(data);
+        }
 
         return (
             <ModalWrapper $isOpen={isOpen}>
@@ -397,24 +409,36 @@ const ScorePage = () => {
                     {
                         isRegisterModalOpen
                             ? (
-                                <div>
-                                    <HR $top={24} />
+                                <PointContainer>
+                                    <PointCategoryContainer>
+                                        <PointCategoryList>
+                                            {
+                                                PointCategory.map((data, index) => (
+                                                    <PointCategoryItem key={index} onClick={() => handleSelectPointCategory(data)} $active={selectedPointCategory === data} $data={data}>
+                                                        {data}
+                                                    </PointCategoryItem>
+                                                ))
+                                            }
+                                        </PointCategoryList>
+                                        <TotalPoint>총 점수: {selectedPointCategory === "벌점" ? "-" : "+" }{calculateTotalPoint(userScoreDetail, selectedPointCategory)}점</TotalPoint>
+                                    </PointCategoryContainer>
+                                    {/* <HR $top={24} /> */}
                                     <RowTitleDiv>
-                                        <RowTitle $right={55}>파드너십</RowTitle>
-                                        <RowTitle $right={113}>점수</RowTitle>
-                                        <RowTitle $right={120}>내용</RowTitle>
-                                        <RowTitle $right={70}>날짜</RowTitle>
-                                        <RowTitle $right={0}>삭제</RowTitle>
+                                        <RowTitle $flex = {1.3}>파드너십</RowTitle>
+                                        <RowTitle $flex = {1}>점수</RowTitle>
+                                        <RowTitle $flex = {4}>내용</RowTitle>
+                                        <RowTitle $flex = {1.4}>날짜</RowTitle>
+                                        <RowTitle $flex = {1.5}>삭제</RowTitle>
                                     </RowTitleDiv>
                         
-                                    <HR $top={8} />
-                                    <ContentDiv2 userScoreDetail = {userScoreDetail}>
+                                    {/* <HR $top={8} /> */}
+                                    <ContentDiv2 userScoreDetail={userScoreDetail} category={selectedPointCategory }>
                             
                                     </ContentDiv2>
                                     <RegisterButton onClick={() => setIsRegisterModalOpen(false)}>
                                         점수 추가
                                     </RegisterButton>
-                                </div>
+                                </PointContainer>
                             )
                             : (
                                 <div>
@@ -549,13 +573,11 @@ const ScorePage = () => {
         borderColor: "#5262F5",
         textAlign: "center"
     };
-
     const fetchUserScoreDetail = async (userEmail, index) => {
         let result;
         if (userEmail != undefined) {
             result = await getSelectedUserScoreData(userEmail);
             setUserCoreDetail(result);
-            console.log(result);
             openModal(index);
         } else {
             alert("사용자 이메일이 존재하지 않습니다.");
@@ -677,6 +699,7 @@ const ScorePage = () => {
                                                             name={userScoreInfo.name}
                                                             part={userScoreInfo.part}
                                                             email={userScoreInfo.userEmail}
+                                                            userData = {userScoreDetail}
                                                             closeModalWidhtUpdate={() => closeModalWidhtUpdate(index)}/>
                                                     </TableCell>
                                                 </TableRow>
@@ -894,6 +917,62 @@ const ModalContents = styled.div `
 ) => props.$top}px;
   `;
 
+
+const PointContainer = styled.div`
+    width: 100%;
+    /* background-color: skyblue; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`;
+
+const PointCategoryContainer = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* background-color: green; */
+    padding : 0px 55px;
+    box-sizing: border-box;
+    margin: 20px 0px;
+`;  
+
+const PointCategoryList = styled.div`
+    display: flex;
+`;
+
+const TotalPoint = styled.div`
+    font-size: 13px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
+
+const PointCategory = ["전체", "벌점", "스터디", "회고", "소통", "MVP"];
+
+const PointCategoryItem = styled.div`
+    width: ${props => props.$data === "스터디" || props.$data === "MVP"  ? "60px" : "45px"};
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    color : ${props => props.$active ? "white" :  "#A3A3A3"};
+    background-color: ${props => props.$active ? "#5262F5" : ""};
+    box-sizing: border-box;
+    margin-right: 20px;
+    font-size: 16px;
+
+    &:hover{
+        color :${props => props.$active ? "white" : "#12121295"};
+        background-color: ${props => props.$active ? "#5262F5": "#5262F520"};
+    }
+
+    &:last-child{
+        margin-right: 0px;
+    }
+`;
+
 const HR = styled.hr `
     width: 540px;
     height: 0px;
@@ -906,22 +985,33 @@ const HR = styled.hr `
 
 const RowTitleDiv = styled.div `
     width: 540px;
-    height: 20px;
     display: flex;
-    margin-left: 57px;
-  `;
+    /* background-color: red; */
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #E4E4E4;
+    border-bottom: 1px solid #E4E4E4;
+    padding : 10px 0px;
+`;
 
 const RowTitle = styled.div `
+    flex : ${props => props.$flex};
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     color: var(--text-black, #111);
     font-family: "Pretendard";
-    font-size: 14px;
+    font-size: 15px;
     font-style: normal;
     font-weight: 600;
     line-height: 18px;
-    margin-right: ${ (
-    props
-) => props.$right}px;
-  `;
+    /* background-color: green; */
+    /* &:nth-child(even){
+        background-color: purple;
+    } */
+`;
 
 const RowContent = styled.div `
     color: var(--text-black, #111);
@@ -930,15 +1020,38 @@ const RowContent = styled.div `
     font-style: normal;
     font-weight: 500;
     line-height: 16px;
-    margin-right: ${ (
-    props
-) => props.$right}px;
+    flex : ${props => props.$flex};
     width: ${ (props) => props.width}px;
-    /* background-color: red; */
     display: flex;
     align-items: center;
-    justify-content: start;
-  `;
+    justify-content: center;
+    font-size: 13px;
+
+`;
+
+const DeleteContainer = styled.div`
+    width: 55px;
+    height : 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color : #A3A3A3;
+    border: 1px solid #A3A3A3;
+    background-color: #F8F8F8;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+
+    &:hover{
+        opacity: 0.8;
+    }
+`;
+
+const DeleteIcon = styled.img`
+    width: 18px;
+    height : 18px;
+    margin-right : 5px;
+`;
 
 const RowContentType = styled.div `
     color: var(--text-black, #111);
@@ -979,23 +1092,19 @@ const RowContentDiv = styled.div `
     width: 540px;
     height: auto;
     display: flex;
-    margin-left: 53px;
     margin-top: 16px;
-  `;
+`;
 
 
 const RegisterButton = styled.button `
-    width: 556px;
     height: 48px;
-    margin-left: 32px;
     border-radius: 8px;
     border: 1px solid var(--primary-blue, #5262f5);
     background: var(--primary-blue-10, #eeeffe);
     display: flex;
-    width: 556px;
+    width: 90%;
     justify-content: center;
     align-items: center;
-    gap: 8px;
     color: var(--primary-blue, #5262f5);
     /* Head/H1-SB-18 */
     font-family: "Pretendard";
@@ -1004,6 +1113,9 @@ const RegisterButton = styled.button `
     font-weight: 600;
     line-height: 24px;
     margin-top: 10px;
+    
+    position: absolute;
+    bottom: 30px;
 
     &:hover {
       box-shadow: 0px 4px 8px 0px rgba(0, 17, 170, 0.25);
