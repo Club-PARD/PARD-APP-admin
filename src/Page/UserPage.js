@@ -834,7 +834,7 @@ const UserPage = () => {
                                                 </TableHead2Cell>
                                                 <TableHead2Cell $flex={1}>
                                                     <InputBox
-                                                        type="text"
+                                                        type="number"
                                                         placeholder="입력"
                                                         value={generationInputs[index] || ""}
                                                         required
@@ -868,7 +868,7 @@ const UserPage = () => {
                                                 </TableHead2Cell>
                                                 <TableHead2Cell $flex={2}>
                                                     <InputBox
-                                                        type="text"
+                                                        type="number"
                                                         placeholder="입력"
                                                         value={birthdayInputs[index] || ""}
                                                         required
@@ -1298,6 +1298,12 @@ const InputBox = styled.input `
     text-align: center;
     @media (min-width: 1200px) {
         font-size: 18px;
+    }
+    /* 스핀 버튼 제거 */
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
     }
 `;
 
