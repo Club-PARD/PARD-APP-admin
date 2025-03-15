@@ -8,6 +8,8 @@ import { getSelectedUserScoreData } from "../Api/ScoreAPI";
 import { options, ScoreList } from "../Components/Common/Variables";
 import { PageInfo } from "../Components/Common/PageInfo";
 import { BaseContainer } from "../Components/Common/BaseContainer";
+import { AtomSelectedGeneration } from "../Context/Atom";
+import { useRecoilState } from "recoil";
 
 /* 
 - 모달 관련 코드
@@ -52,6 +54,7 @@ const ScorePage = () => {
     const [isContentChanged, setContentChanged] = useState(false); // 컨텐츠 변경 확인 state
     const [loading, setLoading] = useState(true);
     const [userScoreDetail, setUserCoreDetail] = useState([]);
+    const [SelectedGeneration] = useRecoilState(AtomSelectedGeneration); // Recoil 상태 사용
     // const [selectedGeneration, setSelectedGeneration] = useState(4);
     // const [isDropDownGeneration, setIsDropDownGeneration] = useState(false);
 
@@ -67,7 +70,7 @@ const ScorePage = () => {
     useEffect(() => {
         const fetchUserScores = async () => {
             try {
-                const result = await getAllUserData(4);
+                const result = await getAllUserData(SelectedGeneration);
                 if (result != undefined) {
                     const filteredResults = result.filter(user => user.role !== "ROLE_ADMIN");
                     setUserScores(filteredResults);

@@ -12,6 +12,8 @@ import { PageInfo } from "../Components/Common/PageInfo";
 import { BaseContainer } from "../Components/Common/BaseContainer";
 import { AddButton } from "../Components/Buttons";
 import { ContentContainer, ContentText, LeftContainer, PartNameChip, RightContainer, ScheduleFirstRow, ScheduleItem, ScheduleSecondRow, ScheduleTitle, ScrollContainer, ButtonListContainer, ScheduleInfoContainer} from "../Components/Schedule/ScheduleItem";
+import { AtomSelectedGeneration } from "../Context/Atom";
+import { useRecoilState } from "recoil";
 
 /* 
 - Firebase fireStore 스케쥴 데이터 조회
@@ -34,17 +36,20 @@ const SchedulePage = () => {
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(true);
     const [isOpen, setIsOpen] = useState(false);
     const [selectedSchedule, setSelectedSchedule] = useState(null);
+    const [setSelectedGeneration] = useRecoilState(AtomSelectedGeneration); // Recoil 상태 사용
 
     // 스케쥴 조회
     useEffect(() => {
         const fetchSchedules = async () => {
             try {
                 // 1. 전체 스케줄 다 가져오기 (type 상관 없이 [false / true])
+
                 const result = await getAllScheduleData();
-                console.log(result);
+                // console.log(result);
+                const filteredSchedules = result.filter(item => item.generation === setSelectedGeneration);
 
                 // 2. useState 변수에 저장
-                setSchedule(result);
+                setSchedule(filteredSchedules);
                 // console.log(result);
             } catch (error) {
                 console.error("[Error] getAllScheduleData():", error);
@@ -296,7 +301,7 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
     const [inputText, setInputText] = useState("");
     const [inputAbout, setInputAbout] = useState("");
     const [selectedTime, setSelectedTime] = useState(new Date());
-
+    const [SelectedGeneration] = useRecoilState(AtomSelectedGeneration); // Recoil 상태 사용
     useEffect(() => {
         if (selectedSchedule) {
             setInputText(selectedSchedule?.title);
@@ -432,7 +437,7 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
                     notice: true,
                     remaingDay: 0,
                     pastEvent: false,
-                    generation : 4
+                    generation : SelectedGeneration
                 }
                 const result = await postScheduleData(addScheduleInfo);
 
@@ -463,7 +468,7 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
                     notice: true,
                     remaingDay: 0,
                     pastEvent: false,
-                    generation : 4
+                    generation : SelectedGeneration
                 }
                 const result = await patchScheduleData(
                     addScheduleInfo,

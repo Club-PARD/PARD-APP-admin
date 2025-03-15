@@ -73,7 +73,7 @@ const UserPage = () => {
             if (selectedGeneration)
                 setSelectedGeneration(selectedGeneration);
             else
-                setSelectedGeneration(4);
+                setSelectedGeneration(5);
         }
 
         if (selectedGeneration) {

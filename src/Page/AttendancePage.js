@@ -7,6 +7,9 @@ import { PageInfo } from "../Components/Common/PageInfo";
 import { BaseContainer } from "../Components/Common/BaseContainer";
 import { CancelButton, EditButton, SaveButton } from "../Components/Buttons";
 import { CustomTableCell } from "../Components/AttendancePage/CustomTableCell";
+import { useRecoilState } from "recoil";
+import { AtomSelectedGeneration } from "../Context/Atom";
+import { useNavigate } from "react-router-dom";
 
 /*
 - Firebase fireStore 스케쥴 데이터 조회
@@ -26,13 +29,14 @@ const AttendancePage = () => {
     const [selectedOption, setSelectedOption] = useState(null);
     const [addable, setAddable] = useState(true);
     const [originalAttendanceData, setOriginalAttendanceData] = useState([]);
+    const [SelectedGeneration] = useRecoilState(AtomSelectedGeneration); // Recoil 상태 사용
 
     const [activeCell, setActiveCell] = useState({ userIndex: null, seminarIndex: null });
 
     // 사용자 출석 정보 다 불러오기
     useEffect(() => {
         const fetchAllAttendanceData = async () => {
-            const result = await getAllAttendanceData('4');
+            const result = await getAllAttendanceData(SelectedGeneration);
             // console.log(result);
             if (result != undefined) {
                 setAttendanceData(result);
@@ -92,11 +96,16 @@ const AttendancePage = () => {
         }
     };
 
+    const navigate = useNavigate();
     // 핸들러 : 변경 사항 취소를 묻는 핸들러
     const handleCancelClick = () => {
         const confirmSave = window.confirm("변경사항이 저장되지 않습니다.\n취소 하시겠습니까?");
         if (confirmSave) {
-            setTimeout(() => {window.location.reload();}, 1000);
+            setTimeout(() => {
+                // window.location.reload();
+                setAddable(true);
+                navigate("/Check");
+            }, 1000);
         }
     };
 

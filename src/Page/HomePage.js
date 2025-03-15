@@ -7,6 +7,8 @@ import { formatDate, getPartName } from "../Components/Common/Variables";
 import { PageInfo } from "../Components/Common/PageInfo";
 import { BaseContainer } from "../Components/Common/BaseContainer";
 import { ContentContainer, LeftContainer, RightContainer, ScheduleItem, ScheduleFirstRow, ScheduleSecondRow, ContentText, ScrollContainer, PartNameChip, ScheduleTitle } from "../Components/Schedule/ScheduleItem";
+import { AtomSelectedGeneration } from "../Context/Atom";
+import { useRecoilState } from "recoil";
 
 /*
 - Firebase fireStore 스케쥴 데이터 조회
@@ -21,6 +23,8 @@ import { ContentContainer, LeftContainer, RightContainer, ScheduleItem, Schedule
 const HomePage = () => {
     const [schedules, setSchedule] = useState([]);
     const [userRankings, setUserRankings] = useState([]);
+    const [SelectedGeneration] = useRecoilState(AtomSelectedGeneration); // Recoil 상태 사용
+        
 
     // 스케줄 가져오기
     useEffect(() => {
@@ -44,7 +48,7 @@ const HomePage = () => {
         const calculateUserRankings = async () => {
             try {
                 // 3기 사용자들의 전체 랭킹을 불러온다.
-                const result = await getRankingInfo('4');
+                const result = await getRankingInfo(SelectedGeneration);
 
                 // 랭킹을 저장한다.
                 if (result !== undefined) {
