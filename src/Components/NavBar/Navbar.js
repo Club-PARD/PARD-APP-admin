@@ -16,6 +16,7 @@ function NavBar() {
         { path: "/Schedule", label: "일정 관리", iconSrc: require("../../Assets/img/CalendarIcon.png") },
         { path: "/Score", label: "점수 관리", iconSrc: require("../../Assets/img/ScoreIcon.png") },
         { path: "/User", label: "사용자 관리", iconSrc: require("../../Assets/img/NavBar_MemberIcon.png") },
+        { path: "/Setting", label: "설정", iconSrc: require("../../Assets/img/setting_page_icon.png") },
     ];
 
     return (

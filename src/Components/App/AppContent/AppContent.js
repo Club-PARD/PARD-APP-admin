@@ -8,6 +8,7 @@ import UserPage from "../../../Page/UserPage";
 import SchedulePage from "../../../Page/SchedulePage";
 import ScorePage from "../../../Page/ScorePage";
 import NavBar from "../../NavBar/Navbar";
+import SettingPage from "../../../Page/SettingPage"
 
 export const AppContent = () => {
     const location = useLocation();
@@ -32,7 +33,8 @@ export const AppContent = () => {
                     <Route path="/Check" element={<AttendancePage />}/>
                     <Route path="/Schedule" element={<SchedulePage />}/>
                     <Route path="/User" element={<UserPage />}/>
-                    <Route path="/Login" element={<LoginPage />}/>
+                    <Route path="/Login" element={<LoginPage />} />
+                    <Route path="/Setting" element = {<SettingPage/>}/>
                 </Routes>
             </MainContent>
         </AppContainer>
