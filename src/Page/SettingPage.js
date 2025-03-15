@@ -8,7 +8,7 @@ import { AtomSelectedGeneration } from "../Context/Atom";
 
 function SettingPage() {
 
-    const GenerationList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const GenerationList = [1, 2, 3, 4, 5];
     const [SelectedGeneration, setSelectedGeneration] = useRecoilState(AtomSelectedGeneration);
 
     const handleChangeGeneartion = (generation) => {
