@@ -15,6 +15,12 @@ import { de } from "date-fns/locale";
 
 // Google 로그인 코드
 export const handleGoogleLogin = async (navigate, selectedGeneration) => {
+
+    if (selectedGeneration > 0)
+        selectedGeneration = selectedGeneration;
+    else
+        selectedGeneration = 5;
+
     const provider = new GoogleAuthProvider();
     try {
         // Google login을 통한 사용자 정보 조회

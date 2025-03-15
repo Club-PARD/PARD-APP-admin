@@ -12,7 +12,8 @@ function SettingPage() {
     const [SelectedGeneration, setSelectedGeneration] = useRecoilState(AtomSelectedGeneration);
 
     const handleChangeGeneartion = (generation) => {
-        setSelectedGeneration(generation);
+        if(generation > 0)
+            setSelectedGeneration(generation);
         sessionStorage.setItem('selectedGeneration', generation);
     }
     return (

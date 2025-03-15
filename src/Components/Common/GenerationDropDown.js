@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const GenerationDropDown = ({ selectedGeneration, isDropDownGeneration, setIsDropDownGeneration, setSelectedGeneration }) => {
+const GenerationDropDown = ({ selectedGeneration, isDropDownGeneration, setIsDropDownGeneration, setSelectedGeneration, setSelectedGeneartionAtom }) => {
     // 기수 리스트 
     const GenerationList = [1, 2, 3, 4, 5];
 
@@ -8,6 +8,7 @@ const GenerationDropDown = ({ selectedGeneration, isDropDownGeneration, setIsDro
     const handleSelectGeneration = (generation) => {
         setSelectedGeneration(generation);
         sessionStorage.setItem('selectedGeneration', generation);
+        setSelectedGeneartionAtom(generation);
         setIsDropDownGeneration(false);
     }
     return (

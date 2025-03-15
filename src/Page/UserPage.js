@@ -7,6 +7,8 @@ import GenerationDropDown from "../Components/Common/GenerationDropDown";
 import { PageInfo } from "../Components/Common/PageInfo";
 import { BaseContainer } from "../Components/Common/BaseContainer";
 import { EditButton, CancelButton, SaveButton } from "../Components/Buttons";
+import { useSetRecoilState } from "recoil";
+import { AtomSelectedGeneration } from "../Context/Atom";
 
 /*
 - Firebase fireStore User 데이터 조회
@@ -44,6 +46,7 @@ const UserPage = () => {
     const [selectedGeneration, setSelectedGeneration] = useState();
     const [isDropDownGeneration, setIsDropDownGeneration] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(null);
+    const setSelectedGeneartionAtom = useSetRecoilState(AtomSelectedGeneration);
 
     // 변수 : User 정보 조회 후 sort
     const sortedUserDataList = userDataList
@@ -661,7 +664,7 @@ const UserPage = () => {
                                         </MemberNumText>
                                         <MemberNumText color={"#1A1A1A"}>명</MemberNumText>
                                     </FlexDiv>
-                                    <GenerationDropDown selectedGeneration={selectedGeneration} isDropDownGeneration={isDropDownGeneration} setIsDropDownGeneration={setIsDropDownGeneration} setSelectedGeneration={setSelectedGeneration} />
+                                    <GenerationDropDown selectedGeneration={selectedGeneration} isDropDownGeneration={isDropDownGeneration} setIsDropDownGeneration={setIsDropDownGeneration} setSelectedGeneration={setSelectedGeneration} setSelectedGeneartionAtom={setSelectedGeneartionAtom} />
                                 </GenerationDiv>
                                 <EditButton onClick={() => setAddable(false)}>
                                     <RegisterMemberIcon src={require("../Assets/img/MemberIcon.png")}/>
