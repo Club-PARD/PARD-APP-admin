@@ -14,7 +14,7 @@ import { de } from "date-fns/locale";
 
 
 // Google 로그인 코드
-export const handleGoogleLogin = async (navigate) => {
+export const handleGoogleLogin = async (navigate, selectedGeneration) => {
     const provider = new GoogleAuthProvider();
     try {
         // Google login을 통한 사용자 정보 조회
@@ -26,13 +26,13 @@ export const handleGoogleLogin = async (navigate) => {
         const response = await handleLoginAPI(userEmail);
         if (response) {
             // console.log(user.displayName);
-            console.log(response);
+            // console.log(response);
             
             const decoded = jwtDecode(response);
             // console.log(decoded);
             if (decoded?.role === "ROLE_ADMIN") {
                 alert("로그인되었습니다.");
-                sessionStorage.setItem('selectedGeneration', 4);
+                sessionStorage.setItem('selectedGeneration', selectedGeneration);
                 localStorage.setItem("token", "pardo-admin-key");
                 localStorage.setItem("userName", user.displayName);
                 navigate("/");                
