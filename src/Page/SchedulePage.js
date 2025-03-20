@@ -520,7 +520,8 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
                     contentsLocation: "",
                     notice: false,
                     remaingDay: 0,
-                    pastEvent: false
+                    pastEvent: false,
+                    generation : 5 // 기수 수정
                 }
                 const result = await postScheduleData(addScheduleInfo);
                 alert("과제 일정이 추가되었습니다.");
@@ -546,7 +547,8 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
                     contentsLocation: "",
                     notice: false,
                     remaingDay: 0,
-                    pastEvent: false
+                    pastEvent: false,
+                    generation : 5 // 기수 수정
                 }
                 const result = await patchScheduleData(
                     addScheduleInfo,
