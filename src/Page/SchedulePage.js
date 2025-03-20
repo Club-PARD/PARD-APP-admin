@@ -437,7 +437,7 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
                     notice: true,
                     remaingDay: 0,
                     pastEvent: false,
-                    generation : SelectedGeneration
+                    generation : 5 // 기수 수정
                 }
                 const result = await postScheduleData(addScheduleInfo);
 
@@ -468,7 +468,7 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
                     notice: true,
                     remaingDay: 0,
                     pastEvent: false,
-                    generation : SelectedGeneration
+                    generation : 5 // 기수 수정
                 }
                 const result = await patchScheduleData(
                     addScheduleInfo,
