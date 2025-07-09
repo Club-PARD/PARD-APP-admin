@@ -84,7 +84,6 @@ const AttendancePage = () => {
         }
     };
 
-
     // 핸들러 : 변경 사항 저장을 묻는 핸들러
     const handleEditButtonClick = () => {
         const confirmSave = window.confirm("변경 사항을 저장하시겠습니까?");
@@ -108,8 +107,6 @@ const AttendancePage = () => {
             }, 1000);
         }
     };
-
-
 
     // 핸들러 : DropDown의 토클 역할을 수행하며 변수를 false <-> true로 지정하는 핸들러
     const toggleDropdown = () => {
@@ -135,8 +132,6 @@ const AttendancePage = () => {
             (userScore) => userScore.role !== "ROLE_ADMIN" 
         );
 
-    
-    
     // 핸들러 : 즉시 업데이트 관련 코드 (수정중 즉, 출석, 지각, 결석 중 선택했을 때 선택된 값을 변경해주는 핸들러)
     const updateUser = async (index, idx, newData) => {
         setAttendanceData(prevData => {
@@ -149,7 +144,6 @@ const AttendancePage = () => {
                     updatedData[userIndex].attendances = [];
                 }
                 
-
                 for (let i = 0; i < updatedData[userIndex].attendances.length; i++){
                     if (updatedData[userIndex].attendances[i].seminar === attendanceList[idx].name) {
                         updatedData[userIndex].attendances[i].status = newData;
@@ -160,9 +154,7 @@ const AttendancePage = () => {
                 }
                 if (flag === 0) {
                     updatedData[userIndex].attendances.push({ status: newData, seminar: attendanceList[idx].name });
-
                 }
-                
             }
             // console.log("check", updatedData);
             return updatedData;
@@ -188,7 +180,6 @@ const AttendancePage = () => {
 
             {/* 전체, 취소하기, 수정하기 Header */}
             <FirstDiv>
-
                 {/* 전체 or 파트 선택 */}
                 <DropdownWrapper>
                     <DropdownButton onClick={toggleDropdown}>
@@ -235,21 +226,17 @@ const AttendancePage = () => {
                 addable
                     ? (
                         <BodyDiv>
-                            {/* <AttendanceTable /> */}
                             <Table>
                                 {/* Table - Head */}
                                 <TableHead>
                                     <TableRow>
-                                        <TableHeaderCell width={140} style={{ background: "#F8F8F8"}}>
+                                        <TableHeaderCell width={140} $isFixed={true} style={{ background: "#F8F8F8"}}>
                                             이름
                                         </TableHeaderCell>
                                         {
                                             attendanceList.map((attendance, index) => (
                                                 <TableHeaderCell width={152} key = {index}>{attendance?.desc}</TableHeaderCell>
                                         ))}
-                                        
-                                        
-                                        
                                     </TableRow>
                                 </TableHead>
 
@@ -259,7 +246,7 @@ const AttendancePage = () => {
                                         filteredUserScores.map((attendanceDataInfo, index) => (
                                             <TableRow key={index}>
                                                 {/* 사용자 - 이름 */}
-                                                <TableCell color={"#2A2A2A"} width={140}>
+                                                <TableCell color={"#2A2A2A"} width={140} $isFixed={true}>
                                                     {attendanceDataInfo.name}
                                                 </TableCell>
 
@@ -276,7 +263,6 @@ const AttendancePage = () => {
                                     }
                                 </TableBody>
                             </Table>
-
                         </BodyDiv>
                     )
                     : (
@@ -287,6 +273,7 @@ const AttendancePage = () => {
                                     <TableRow>
                                         <TableHeaderCell
                                             width={140}
+                                            $isFixed={true}
                                             style={{
                                                 background: "#F8F8F8"
                                             }}>
@@ -304,7 +291,7 @@ const AttendancePage = () => {
                                     {
                                         filteredUserScores.map((attendanceDataInfo, index) => (
                                             <TableRow key={index}>
-                                                <TableCell color={"#2A2A2A"} width={140}>
+                                                <TableCell color={"#2A2A2A"} width={140} $isFixed={true}>
                                                     {attendanceDataInfo.name}
                                                 </TableCell>
                                                 {
@@ -337,25 +324,25 @@ const AttendancePage = () => {
 
 export default AttendancePage;
 
-const BodyDiv = styled.div `
+const BodyDiv = styled.div`
     display: flex;
     width: 100%;
-    height : 60vh;
-    overflow: scroll;
+    height: 60vh;
+    overflow: auto;
     scrollbar-width: none;
+    position: relative;
 `;
 
-const Table = styled.table `
+const Table = styled.table`
     width: 1380px;
     border-collapse: collapse;
     border-spacing: 0;
     border-radius: 4px;
-    overflow-x: scroll;
-    overflow-y: scroll;
     border-radius: 4px 0px 0px 0px;
+    position: relative;
 `;
 
-const TableHead = styled.thead `
+const TableHead = styled.thead`
     background-color: #eee;
     border-bottom: 1px solid #a3a3a3;
     border-radius: 4px 0px 0px 0px;
@@ -364,23 +351,20 @@ const TableHead = styled.thead `
     z-index: 300;
 `;
 
-const TableRow = styled.tr `
+const TableRow = styled.tr`
     border-bottom: 1px solid #ddd;
     display: flex;
     border-radius: 4px 0px 0px 0px;
 `;
 
-const TableBody = styled.tbody `
-    display: block;
-    max-height: calc(100% - 48px);
-    overflow-y: auto;
+const TableBody = styled.tbody`
     border-bottom: 0.5px solid var(--Gray30, #a3a3a3);
     &:first-child {
         border-left: 1px solid var(--Gray30, #a3a3a3);
     }
 `;
 
-const TableHeaderCell = styled.th `
+const TableHeaderCell = styled.th`
     color: var(--black-background, #1a1a1a);
     font-family: "Pretendard";
     font-size: 16px;
@@ -397,6 +381,13 @@ const TableHeaderCell = styled.th `
     border-left: 0.5px solid var(--Gray30, #a3a3a3);
     border-right: 0.5px solid var(--Gray30, #a3a3a3);
     background: #f0f9f5;
+    
+    ${props => props.$isFixed && `
+        position: sticky;
+        left: 0;
+        z-index: 301;
+        background: #F8F8F8;
+    `}
 
     &:first-child {
         border-left: 1px solid var(--Gray30, #a3a3a3);
@@ -409,8 +400,8 @@ const TableHeaderCell = styled.th `
     }
 `;
 
-const TableCell = styled.td `
-    color: ${ (props) => props.color};
+const TableCell = styled.td`
+    color: ${(props) => props.color};
     font-family: "Pretendard";
     font-size: 16px;
     font-style: normal;
@@ -424,6 +415,13 @@ const TableCell = styled.td `
     border-right: 0.5px solid var(--Gray30, #a3a3a3);
     border-left: 0.5px solid var(--Gray30, #a3a3a3);
     cursor: ${props => props.$isUpdate};
+    
+    ${props => props.$isFixed && `
+        position: sticky;
+        left: 0;
+        z-index: 299;
+        background: white;
+    `}
 
     &:first-child {
         border-left: 1px solid var(--Gray30, #a3a3a3);
@@ -434,7 +432,7 @@ const TableCell = styled.td `
     }
 `;
 
-const DropdownWrapper = styled.div `
+const DropdownWrapper = styled.div`
     position: relative;
     display: inline-block;
     display: flex;
@@ -447,7 +445,7 @@ const DropdownWrapper = styled.div `
     background: var(--White, #fff);
 `;
 
-const DropdownButton = styled.button `
+const DropdownButton = styled.button`
     cursor: pointer;
     width: 100%;
     height: 100%;
@@ -465,8 +463,8 @@ const DropdownButton = styled.button `
     align-items: center;
 `;
 
-const DropdownContent = styled.div `
-    display: ${ (props) => (props.$isOpen? "block" : "none")};
+const DropdownContent = styled.div`
+    display: ${(props) => (props.$isOpen ? "block" : "none")};
     position: absolute;
     background-color: #f1f1f1;
     z-index: 999;
@@ -478,7 +476,7 @@ const DropdownContent = styled.div `
     border: 1px solid var(--primary-blue, #5262f5);
 `;
 
-const DropdownItem = styled.div `
+const DropdownItem = styled.div`
     padding: 10px;
     cursor: pointer;
     background: var(--White, #fff);
@@ -495,9 +493,9 @@ const DropdownItem = styled.div `
     }
 `;
 
-const FirstDiv = styled.div `
+const FirstDiv = styled.div`
     display: flex;
-    height : auto;
+    height: auto;
     width: 100%;
     margin-bottom: 16px;
     margin-top: 83px;
@@ -505,19 +503,19 @@ const FirstDiv = styled.div `
     align-items: center;
 `;
 
-const FlexDiv = styled.div `
+const FlexDiv = styled.div`
     display: flex;
     align-items: center;
 `;
 
-const EditIcon = styled.img `
+const EditIcon = styled.img`
     width: 24px;
     height: 24px;
     margin-right: 8px;
 `;
-const ArrowTop = styled.img `
+
+const ArrowTop = styled.img`
     width: 14px;
     height: 14px;
     cursor: pointer;
 `;
-
