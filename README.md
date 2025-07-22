@@ -2,7 +2,7 @@
 
 ## 프로젝트 개요
 
-PARD app 관리자 웹사이트는 React와 firebase 프레임워크를 사용하여 개발된 웹 어플리케이션입니다. 이 웹사이트는 firebase 서버에서 호스팅되며, 디자인은 Figma를 통해 디자이너와 기획자가 협력하여 완성되었습니다.
+PARD app 관리자 웹사이트는 React와 Spring Boot 프레임워크를 사용하여 개발된 웹 어플리케이션입니다. 이 웹사이트는 firebase 서버에서 호스팅되며, 디자인은 Figma를 통해 디자이너와 기획자가 협력하여 완성되었습니다.
 
 ## 웹사이트 링크
 
@@ -39,6 +39,9 @@ npm start
   - `코드 리펙토링 1차`
   - 수정: `코드 인수인계 자료 준비`
     <br>
+- 1.1.0
+  - `두 번째 배포`
+  - 수정: `firebase -> Spring Boot`
 
 [![NPM Version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
