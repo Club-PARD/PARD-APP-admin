@@ -437,7 +437,7 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
                     notice: true,
                     remaingDay: 0,
                     pastEvent: false,
-                    generation : 5 // 기수 수정
+                    generation : 6 // 기수 수정
                 }
                 const result = await postScheduleData(addScheduleInfo);
 
@@ -468,7 +468,7 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
                     notice: true,
                     remaingDay: 0,
                     pastEvent: false,
-                    generation : 5 // 기수 수정
+                    generation : 6 // 기수 수정
                 }
                 const result = await patchScheduleData(
                     addScheduleInfo,
@@ -521,7 +521,7 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
                     notice: false,
                     remaingDay: 0,
                     pastEvent: false,
-                    generation : 5 // 기수 수정
+                    generation : 6 // 기수 수정
                 }
                 const result = await postScheduleData(addScheduleInfo);
                 alert("과제 일정이 추가되었습니다.");
@@ -548,7 +548,7 @@ const Modal = ({isOpen, isRegisterModalOpen, onClose, closeModalWidhtUppdate, se
                     notice: false,
                     remaingDay: 0,
                     pastEvent: false,
-                    generation : 5 // 기수 수정
+                    generation : 6 // 기수 수정
                 }
                 const result = await patchScheduleData(
                     addScheduleInfo,

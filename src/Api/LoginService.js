@@ -19,7 +19,7 @@ export const handleGoogleLogin = async (navigate, selectedGeneration) => {
     if (selectedGeneration > 0)
         selectedGeneration = selectedGeneration;
     else
-        selectedGeneration = 5;
+        selectedGeneration = 6;
 
     const provider = new GoogleAuthProvider();
     try {
